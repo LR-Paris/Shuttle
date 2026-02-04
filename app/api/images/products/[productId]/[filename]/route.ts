@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ productId: string; filename: string }> }
@@ -9,14 +16,7 @@ export async function GET(
   try {
     const { productId, filename } = await params;
 
-    // Parse productId to get collection and item paths
-    // productId format: "collection-slug-item-slug"
-    const parts = productId.split('-');
-    if (parts.length < 2) {
-      return new NextResponse('Invalid product ID', { status: 400 });
-    }
-
-    // We need to find the actual collection and item folders
+    // We need to find the actual collection and item folders that match this productId
     const collectionsPath = path.join(process.cwd(), 'DATABASE', 'ShopCollections');
     const collections = fs.readdirSync(collectionsPath, { withFileTypes: true });
 
@@ -25,16 +25,23 @@ export async function GET(
     for (const collection of collections) {
       if (!collection.isDirectory()) continue;
 
+      const collectionSlug = slugify(collection.name);
       const collectionPath = path.join(collectionsPath, collection.name);
       const items = fs.readdirSync(collectionPath, { withFileTypes: true });
 
       for (const item of items) {
         if (!item.isDirectory()) continue;
 
-        const photosPath = path.join(collectionPath, item.name, 'Photos', filename);
-        if (fs.existsSync(photosPath)) {
-          imagePath = photosPath;
-          break;
+        // Generate the productId for this item and check if it matches
+        const itemSlug = slugify(item.name);
+        const expectedProductId = `${collectionSlug}-${itemSlug}`;
+
+        if (expectedProductId === productId) {
+          const photosPath = path.join(collectionPath, item.name, 'Photos', filename);
+          if (fs.existsSync(photosPath)) {
+            imagePath = photosPath;
+            break;
+          }
         }
       }
 
@@ -42,6 +49,17 @@ export async function GET(
     }
 
     if (!imagePath) {
+      // Return fallback image if available
+      const fallbackPath = path.join(process.cwd(), 'public', 'fallback-image.png');
+      if (fs.existsSync(fallbackPath)) {
+        const fileBuffer = fs.readFileSync(fallbackPath);
+        return new NextResponse(fileBuffer, {
+          headers: {
+            'Content-Type': 'image/png',
+            'Cache-Control': 'public, max-age=31536000, immutable',
+          },
+        });
+      }
       return new NextResponse('Image not found', { status: 404 });
     }
 

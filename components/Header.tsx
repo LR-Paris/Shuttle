@@ -4,15 +4,22 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { getCart } from '@/lib/cart';
 
+interface Collection {
+  id: string;
+  name: string;
+}
+
 interface HeaderProps {
   companyName: string;
   logoPath: string | null;
   primaryColor: string;
   secondaryColor: string;
+  collections?: Collection[];
 }
 
-export default function Header({ companyName, logoPath, primaryColor, secondaryColor }: HeaderProps) {
+export default function Header({ companyName, logoPath, primaryColor, secondaryColor, collections = [] }: HeaderProps) {
   const [cartItemCount, setCartItemCount] = useState(0);
+  const [showCollectionsDropdown, setShowCollectionsDropdown] = useState(false);
 
   useEffect(() => {
     const updateCartCount = () => {
@@ -50,12 +57,57 @@ export default function Header({ companyName, logoPath, primaryColor, secondaryC
             >
               Home
             </Link>
-            <Link
-              href="/collections"
-              className="text-white hover:opacity-80 transition-opacity"
+
+            {/* Collections Dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={() => setShowCollectionsDropdown(true)}
+              onMouseLeave={() => setShowCollectionsDropdown(false)}
             >
-              Collections
-            </Link>
+              <Link
+                href="/collections"
+                className="text-white hover:opacity-80 transition-opacity flex items-center space-x-1"
+              >
+                <span>Collections</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </Link>
+
+              {showCollectionsDropdown && collections.length > 0 && (
+                <div
+                  className="absolute top-full left-0 mt-2 w-64 bg-white shadow-lg border rounded-lg overflow-hidden z-50"
+                  style={{ borderColor: '#e5e5e5' }}
+                >
+                  <Link
+                    href="/collections"
+                    className="block px-4 py-3 hover:bg-gray-50 transition-colors border-b"
+                    style={{ borderColor: '#e5e5e5' }}
+                  >
+                    <span className="font-semibold" style={{ color: primaryColor }}>
+                      All Collections
+                    </span>
+                  </Link>
+                  {collections.map((collection) => (
+                    <Link
+                      key={collection.id}
+                      href={`/collections/${collection.id}`}
+                      className="block px-4 py-3 hover:bg-gray-50 transition-colors"
+                      style={{ color: '#333333' }}
+                    >
+                      {collection.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <Link
               href="/cart"
               className="flex items-center space-x-2 px-4 py-2 rounded-lg text-white hover:opacity-90 transition-opacity"

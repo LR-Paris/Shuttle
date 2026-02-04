@@ -15,6 +15,12 @@ export interface Product {
   images: string[];
   collectionId: string;
   collectionName: string;
+  boxSize?: string;
+  itemSize?: string;
+  weight?: string;
+  material?: string;
+  color?: string;
+  additionalDetails?: string;
 }
 
 export interface Collection {
@@ -76,6 +82,14 @@ function parseProduct(
     const boxCost = parseFloat(readDetailsFile(detailsPath, 'BoxCost.txt') || '0');
     const unitsPerBox = parseInt(readDetailsFile(detailsPath, 'UnitsPerBox.txt') || '1', 10);
 
+    // Optional detail fields
+    const boxSize = readDetailsFile(detailsPath, 'BoxSize.txt');
+    const itemSize = readDetailsFile(detailsPath, 'ItemSize.txt');
+    const weight = readDetailsFile(detailsPath, 'Weight.txt');
+    const material = readDetailsFile(detailsPath, 'Material.txt');
+    const color = readDetailsFile(detailsPath, 'Color.txt');
+    const additionalDetails = readDetailsFile(detailsPath, 'AdditionalDetails.txt');
+
     if (!name || !sku) {
       return null;
     }
@@ -94,6 +108,12 @@ function parseProduct(
       images,
       collectionId,
       collectionName,
+      ...(boxSize && { boxSize }),
+      ...(itemSize && { itemSize }),
+      ...(weight && { weight }),
+      ...(material && { material }),
+      ...(color && { color }),
+      ...(additionalDetails && { additionalDetails }),
     };
   } catch (error) {
     console.error(`Error parsing product ${itemName}:`, error);

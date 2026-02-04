@@ -28,6 +28,8 @@ export interface DesignData {
   logoPath: string | null;
   logoWhitePath: string | null;
   faviconPath: string | null;
+  cornerStyle: 'rounded' | 'square';
+  showcaseImages: string[];
 }
 
 function parseKeyValueFile(content: string): Record<string, string> {
@@ -123,6 +125,35 @@ function getLogoPath(filename: string): string | null {
   }
 }
 
+function getCornerStyle(): 'rounded' | 'square' {
+  try {
+    const cornerStylePath = path.join(DESIGN_PATH, 'Details', 'CornerStyle.txt');
+    const content = fs.readFileSync(cornerStylePath, 'utf-8').trim().toLowerCase();
+    return content === 'square' ? 'square' : 'rounded';
+  } catch (error) {
+    return 'rounded';
+  }
+}
+
+function getShowcaseImages(): string[] {
+  try {
+    const showcasePath = path.join(DESIGN_PATH, 'Showcase');
+    if (!fs.existsSync(showcasePath)) {
+      return [];
+    }
+
+    const files = fs.readdirSync(showcasePath);
+    const imageFiles = files.filter(file => {
+      const ext = path.extname(file).toLowerCase();
+      return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext);
+    });
+
+    return imageFiles.map(file => `/api/images/showcase/${file}`);
+  } catch (error) {
+    return [];
+  }
+}
+
 export function getDesignData(): DesignData {
   return {
     colors: getColors(),
@@ -131,5 +162,7 @@ export function getDesignData(): DesignData {
     logoPath: getLogoPath('logo.png'),
     logoWhitePath: getLogoPath('logo-white.png'),
     faviconPath: getLogoPath('favicon.ico'),
+    cornerStyle: getCornerStyle(),
+    showcaseImages: getShowcaseImages(),
   };
 }

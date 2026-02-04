@@ -16,6 +16,12 @@ interface Product {
   images: string[];
   collectionId: string;
   collectionName: string;
+  boxSize?: string;
+  itemSize?: string;
+  weight?: string;
+  material?: string;
+  color?: string;
+  additionalDetails?: string;
 }
 
 interface DesignData {
@@ -35,6 +41,8 @@ interface DesignData {
     about: string;
     footer: string;
   };
+  cornerStyle: 'rounded' | 'square';
+  showcaseImages: string[];
 }
 
 export default function ProductPage({ params }: { params: Promise<{ productId: string }> }) {
@@ -95,6 +103,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
   }
 
   const totalPrice = product.boxCost * quantity;
+  const borderRadius = design.cornerStyle === 'rounded' ? '0.5rem' : '0';
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -120,7 +129,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
         <div>
           {product.images.length > 0 ? (
             <>
-              <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-4">
+              <div className="aspect-square bg-gray-100 overflow-hidden mb-4" style={{ borderRadius }}>
                 <img
                   src={product.images[selectedImage]}
                   alt={product.name}
@@ -133,9 +142,10 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
                     <button
                       key={index}
                       onClick={() => setSelectedImage(index)}
-                      className="aspect-square bg-gray-100 rounded-lg overflow-hidden border-2 hover:opacity-80"
+                      className="aspect-square bg-gray-100 overflow-hidden border-2 hover:opacity-80"
                       style={{
                         borderColor: index === selectedImage ? design.colors.secondary : design.colors.border,
+                        borderRadius,
                       }}
                     >
                       <img
@@ -149,7 +159,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
               )}
             </>
           ) : (
-            <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+            <div className="aspect-square bg-gray-100 flex items-center justify-center" style={{ borderRadius }}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-24 w-24 text-gray-300"
@@ -193,6 +203,52 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
             </p>
           </div>
 
+          {/* Additional Details */}
+          {(product.boxSize || product.itemSize || product.weight || product.material || product.color || product.additionalDetails) && (
+            <div className="mb-6 p-4 border" style={{ borderColor: design.colors.border, borderRadius }}>
+              <h3 className="font-bold text-lg mb-3" style={{ color: design.colors.primary }}>
+                Product Details
+              </h3>
+              <div className="space-y-2">
+                {product.itemSize && (
+                  <div className="flex justify-between">
+                    <span className="font-semibold" style={{ color: design.colors.text }}>Item Size:</span>
+                    <span style={{ color: design.colors.textLight }}>{product.itemSize}</span>
+                  </div>
+                )}
+                {product.boxSize && (
+                  <div className="flex justify-between">
+                    <span className="font-semibold" style={{ color: design.colors.text }}>Box Size:</span>
+                    <span style={{ color: design.colors.textLight }}>{product.boxSize}</span>
+                  </div>
+                )}
+                {product.weight && (
+                  <div className="flex justify-between">
+                    <span className="font-semibold" style={{ color: design.colors.text }}>Weight:</span>
+                    <span style={{ color: design.colors.textLight }}>{product.weight}</span>
+                  </div>
+                )}
+                {product.material && (
+                  <div className="flex justify-between">
+                    <span className="font-semibold" style={{ color: design.colors.text }}>Material:</span>
+                    <span style={{ color: design.colors.textLight }}>{product.material}</span>
+                  </div>
+                )}
+                {product.color && (
+                  <div className="flex justify-between">
+                    <span className="font-semibold" style={{ color: design.colors.text }}>Color:</span>
+                    <span style={{ color: design.colors.textLight }}>{product.color}</span>
+                  </div>
+                )}
+                {product.additionalDetails && (
+                  <div className="pt-2 border-t" style={{ borderColor: design.colors.border }}>
+                    <p className="text-sm" style={{ color: design.colors.text }}>{product.additionalDetails}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Quantity Selector */}
           <div className="mb-6">
             <label className="block text-sm font-semibold mb-2" style={{ color: design.colors.text }}>
@@ -201,8 +257,8 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-10 h-10 border rounded-lg flex items-center justify-center hover:bg-gray-100"
-                style={{ borderColor: design.colors.border }}
+                className="w-10 h-10 border flex items-center justify-center hover:bg-gray-100"
+                style={{ borderColor: design.colors.border, borderRadius }}
               >
                 -
               </button>
@@ -211,13 +267,13 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
                 min="1"
                 value={quantity}
                 onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-20 h-10 border rounded-lg text-center"
-                style={{ borderColor: design.colors.border }}
+                className="w-20 h-10 border text-center"
+                style={{ borderColor: design.colors.border, borderRadius }}
               />
               <button
                 onClick={() => setQuantity(quantity + 1)}
-                className="w-10 h-10 border rounded-lg flex items-center justify-center hover:bg-gray-100"
-                style={{ borderColor: design.colors.border }}
+                className="w-10 h-10 border flex items-center justify-center hover:bg-gray-100"
+                style={{ borderColor: design.colors.border, borderRadius }}
               >
                 +
               </button>
@@ -241,8 +297,8 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
           <button
             onClick={handleAddToCart}
             disabled={isAdding}
-            className="w-full py-4 rounded-lg text-white text-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
-            style={{ backgroundColor: design.colors.secondary }}
+            className="w-full py-4 text-white text-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+            style={{ backgroundColor: design.colors.secondary, borderRadius }}
           >
             {isAdding ? 'Adding...' : 'Add to Cart'}
           </button>
@@ -250,8 +306,8 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
           {/* Success Message */}
           {showSuccess && (
             <div
-              className="mt-4 p-4 rounded-lg text-white"
-              style={{ backgroundColor: design.colors.success }}
+              className="mt-4 p-4 text-white"
+              style={{ backgroundColor: design.colors.success, borderRadius }}
             >
               Added to cart successfully!
             </div>

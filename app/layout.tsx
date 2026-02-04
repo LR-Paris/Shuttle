@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { getDesignData } from "@/lib/design";
+import { getAllCollections } from "@/lib/catalog";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -18,6 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const design = getDesignData();
+  const collections = getAllCollections();
 
   return (
     <html lang="en">
@@ -43,6 +45,7 @@ export default function RootLayout({
           logoPath={design.logoPath}
           primaryColor={design.colors.primary}
           secondaryColor={design.colors.secondary}
+          collections={collections.map(c => ({ id: c.id, name: c.name }))}
         />
         <main className="flex-grow">
           {children}
