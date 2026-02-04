@@ -1,29 +1,41 @@
 import Link from 'next/link';
 import { getDesignData } from '@/lib/design';
 import { getAllCollections } from '@/lib/catalog';
+import Carousel from '@/components/Carousel';
 
 export default function Home() {
   const design = getDesignData();
   const collections = getAllCollections();
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      {/* Hero Section */}
-      <div className="text-center mb-16">
-        <h1 className="text-5xl font-bold mb-4" style={{ color: design.colors.primary }}>
-          {design.companyName}
-        </h1>
-        <p className="text-2xl mb-8" style={{ color: design.colors.textLight }}>
-          {design.descriptions.tagline}
-        </p>
-        <Link
-          href="/collections"
-          className="inline-block px-8 py-3 text-white rounded-lg text-lg font-semibold hover:opacity-90 transition-opacity"
-          style={{ backgroundColor: design.colors.secondary }}
-        >
-          Browse Collections
-        </Link>
-      </div>
+    <div>
+      {/* Showcase Carousel */}
+      {design.showcasePhotos.length > 0 && (
+        <div className="container mx-auto px-4 pt-8">
+          <Carousel
+            images={design.showcasePhotos}
+            cornerRadius={`${design.styleSettings.cornerRadius}px`}
+          />
+        </div>
+      )}
+
+      <div className="container mx-auto px-4 py-12">
+        {/* Hero Section */}
+        <div className="text-center mb-16">
+          <h1 className="text-5xl font-bold mb-4" style={{ color: design.colors.primary }}>
+            {design.companyName}
+          </h1>
+          <p className="text-2xl mb-8" style={{ color: design.colors.textLight }}>
+            {design.descriptions.tagline}
+          </p>
+          <Link
+            href="/collections"
+            className="inline-block px-8 py-3 text-white rounded-lg text-lg font-semibold hover:opacity-90 transition-opacity"
+            style={{ backgroundColor: design.colors.secondary, borderRadius: `${design.styleSettings.cornerRadius}px` }}
+          >
+            Browse Collections
+          </Link>
+        </div>
 
       {/* About Section */}
       <div className="mb-16 max-w-3xl mx-auto">
