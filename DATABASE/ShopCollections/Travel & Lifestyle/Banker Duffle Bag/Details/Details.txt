@@ -1,0 +1,5 @@
+itemSize: 22" x 12" x 10"
+boxSize: 24" x 18" x 14"
+weight: 2.5 lbs per unit
+material: Water-resistant nylon
+capacity: 45L

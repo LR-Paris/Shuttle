@@ -1,0 +1,5 @@
+itemSize: 8.5" x 11" x 0.5"
+boxSize: 12" x 10" x 6"
+weight: 1.2 lbs per unit
+material: Premium leather cover
+pages: 100 sheets

@@ -21,6 +21,18 @@ export interface Descriptions {
   footer: string;
 }
 
+export interface StyleSettings {
+  cornerRadius: string;
+  style: 'rounded' | 'square';
+}
+
+export interface FontSettings {
+  titleFont: string;
+  bodyFont: string;
+  titleFontUrl: string;
+  bodyFontUrl: string;
+}
+
 export interface DesignData {
   colors: Colors;
   companyName: string;
@@ -28,6 +40,10 @@ export interface DesignData {
   logoPath: string | null;
   logoWhitePath: string | null;
   faviconPath: string | null;
+  styleSettings: StyleSettings;
+  fontSettings: FontSettings;
+  showcasePhotos: string[];
+  password: string;
 }
 
 function parseKeyValueFile(content: string): Record<string, string> {
@@ -123,6 +139,70 @@ function getLogoPath(filename: string): string | null {
   }
 }
 
+export function getStyleSettings(): StyleSettings {
+  try {
+    const stylePath = path.join(DESIGN_PATH, 'Details', 'Style.txt');
+    const content = fs.readFileSync(stylePath, 'utf-8');
+    const parsed = parseKeyValueFile(content);
+
+    return {
+      cornerRadius: parsed.cornerRadius || '12',
+      style: (parsed.style as 'rounded' | 'square') || 'rounded',
+    };
+  } catch (error) {
+    return {
+      cornerRadius: '12',
+      style: 'rounded',
+    };
+  }
+}
+
+export function getFontSettings(): FontSettings {
+  try {
+    const fontsPath = path.join(DESIGN_PATH, 'Details', 'Fonts.txt');
+    const content = fs.readFileSync(fontsPath, 'utf-8');
+    const parsed = parseKeyValueFile(content);
+
+    return {
+      titleFont: parsed.titleFont || 'Inter',
+      bodyFont: parsed.bodyFont || 'Inter',
+      titleFontUrl: parsed.titleFontUrl || '',
+      bodyFontUrl: parsed.bodyFontUrl || '',
+    };
+  } catch (error) {
+    return {
+      titleFont: 'Inter',
+      bodyFont: 'Inter',
+      titleFontUrl: '',
+      bodyFontUrl: '',
+    };
+  }
+}
+
+export function getShowcasePhotos(): string[] {
+  try {
+    const showcasePath = path.join(DESIGN_PATH, 'ShowcasePhotos');
+    const files = fs.readdirSync(showcasePath);
+    const imageFiles = files.filter(file => {
+      const ext = path.extname(file).toLowerCase();
+      return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext) && !fs.statSync(path.join(showcasePath, file)).isDirectory();
+    });
+
+    return imageFiles.map(file => `/api/images/showcase/${file}`);
+  } catch (error) {
+    return [];
+  }
+}
+
+export function getPassword(): string {
+  try {
+    const passwordPath = path.join(DESIGN_PATH, 'Details', 'Password.txt');
+    return fs.readFileSync(passwordPath, 'utf-8').trim();
+  } catch (error) {
+    return 'basil';
+  }
+}
+
 export function getDesignData(): DesignData {
   return {
     colors: getColors(),
@@ -131,5 +211,9 @@ export function getDesignData(): DesignData {
     logoPath: getLogoPath('logo.png'),
     logoWhitePath: getLogoPath('logo-white.png'),
     faviconPath: getLogoPath('favicon.ico'),
+    styleSettings: getStyleSettings(),
+    fontSettings: getFontSettings(),
+    showcasePhotos: getShowcasePhotos(),
+    password: getPassword(),
   };
 }

@@ -4,6 +4,16 @@ import path from 'path';
 const DATABASE_PATH = path.join(process.cwd(), 'DATABASE');
 const COLLECTIONS_PATH = path.join(DATABASE_PATH, 'ShopCollections');
 
+export interface ProductDetails {
+  itemSize?: string;
+  boxSize?: string;
+  weight?: string;
+  material?: string;
+  capacity?: string;
+  pages?: string;
+  [key: string]: string | undefined;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -15,12 +25,14 @@ export interface Product {
   images: string[];
   collectionId: string;
   collectionName: string;
+  details?: ProductDetails;
 }
 
 export interface Collection {
   id: string;
   name: string;
   products: Product[];
+  showcasePhoto?: string;
 }
 
 function slugify(text: string): string {
@@ -49,9 +61,45 @@ function getProductImages(photosPath: string, productId: string): string[] {
       return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext);
     });
 
+    // Sort images so main.* comes first
+    imageFiles.sort((a, b) => {
+      if (a.startsWith('main.')) return -1;
+      if (b.startsWith('main.')) return 1;
+      return a.localeCompare(b);
+    });
+
     return imageFiles.map(file => `/api/images/products/${productId}/${file}`);
   } catch (error) {
     return [];
+  }
+}
+
+function parseProductDetails(detailsPath: string): ProductDetails | undefined {
+  try {
+    const detailsFilePath = path.join(detailsPath, 'Details.txt');
+    if (!fs.existsSync(detailsFilePath)) {
+      return undefined;
+    }
+
+    const content = fs.readFileSync(detailsFilePath, 'utf-8');
+    const details: ProductDetails = {};
+    const lines = content.split('\n');
+
+    for (const line of lines) {
+      const trimmedLine = line.trim();
+      if (!trimmedLine || trimmedLine.startsWith('#')) continue;
+
+      const colonIndex = trimmedLine.indexOf(':');
+      if (colonIndex === -1) continue;
+
+      const key = trimmedLine.substring(0, colonIndex).trim();
+      const value = trimmedLine.substring(colonIndex + 1).trim();
+      details[key] = value;
+    }
+
+    return Object.keys(details).length > 0 ? details : undefined;
+  } catch (error) {
+    return undefined;
   }
 }
 
@@ -82,6 +130,7 @@ function parseProduct(
 
     const productId = `${collectionId}-${slugify(itemName)}`;
     const images = getProductImages(photosPath, productId);
+    const details = parseProductDetails(detailsPath);
 
     return {
       id: productId,
@@ -94,6 +143,7 @@ function parseProduct(
       images,
       collectionId,
       collectionName,
+      details,
     };
   } catch (error) {
     console.error(`Error parsing product ${itemName}:`, error);
@@ -122,10 +172,29 @@ function parseCollection(collectionName: string, collectionPath: string): Collec
       return null;
     }
 
+    // Check for collection-specific showcase photo
+    let showcasePhoto: string | undefined;
+    try {
+      const showcaseDir = path.join(DATABASE_PATH, 'Design', 'ShowcasePhotos', 'Collections');
+      if (fs.existsSync(showcaseDir)) {
+        const files = fs.readdirSync(showcaseDir);
+        const matchingFile = files.find(file => {
+          const nameWithoutExt = file.replace(/\.[^/.]+$/, '');
+          return nameWithoutExt === collectionId;
+        });
+        if (matchingFile) {
+          showcasePhoto = `/api/images/showcase/Collections/${matchingFile}`;
+        }
+      }
+    } catch (error) {
+      // Showcase photo is optional
+    }
+
     return {
       id: collectionId,
       name: collectionName,
       products,
+      showcasePhoto,
     };
   } catch (error) {
     console.error(`Error parsing collection ${collectionName}:`, error);
