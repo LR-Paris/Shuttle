@@ -111,11 +111,17 @@ export function getDescriptions(): Descriptions {
   }
 }
 
-function getLogoPath(filename: string): string | null {
+function getLogoPath(baseName: string): string | null {
   try {
-    const logoPath = path.join(DESIGN_PATH, 'Logos', filename);
-    if (fs.existsSync(logoPath)) {
-      return `/api/images/logos/${filename}`;
+    // Check for multiple image formats
+    const formats = ['.png', '.jpg', '.jpeg'];
+
+    for (const ext of formats) {
+      const filename = baseName + ext;
+      const logoPath = path.join(DESIGN_PATH, 'Logos', filename);
+      if (fs.existsSync(logoPath)) {
+        return `/api/images/logos/${filename}`;
+      }
     }
     return null;
   } catch (error) {
@@ -128,8 +134,8 @@ export function getDesignData(): DesignData {
     colors: getColors(),
     companyName: getCompanyName(),
     descriptions: getDescriptions(),
-    logoPath: getLogoPath('logo.png'),
-    logoWhitePath: getLogoPath('logo-white.png'),
+    logoPath: getLogoPath('logo'),
+    logoWhitePath: getLogoPath('logo-white'),
     faviconPath: getLogoPath('favicon.ico'),
   };
 }
