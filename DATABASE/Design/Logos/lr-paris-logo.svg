@@ -1,0 +1,25 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Circular background -->
+  <circle cx="100" cy="100" r="95" fill="#2B5AA0" stroke="#1E3A6F" stroke-width="2"/>
+
+  <!-- LR text (top) -->
+  <text x="100" y="80" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white" text-anchor="middle">
+    LR PARIS
+  </text>
+
+  <!-- LE text (bottom) -->
+  <text x="100" y="130" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white" text-anchor="middle">
+    LE PARIS
+  </text>
+
+  <!-- Circular text path -->
+  <defs>
+    <path id="circlePath" d="M 100, 100 m -80, 0 a 80,80 0 1,1 160,0 a 80,80 0 1,1 -160,0" />
+  </defs>
+
+  <text fill="white" font-size="12" font-family="Arial, sans-serif">
+    <textPath href="#circlePath" startOffset="50%" text-anchor="middle">
+      LR PARIS • LE PARIS
+    </textPath>
+  </text>
+</svg>

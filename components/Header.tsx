@@ -14,6 +14,14 @@ interface HeaderProps {
   cornerRadius?: number;
 }
 
+interface Collection {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  productCount: number;
+}
+
 export default function Header({
   companyName,
   logoPath,
@@ -24,6 +32,8 @@ export default function Header({
   cornerRadius = 12
 }: HeaderProps) {
   const [cartItemCount, setCartItemCount] = useState(0);
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     const updateCartCount = () => {
@@ -37,6 +47,14 @@ export default function Header({
     // Listen for cart updates
     window.addEventListener('cartUpdated', updateCartCount);
     return () => window.removeEventListener('cartUpdated', updateCartCount);
+  }, []);
+
+  useEffect(() => {
+    // Fetch collections
+    fetch('/api/collections')
+      .then(r => r.json())
+      .then(data => setCollections(data.collections || []))
+      .catch(console.error);
   }, []);
 
   return (
@@ -69,13 +87,60 @@ export default function Header({
             >
               About
             </Link>
-            <Link
-              href="/collections"
-              className="text-white hover:opacity-80 transition-opacity"
-              style={{ fontFamily: bodyFont }}
+            {/* Collections Dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={() => setShowDropdown(true)}
+              onMouseLeave={() => setShowDropdown(false)}
             >
-              Collections
-            </Link>
+              <button
+                className="text-white hover:opacity-80 transition-opacity flex items-center space-x-1"
+                style={{ fontFamily: bodyFont }}
+              >
+                <span>Collections</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+              {showDropdown && (
+                <div
+                  className="absolute top-full left-0 mt-2 w-56 shadow-lg py-2"
+                  style={{
+                    backgroundColor: 'white',
+                    borderRadius: `${cornerRadius}px`,
+                  }}
+                >
+                  <Link
+                    href="/collections"
+                    className="block px-4 py-2 hover:bg-gray-100 transition-colors"
+                    style={{ fontFamily: bodyFont, color: primaryColor }}
+                  >
+                    All Collections
+                  </Link>
+                  {collections.map((collection) => (
+                    <Link
+                      key={collection.id}
+                      href={`/collections/${collection.id}`}
+                      className="block px-4 py-2 hover:bg-gray-100 transition-colors"
+                      style={{ fontFamily: bodyFont, color: primaryColor }}
+                    >
+                      {collection.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
             <Link
               href="/shop-all"
               className="text-white hover:opacity-80 transition-opacity"

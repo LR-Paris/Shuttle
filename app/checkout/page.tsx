@@ -40,8 +40,8 @@ export default function CheckoutPage() {
   // Form fields - Address
   const [address, setAddress] = useState('');
   const [apt, setApt] = useState('');
-  const [city, setCity] = useState('New York');
-  const [country, setCountry] = useState('United States');
+  const [city, setCity] = useState('');
+  const [country, setCountry] = useState('');
   const [province, setProvince] = useState('');
   const [postalCode, setPostalCode] = useState('');
 
@@ -267,7 +267,7 @@ export default function CheckoutPage() {
                       onChange={(e) => setCountry(e.target.value)}
                       className="w-full px-4 py-2 border focus:outline-none focus:ring-2"
                       style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
-                      placeholder="Canada"
+                      placeholder="country"
                     />
                   </div>
                   <div>
