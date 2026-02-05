@@ -119,7 +119,7 @@ export default function AboutPage() {
         >
           Frequently Asked Questions
         </h2>
-        <div className="space-y-4 max-w-4xl">
+        <div className="space-y-4 max-w-3xl">
           {faqs.map((faq, index) => (
             <div
               key={index}
@@ -190,7 +190,7 @@ export default function AboutPage() {
       {/* System Information */}
       <section className="mb-8">
         <div
-          className="border p-6 max-w-2xl"
+          className="border p-6 max-w-3xl"
           style={{
             borderColor: design.colors.border,
             backgroundColor: design.colors.background,
@@ -235,7 +235,7 @@ export default function AboutPage() {
           href="https://lrparis.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-4 max-w-2xl p-6 border hover:shadow-md transition-shadow"
+          className="flex items-center gap-4 max-w-3xl p-6 border hover:shadow-md transition-shadow"
           style={{
             borderColor: design.colors.border,
             backgroundColor: design.colors.background,
