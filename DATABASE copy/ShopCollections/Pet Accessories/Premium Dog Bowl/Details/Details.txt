@@ -1,0 +1,5 @@
+itemSize: 7" diameter x 3" height
+boxSize: 16" x 16" x 14"
+weight: 0.8 lbs per unit
+material: Stainless steel
+capacity: 32oz

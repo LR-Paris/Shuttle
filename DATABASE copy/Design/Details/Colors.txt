@@ -1,6 +1,6 @@
 primary: #1a1a1a
 secondary: #ff6600
-accent: #30bdff
+accent: #4a90e2
 background: #ffffff
 text: #333333
 textLight: #666666
