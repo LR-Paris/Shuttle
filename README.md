@@ -1,4 +1,4 @@
-# Folder-Driven B2B Storefront
+# Shuttle By LR Paris
 
 A static-first e-commerce storefront where everything — branding, products, collections, and orders — is driven by a single `DATABASE` folder. Swapping this folder completely rebrands and restocks the site for a different client.
 
