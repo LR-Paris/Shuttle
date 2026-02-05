@@ -1,8 +1,0 @@
-primary: #1a1a1a
-secondary: #ff6600
-accent: #4a90e2
-background: #ffffff
-text: #333333
-textLight: #666666
-border: #e5e5e5
-success: #10b981

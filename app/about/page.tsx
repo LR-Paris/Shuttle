@@ -119,7 +119,7 @@ export default function AboutPage() {
         >
           Frequently Asked Questions
         </h2>
-        <div className="space-y-4 max-w-4xl">
+        <div className="space-y-4 max-w-3xl">
           {faqs.map((faq, index) => (
             <div
               key={index}
@@ -133,7 +133,7 @@ export default function AboutPage() {
                 onClick={() => toggleFAQ(index)}
                 className="w-full text-left px-6 py-4 flex justify-between items-center hover:opacity-80 transition-opacity"
                 style={{
-                  backgroundColor: openFAQ === index ? design.colors.background : '#f9fafb',
+                  backgroundColor: design.colors.background,
                 }}
               >
                 <h3
@@ -190,10 +190,10 @@ export default function AboutPage() {
       {/* System Information */}
       <section className="mb-8">
         <div
-          className="border p-6 max-w-2xl"
+          className="border p-6 max-w-3xl"
           style={{
             borderColor: design.colors.border,
-            backgroundColor: '#f9fafb',
+            backgroundColor: design.colors.background,
             borderRadius: `${design.style.cornerRadius}px`,
           }}
         >
@@ -227,6 +227,49 @@ export default function AboutPage() {
             </p>
           </div>
         </div>
+      </section>
+
+      {/* Built by LR Paris */}
+      <section className="mb-8">
+        <a
+          href="https://lrparis.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-4 max-w-3xl p-6 border hover:shadow-md transition-shadow"
+          style={{
+            borderColor: design.colors.border,
+            backgroundColor: design.colors.background,
+            borderRadius: `${design.style.cornerRadius}px`,
+          }}
+        >
+          <div className="bg-white rounded-lg p-3" style={{ borderRadius: '12px' }}>
+            <img
+              src="/lr-paris-logo.svg"
+              alt="LR Paris"
+              className="w-16 h-16"
+            />
+          </div>
+          <div>
+            <p
+              className="text-lg font-semibold"
+              style={{
+                color: design.colors.primary,
+                fontFamily: design.fonts.titleFont,
+              }}
+            >
+              Built by LR Paris
+            </p>
+            <p
+              className="text-sm"
+              style={{
+                color: design.colors.textLight,
+                fontFamily: design.fonts.bodyFont,
+              }}
+            >
+              Visit lrparis.com to learn more
+            </p>
+          </div>
+        </a>
       </section>
 
       {/* Back to Home */}

@@ -3,6 +3,7 @@ import "./globals.css";
 import { getDesignData } from "@/lib/design";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import PasswordProtection from "@/components/PasswordProtection";
 
 export async function generateMetadata(): Promise<Metadata> {
   const design = getDesignData();
@@ -44,23 +45,34 @@ export default function RootLayout({
         }} />
       </head>
       <body className="flex flex-col min-h-screen" style={{ backgroundColor: design.colors.background, color: design.colors.text }}>
-        <Header
-          companyName={design.companyName}
-          logoPath={design.logoPath}
+        <PasswordProtection
+          correctPassword={design.password}
           primaryColor={design.colors.primary}
           secondaryColor={design.colors.secondary}
           titleFont={design.fonts.titleFont}
           bodyFont={design.fonts.bodyFont}
           cornerRadius={design.style.cornerRadius}
-        />
-        <main className="flex-grow">
-          {children}
-        </main>
-        <Footer
-          footerText={design.descriptions.footer}
-          primaryColor={design.colors.primary}
-          bodyFont={design.fonts.bodyFont}
-        />
+          companyName={design.companyName}
+        >
+          <Header
+            companyName={design.companyName}
+            logoPath={design.logoPath}
+            primaryColor={design.colors.primary}
+            secondaryColor={design.colors.secondary}
+            titleFont={design.fonts.titleFont}
+            bodyFont={design.fonts.bodyFont}
+            cornerRadius={design.style.cornerRadius}
+          />
+          <main className="flex-grow">
+            {children}
+          </main>
+          <Footer
+            footerText={design.descriptions.footer}
+            primaryColor={design.colors.primary}
+            bodyFont={design.fonts.bodyFont}
+            cornerRadius={design.style.cornerRadius}
+          />
+        </PasswordProtection>
       </body>
     </html>
   );

@@ -1,4 +1,0 @@
-titleFont: Inter
-bodyFont: Inter
-titleFontUrl:
-bodyFontUrl:

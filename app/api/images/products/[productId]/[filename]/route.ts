@@ -28,9 +28,6 @@ export async function GET(
     for (const collection of collections) {
       if (!collection.isDirectory()) continue;
 
-      const collectionSlugified = slugify(collection.name);
-      if (collectionSlugified !== collectionSlug) continue;
-
       const collectionPath = path.join(collectionsPath, collection.name);
       const collectionSlug = slugify(collection.name);
       const items = fs.readdirSync(collectionPath, { withFileTypes: true });
