@@ -13,6 +13,9 @@ Design/
 │   ├── CompanyName.txt   # Your company name
 │   ├── Colors.txt        # Color scheme (key: value format)
 │   └── Descriptions.txt  # Tagline, about, footer text
+├── FAQ/                   # Frequently Asked Questions
+│   ├── README.md         # FAQ folder documentation
+│   └── FAQ.txt           # Questions and answers (Q: / A: format)
 ├── Logos/                 # Company logos and favicon
 │   ├── README.md         # Logos folder documentation
 │   ├── logo.png or logo.jpg           # Main logo (dark backgrounds)
@@ -60,6 +63,7 @@ Place these files in `ShowcasePhotos/`:
 
 Each subfolder has its own README with complete specifications:
 - **Details/** - See `Details/README.md` for text content format
+- **FAQ/** - See `FAQ/README.md` for FAQ format and customization
 - **Logos/** - See `Logos/README.md` for logo specifications
 - **ShowcasePhotos/** - See `ShowcasePhotos/README.md` for image requirements
 

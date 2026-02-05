@@ -21,6 +21,11 @@ export interface Descriptions {
   footer: string;
 }
 
+export interface FAQEntry {
+  question: string;
+  answer: string;
+}
+
 export interface DesignData {
   colors: Colors;
   companyName: string;
@@ -126,6 +131,65 @@ function getLogoPath(baseName: string): string | null {
     return null;
   } catch (error) {
     return null;
+  }
+}
+
+export function getFAQData(): FAQEntry[] {
+  try {
+    const faqPath = path.join(DESIGN_PATH, 'FAQ', 'FAQ.txt');
+    const content = fs.readFileSync(faqPath, 'utf-8');
+
+    const entries: FAQEntry[] = [];
+    const lines = content.split('\n');
+    let currentQuestion = '';
+    let currentAnswer = '';
+    let inAnswer = false;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      if (line.startsWith('Q: ')) {
+        // Save previous entry if exists
+        if (currentQuestion && currentAnswer) {
+          entries.push({
+            question: currentQuestion,
+            answer: currentAnswer.trim(),
+          });
+        }
+        currentQuestion = line.substring(3).trim();
+        currentAnswer = '';
+        inAnswer = false;
+      } else if (line.startsWith('A: ')) {
+        currentAnswer = line.substring(3);
+        inAnswer = true;
+      } else if (inAnswer) {
+        // Continue multi-line answer
+        currentAnswer += '\n' + line;
+      }
+    }
+
+    // Add last entry
+    if (currentQuestion && currentAnswer) {
+      entries.push({
+        question: currentQuestion,
+        answer: currentAnswer.trim(),
+      });
+    }
+
+    return entries;
+  } catch (error) {
+    console.error('Error reading FAQ:', error);
+    // Return default FAQ
+    return [
+      {
+        question: 'How do I place an order?',
+        answer: 'Browse our collections, add items to your cart, and proceed to checkout.',
+      },
+      {
+        question: 'What payment methods do you accept?',
+        answer: 'Please contact us for payment information.',
+      },
+    ];
   }
 }
 

@@ -1,120 +1,53 @@
-import { getDesignData } from '@/lib/design';
+import { getDesignData, getFAQData } from '@/lib/design';
 import { getVersionInfo } from '@/lib/version';
 import Link from 'next/link';
+
+// Helper function to format FAQ answer text with email links
+function formatAnswer(answer: string, secondaryColor: string) {
+  // Split by lines to preserve formatting
+  const lines = answer.split('\n');
+
+  return lines.map((line, lineIndex) => {
+    // Skip empty lines but preserve spacing
+    if (!line.trim()) {
+      return <br key={`br-${lineIndex}`} />;
+    }
+
+    // Check if line contains email
+    const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
+    const parts = line.split(emailRegex);
+
+    // Process line parts (text and emails)
+    const processedLine = parts.map((part, partIndex) => {
+      // Check if this part is an email
+      if (emailRegex.test(part)) {
+        emailRegex.lastIndex = 0; // Reset regex
+        return (
+          <a
+            key={`email-${lineIndex}-${partIndex}`}
+            href={`mailto:${part}`}
+            className="underline hover:opacity-80"
+            style={{ color: secondaryColor }}
+          >
+            {part}
+          </a>
+        );
+      }
+      return part;
+    });
+
+    return (
+      <p key={`line-${lineIndex}`} className="mb-2">
+        {processedLine}
+      </p>
+    );
+  });
+}
 
 export default function AboutPage() {
   const design = getDesignData();
   const versionInfo = getVersionInfo();
-
-  const faqs = [
-    {
-      question: 'Who should I contact for questions?',
-      answer: (
-        <div>
-          <p className="mb-2">
-            <strong>For general questions, please contact Samantha Sacks:</strong>
-          </p>
-          <p className="mb-1">
-            Email:{' '}
-            <a
-              href="mailto:s.sacks@lrparis.com"
-              className="underline hover:opacity-80"
-              style={{ color: design.colors.secondary }}
-            >
-              s.sacks@lrparis.com
-            </a>
-          </p>
-          <p className="mb-4">Phone: +386 562 8359</p>
-          <p className="mb-2">
-            <strong>For finance-related questions:</strong>
-          </p>
-          <p>
-            Email:{' '}
-            <a
-              href="mailto:finance@lrparis.com"
-              className="underline hover:opacity-80"
-              style={{ color: design.colors.secondary }}
-            >
-              finance@lrparis.com
-            </a>
-          </p>
-        </div>
-      ),
-    },
-    {
-      question: 'How do I pay for my product?',
-      answer: (
-        <div>
-          <p className="mb-3">
-            Once you have checked out via the website, please send a purchase order to{' '}
-            <a
-              href="mailto:s.sacks@lrparis.com"
-              className="underline hover:opacity-80"
-              style={{ color: design.colors.secondary }}
-            >
-              s.sacks@lrparis.com
-            </a>{' '}
-            if your hotel requires that for invoice.
-          </p>
-          <p>
-            We will then send over an invoice for 100% of the total. The invoice will include
-            shipping and taxes.
-          </p>
-        </div>
-      ),
-    },
-    {
-      question: 'How much does shipping cost?',
-      answer: (
-        <p>Shipping is calculated based on your location and the items in your order.</p>
-      ),
-    },
-    {
-      question: 'What payment options do you support?',
-      answer: <p>Invoice, ACH, Wire.</p>,
-    },
-    {
-      question: 'Where can I find a copy of your W9 for future use?',
-      answer: (
-        <p>
-          Please visit{' '}
-          <a
-            href="#"
-            className="underline hover:opacity-80"
-            style={{ color: design.colors.secondary }}
-          >
-            this link
-          </a>{' '}
-          to see our W9 and Banking Back up information.
-        </p>
-      ),
-    },
-    {
-      question: 'How can I order less than one case?',
-      answer: <p>We cannot support orders smaller than one case.</p>,
-    },
-    {
-      question: 'How can I place a custom order for my hotel in the future?',
-      answer: (
-        <div>
-          <p className="mb-2">
-            Please contact Samantha Sacks to place a custom order for your hotel:
-          </p>
-          <p className="mb-1">
-            Email:{' '}
-            <a
-              href="mailto:s.sacks@lrparis.com"
-              className="underline hover:opacity-80"
-              style={{ color: design.colors.secondary }}
-            >
-              s.sacks@lrparis.com
-            </a>
-          </p>
-          <p>Phone: +386 562 8359</p>
-        </div>
-      ),
-    },
-  ];
+  const faqs = getFAQData();
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -151,7 +84,7 @@ export default function AboutPage() {
                 {faq.question}
               </h3>
               <div className="text-base leading-relaxed" style={{ color: design.colors.text }}>
-                {faq.answer}
+                {formatAnswer(faq.answer, design.colors.secondary)}
               </div>
             </div>
           ))}
