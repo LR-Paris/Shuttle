@@ -40,8 +40,8 @@ export default function CheckoutPage() {
   // Form fields - Address
   const [address, setAddress] = useState('');
   const [apt, setApt] = useState('');
-  const [city, setCity] = useState('');
-  const [country, setCountry] = useState('');
+  const [city, setCity] = useState('New York');
+  const [country, setCountry] = useState('United States');
   const [province, setProvince] = useState('');
   const [postalCode, setPostalCode] = useState('');
 
@@ -272,7 +272,7 @@ export default function CheckoutPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-semibold mb-2" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
-                      Province
+                      State
                     </label>
                     <input
                       type="text"
@@ -281,12 +281,12 @@ export default function CheckoutPage() {
                       onChange={(e) => setProvince(e.target.value)}
                       className="w-full px-4 py-2 border focus:outline-none focus:ring-2"
                       style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
-                      placeholder="Ontario"
+                      placeholder="NY"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-semibold mb-2" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
-                      Postal code
+                      ZIP code
                     </label>
                     <input
                       type="text"
@@ -295,7 +295,7 @@ export default function CheckoutPage() {
                       onChange={(e) => setPostalCode(e.target.value)}
                       className="w-full px-4 py-2 border focus:outline-none focus:ring-2"
                       style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
-                      placeholder="K2P 1L4"
+                      placeholder="10001"
                     />
                   </div>
                 </div>

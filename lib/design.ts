@@ -139,17 +139,21 @@ export function getFonts(): Fonts {
     const content = fs.readFileSync(fontsPath, 'utf-8');
     const parsed = parseKeyValueFile(content);
 
+    // Add generic fallback to font names
+    const titleFont = parsed.titleFont || 'Inter';
+    const bodyFont = parsed.bodyFont || 'Inter';
+
     return {
-      titleFont: parsed.titleFont || 'Inter',
-      bodyFont: parsed.bodyFont || 'Inter',
+      titleFont: `${titleFont}, sans-serif`,
+      bodyFont: `${bodyFont}, sans-serif`,
       titleFontUrl: parsed.titleFontUrl || '',
       bodyFontUrl: parsed.bodyFontUrl || '',
     };
   } catch (error) {
     console.error('Error reading fonts:', error);
     return {
-      titleFont: 'Inter',
-      bodyFont: 'Inter',
+      titleFont: 'Inter, sans-serif',
+      bodyFont: 'Inter, sans-serif',
       titleFontUrl: '',
       bodyFontUrl: '',
     };
