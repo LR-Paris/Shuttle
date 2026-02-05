@@ -1,48 +1,7 @@
 import { getDesignData, getFAQData } from '@/lib/design';
 import { getVersionInfo } from '@/lib/version';
 import Link from 'next/link';
-
-// Helper function to format FAQ answer text with email links
-function formatAnswer(answer: string, secondaryColor: string) {
-  // Split by lines to preserve formatting
-  const lines = answer.split('\n');
-
-  return lines.map((line, lineIndex) => {
-    // Skip empty lines but preserve spacing
-    if (!line.trim()) {
-      return <br key={`br-${lineIndex}`} />;
-    }
-
-    // Check if line contains email
-    const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
-    const parts = line.split(emailRegex);
-
-    // Process line parts (text and emails)
-    const processedLine = parts.map((part, partIndex) => {
-      // Check if this part is an email
-      if (emailRegex.test(part)) {
-        emailRegex.lastIndex = 0; // Reset regex
-        return (
-          <a
-            key={`email-${lineIndex}-${partIndex}`}
-            href={`mailto:${part}`}
-            className="underline hover:opacity-80"
-            style={{ color: secondaryColor }}
-          >
-            {part}
-          </a>
-        );
-      }
-      return part;
-    });
-
-    return (
-      <p key={`line-${lineIndex}`} className="mb-2">
-        {processedLine}
-      </p>
-    );
-  });
-}
+import FAQAccordion from '@/components/FAQAccordion';
 
 export default function AboutPage() {
   const design = getDesignData();
@@ -68,27 +27,18 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* FAQ Section */}
+      {/* FAQ Section with Accordion */}
       <section className="mb-16">
         <h2 className="text-3xl font-bold mb-8" style={{ color: design.colors.primary }}>
           Frequently Asked Questions
         </h2>
-        <div className="space-y-8 max-w-4xl">
-          {faqs.map((faq, index) => (
-            <div
-              key={index}
-              className="border-b pb-6"
-              style={{ borderColor: design.colors.border }}
-            >
-              <h3 className="text-xl font-semibold mb-3" style={{ color: design.colors.primary }}>
-                {faq.question}
-              </h3>
-              <div className="text-base leading-relaxed" style={{ color: design.colors.text }}>
-                {formatAnswer(faq.answer, design.colors.secondary)}
-              </div>
-            </div>
-          ))}
-        </div>
+        <FAQAccordion
+          faqs={faqs}
+          primaryColor={design.colors.primary}
+          secondaryColor={design.colors.secondary}
+          textColor={design.colors.text}
+          borderColor={design.colors.border}
+        />
       </section>
 
       {/* System Information */}

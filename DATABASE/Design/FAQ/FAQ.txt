@@ -1,7 +1,7 @@
 Q: Who should I contact for questions?
-A: For general questions, please contact Samantha Sacks:
-Email: s.sacks@lrparis.com
-Phone: +386 562 8359
+A: For general questions, please contact Giovanni Lupo:
+Email: g.lupo@lrparis.com
+
 
 For finance-related questions:
 Email: finance@lrparis.com
@@ -14,16 +14,5 @@ We will then send over an invoice for 100% of the total. The invoice will includ
 Q: How much does shipping cost?
 A: Shipping is calculated based on your location and the items in your order.
 
-Q: What payment options do you support?
-A: Invoice, ACH, Wire.
-
-Q: Where can I find a copy of your W9 for future use?
-A: Please visit [W9_LINK] to see our W9 and Banking Back up information.
-
 Q: How can I order less than one case?
 A: We cannot support orders smaller than one case.
-
-Q: How can I place a custom order for my hotel in the future?
-A: Please contact Samantha Sacks to place a custom order for your hotel:
-Email: s.sacks@lrparis.com
-Phone: +386 562 8359

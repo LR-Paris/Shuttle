@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { getAllProducts } from '@/lib/catalog';
 
 export async function GET(
   request: NextRequest,
@@ -9,21 +10,37 @@ export async function GET(
   try {
     const { productId, filename } = await params;
 
-    // Parse productId to get collection and item paths
-    // productId format: "collection-slug-item-slug"
-    const parts = productId.split('-');
-    if (parts.length < 2) {
-      return new NextResponse('Invalid product ID', { status: 400 });
+    // Get all products to find the matching product by ID
+    const products = getAllProducts();
+    const product = products.find(p => p.id === productId);
+
+    if (!product) {
+      return new NextResponse('Product not found', { status: 404 });
     }
 
-    // We need to find the actual collection and item folders
+    // Parse the product ID to get collection and item folder names
+    // productId format: "collection-slug-item-slug" (e.g., "office-essentials-designer-tote-bag")
+    const collectionSlug = product.collectionId;
+
+    // Search for the matching collection folder
     const collectionsPath = path.join(process.cwd(), 'DATABASE', 'ShopCollections');
     const collections = fs.readdirSync(collectionsPath, { withFileTypes: true });
 
     let imagePath: string | null = null;
 
+    // Function to slugify for comparison
+    function slugify(text: string): string {
+      return text
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
     for (const collection of collections) {
       if (!collection.isDirectory()) continue;
+
+      const collectionSlugified = slugify(collection.name);
+      if (collectionSlugified !== collectionSlug) continue;
 
       const collectionPath = path.join(collectionsPath, collection.name);
       const items = fs.readdirSync(collectionPath, { withFileTypes: true });
@@ -31,10 +48,15 @@ export async function GET(
       for (const item of items) {
         if (!item.isDirectory()) continue;
 
-        const photosPath = path.join(collectionPath, item.name, 'Photos', filename);
-        if (fs.existsSync(photosPath)) {
-          imagePath = photosPath;
-          break;
+        const itemSlugified = slugify(item.name);
+        const expectedProductId = `${collectionSlug}-${itemSlugified}`;
+
+        if (expectedProductId === productId) {
+          const photosPath = path.join(collectionPath, item.name, 'Photos', filename);
+          if (fs.existsSync(photosPath)) {
+            imagePath = photosPath;
+            break;
+          }
         }
       }
 
