@@ -9,9 +9,20 @@ interface HeaderProps {
   logoPath: string | null;
   primaryColor: string;
   secondaryColor: string;
+  titleFont?: string;
+  bodyFont?: string;
+  cornerRadius?: number;
 }
 
-export default function Header({ companyName, logoPath, primaryColor, secondaryColor }: HeaderProps) {
+export default function Header({
+  companyName,
+  logoPath,
+  primaryColor,
+  secondaryColor,
+  titleFont = 'Inter',
+  bodyFont = 'Inter',
+  cornerRadius = 12
+}: HeaderProps) {
   const [cartItemCount, setCartItemCount] = useState(0);
 
   useEffect(() => {
@@ -39,7 +50,7 @@ export default function Header({ companyName, logoPath, primaryColor, secondaryC
             {logoPath ? (
               <img src={logoPath} alt={companyName} className="h-10 w-auto" />
             ) : (
-              <span className="text-2xl font-bold text-white">{companyName}</span>
+              <span className="text-2xl font-bold text-white" style={{ fontFamily: titleFont }}>{companyName}</span>
             )}
           </Link>
 
@@ -47,25 +58,32 @@ export default function Header({ companyName, logoPath, primaryColor, secondaryC
             <Link
               href="/"
               className="text-white hover:opacity-80 transition-opacity"
+              style={{ fontFamily: bodyFont }}
             >
               Home
             </Link>
             <Link
               href="/about"
               className="text-white hover:opacity-80 transition-opacity"
+              style={{ fontFamily: bodyFont }}
             >
               About
             </Link>
             <Link
               href="/collections"
               className="text-white hover:opacity-80 transition-opacity"
+              style={{ fontFamily: bodyFont }}
             >
               Collections
             </Link>
             <Link
               href="/cart"
-              className="flex items-center space-x-2 px-4 py-2 rounded-lg text-white hover:opacity-90 transition-opacity"
-              style={{ backgroundColor: secondaryColor }}
+              className="flex items-center space-x-2 px-4 py-2 text-white hover:opacity-90 transition-opacity"
+              style={{
+                backgroundColor: secondaryColor,
+                borderRadius: `${cornerRadius}px`,
+                fontFamily: bodyFont
+              }}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

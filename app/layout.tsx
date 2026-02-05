@@ -33,6 +33,12 @@ export default function RootLayout({
               --color-text-light: ${design.colors.textLight};
               --color-border: ${design.colors.border};
               --color-success: ${design.colors.success};
+              --font-title: ${design.fonts.titleFont};
+              --font-body: ${design.fonts.bodyFont};
+              --corner-radius: ${design.style.cornerRadius}px;
+            }
+            body {
+              font-family: ${design.fonts.bodyFont}, sans-serif;
             }
           `
         }} />
@@ -43,6 +49,9 @@ export default function RootLayout({
           logoPath={design.logoPath}
           primaryColor={design.colors.primary}
           secondaryColor={design.colors.secondary}
+          titleFont={design.fonts.titleFont}
+          bodyFont={design.fonts.bodyFont}
+          cornerRadius={design.style.cornerRadius}
         />
         <main className="flex-grow">
           {children}
@@ -50,6 +59,7 @@ export default function RootLayout({
         <Footer
           footerText={design.descriptions.footer}
           primaryColor={design.colors.primary}
+          bodyFont={design.fonts.bodyFont}
         />
       </body>
     </html>

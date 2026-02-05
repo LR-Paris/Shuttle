@@ -21,6 +21,18 @@ export interface Descriptions {
   footer: string;
 }
 
+export interface Fonts {
+  titleFont: string;
+  bodyFont: string;
+  titleFontUrl: string;
+  bodyFontUrl: string;
+}
+
+export interface Style {
+  cornerRadius: number;
+  style: string;
+}
+
 export interface FAQEntry {
   question: string;
   answer: string;
@@ -30,9 +42,14 @@ export interface DesignData {
   colors: Colors;
   companyName: string;
   descriptions: Descriptions;
+  fonts: Fonts;
+  style: Style;
+  password: string;
   logoPath: string | null;
   logoWhitePath: string | null;
   faviconPath: string | null;
+  heroImages: string[];
+  collectionShowcaseImages: Record<string, string | null>;
 }
 
 function parseKeyValueFile(content: string): Record<string, string> {
@@ -116,6 +133,58 @@ export function getDescriptions(): Descriptions {
   }
 }
 
+export function getFonts(): Fonts {
+  try {
+    const fontsPath = path.join(DESIGN_PATH, 'Details', 'Fonts.txt');
+    const content = fs.readFileSync(fontsPath, 'utf-8');
+    const parsed = parseKeyValueFile(content);
+
+    return {
+      titleFont: parsed.titleFont || 'Inter',
+      bodyFont: parsed.bodyFont || 'Inter',
+      titleFontUrl: parsed.titleFontUrl || '',
+      bodyFontUrl: parsed.bodyFontUrl || '',
+    };
+  } catch (error) {
+    console.error('Error reading fonts:', error);
+    return {
+      titleFont: 'Inter',
+      bodyFont: 'Inter',
+      titleFontUrl: '',
+      bodyFontUrl: '',
+    };
+  }
+}
+
+export function getStyle(): Style {
+  try {
+    const stylePath = path.join(DESIGN_PATH, 'Details', 'Style.txt');
+    const content = fs.readFileSync(stylePath, 'utf-8');
+    const parsed = parseKeyValueFile(content);
+
+    return {
+      cornerRadius: parseInt(parsed.cornerRadius || '12', 10),
+      style: parsed.style || 'rounded',
+    };
+  } catch (error) {
+    console.error('Error reading style:', error);
+    return {
+      cornerRadius: 12,
+      style: 'rounded',
+    };
+  }
+}
+
+export function getPassword(): string {
+  try {
+    const passwordPath = path.join(DESIGN_PATH, 'Details', 'Password.txt');
+    return fs.readFileSync(passwordPath, 'utf-8').trim();
+  } catch (error) {
+    console.error('Error reading password:', error);
+    return 'admin';
+  }
+}
+
 function getLogoPath(baseName: string): string | null {
   try {
     // Check for multiple image formats
@@ -131,6 +200,55 @@ function getLogoPath(baseName: string): string | null {
     return null;
   } catch (error) {
     return null;
+  }
+}
+
+export function getHeroImages(): string[] {
+  try {
+    const showcasePath = path.join(DESIGN_PATH, 'ShowcasePhotos');
+    const formats = ['.png', '.jpg', '.jpeg'];
+    const heroImages: string[] = [];
+
+    // Look for hero1, hero2, hero3, etc.
+    for (let i = 1; i <= 10; i++) {
+      for (const ext of formats) {
+        const filename = `hero${i}${ext}`;
+        const imagePath = path.join(showcasePath, filename);
+        if (fs.existsSync(imagePath)) {
+          heroImages.push(`/api/images/showcase/${filename}`);
+          break;
+        }
+      }
+    }
+
+    return heroImages;
+  } catch (error) {
+    console.error('Error reading hero images:', error);
+    return [];
+  }
+}
+
+export function getCollectionShowcaseImages(): Record<string, string | null> {
+  try {
+    const showcasePath = path.join(DESIGN_PATH, 'ShowcasePhotos', 'Collections');
+    if (!fs.existsSync(showcasePath)) {
+      return {};
+    }
+
+    const files = fs.readdirSync(showcasePath);
+    const showcaseImages: Record<string, string | null> = {};
+
+    for (const file of files) {
+      if (/\.(png|jpg|jpeg)$/i.test(file)) {
+        const collectionId = file.replace(/\.(png|jpg|jpeg)$/i, '');
+        showcaseImages[collectionId] = `/api/images/showcase/Collections/${file}`;
+      }
+    }
+
+    return showcaseImages;
+  } catch (error) {
+    console.error('Error reading collection showcase images:', error);
+    return {};
   }
 }
 
@@ -198,8 +316,13 @@ export function getDesignData(): DesignData {
     colors: getColors(),
     companyName: getCompanyName(),
     descriptions: getDescriptions(),
+    fonts: getFonts(),
+    style: getStyle(),
+    password: getPassword(),
     logoPath: getLogoPath('logo'),
     logoWhitePath: getLogoPath('logo-white'),
     faviconPath: getLogoPath('favicon.ico'),
+    heroImages: getHeroImages(),
+    collectionShowcaseImages: getCollectionShowcaseImages(),
   };
 }
