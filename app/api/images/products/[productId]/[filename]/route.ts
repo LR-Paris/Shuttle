@@ -3,6 +3,13 @@ import fs from 'fs';
 import path from 'path';
 import { getAllProducts } from '@/lib/catalog';
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ productId: string; filename: string }> }
@@ -10,32 +17,14 @@ export async function GET(
   try {
     const { productId, filename } = await params;
 
-    // Get all products to find the matching product by ID
-    const products = getAllProducts();
-    const product = products.find(p => p.id === productId);
-
-    if (!product) {
-      return new NextResponse('Product not found', { status: 404 });
-    }
-
-    // Parse the product ID to get collection and item folder names
-    // productId format: "collection-slug-item-slug" (e.g., "office-essentials-designer-tote-bag")
-    const collectionSlug = product.collectionId;
-
-    // Search for the matching collection folder
+    // Parse productId to get collection and item
+    // productId format: "collection-slug-item-slug"
     const collectionsPath = path.join(process.cwd(), 'DATABASE', 'ShopCollections');
     const collections = fs.readdirSync(collectionsPath, { withFileTypes: true });
 
     let imagePath: string | null = null;
 
-    // Function to slugify for comparison
-    function slugify(text: string): string {
-      return text
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
-    }
-
+    // Iterate through collections to find matching product
     for (const collection of collections) {
       if (!collection.isDirectory()) continue;
 
@@ -43,14 +32,17 @@ export async function GET(
       if (collectionSlugified !== collectionSlug) continue;
 
       const collectionPath = path.join(collectionsPath, collection.name);
+      const collectionSlug = slugify(collection.name);
       const items = fs.readdirSync(collectionPath, { withFileTypes: true });
 
       for (const item of items) {
         if (!item.isDirectory()) continue;
 
-        const itemSlugified = slugify(item.name);
-        const expectedProductId = `${collectionSlug}-${itemSlugified}`;
+        // Construct the expected productId for this item
+        const itemSlug = slugify(item.name);
+        const expectedProductId = `${collectionSlug}-${itemSlug}`;
 
+        // Check if this matches the requested productId
         if (expectedProductId === productId) {
           const photosPath = path.join(collectionPath, item.name, 'Photos', filename);
           if (fs.existsSync(photosPath)) {
@@ -78,7 +70,7 @@ export async function GET(
     return new NextResponse(fileBuffer, {
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=31536000, immutable',
+        'Cache-Control': 'public, max-age=3600', // Changed to 1 hour instead of immutable
       },
     });
   } catch (error) {

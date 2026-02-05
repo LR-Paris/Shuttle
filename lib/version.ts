@@ -12,6 +12,7 @@
  * - STS-0.12 - Improved product display and pricing
  * - STS-0.13 - Added order management system
  * - STS-0.14 - Comprehensive README documentation and PNG/JPG support
+ * - STS-0.15 - Restored customization features (fonts, styles, corner radius), showcase photos, and collection carousels
  *
  * To increment version:
  * 1. Update VERSION constant below
@@ -20,7 +21,7 @@
  * 4. Commit with version number in commit message
  */
 
-export const VERSION = 'STS-0.14';
+export const VERSION = 'STS-0.15';
 
 export const VERSION_INFO = {
   name: 'Shop Template System',

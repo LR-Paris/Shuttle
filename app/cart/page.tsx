@@ -16,6 +16,13 @@ interface DesignData {
     border: string;
     success: string;
   };
+  fonts: {
+    titleFont: string;
+    bodyFont: string;
+  };
+  style: {
+    cornerRadius: number;
+  };
 }
 
 export default function CartPage() {
@@ -55,16 +62,16 @@ export default function CartPage() {
   if (cart.items.length === 0) {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
-        <h1 className="text-4xl font-bold mb-4" style={{ color: design.colors.primary }}>
+        <h1 className="text-4xl font-bold mb-4" style={{ color: design.colors.primary, fontFamily: design.fonts.titleFont }}>
           Your Cart is Empty
         </h1>
-        <p className="mb-8" style={{ color: design.colors.textLight }}>
+        <p className="mb-8" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
           Browse our collections to add items to your cart.
         </p>
         <Link
           href="/collections"
-          className="inline-block px-8 py-3 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity"
-          style={{ backgroundColor: design.colors.secondary }}
+          className="inline-block px-8 py-3 text-white font-semibold hover:opacity-90 transition-opacity"
+          style={{ backgroundColor: design.colors.secondary, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
         >
           Browse Collections
         </Link>
@@ -74,7 +81,7 @@ export default function CartPage() {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold mb-8" style={{ color: design.colors.primary }}>
+      <h1 className="text-4xl font-bold mb-8" style={{ color: design.colors.primary, fontFamily: design.fonts.titleFont }}>
         Shopping Cart
       </h1>
 
@@ -85,18 +92,18 @@ export default function CartPage() {
             {cart.items.map((item) => (
               <div
                 key={item.productId}
-                className="border rounded-lg p-6"
-                style={{ borderColor: design.colors.border }}
+                className="border p-6"
+                style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px` }}
               >
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-xl font-bold mb-1" style={{ color: design.colors.primary }}>
+                    <h3 className="text-xl font-bold mb-1" style={{ color: design.colors.primary, fontFamily: design.fonts.titleFont }}>
                       {item.productName}
                     </h3>
-                    <p className="text-sm mb-2" style={{ color: design.colors.textLight }}>
+                    <p className="text-sm mb-2" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
                       SKU: {item.sku}
                     </p>
-                    <p className="text-sm" style={{ color: design.colors.text }}>
+                    <p className="text-sm" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
                       Box of {item.unitsPerBox} units
                     </p>
                   </div>
@@ -123,34 +130,34 @@ export default function CartPage() {
 
                 <div className="flex justify-between items-center">
                   <div className="flex items-center space-x-4">
-                    <span className="text-sm" style={{ color: design.colors.text }}>Quantity:</span>
+                    <span className="text-sm" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>Quantity:</span>
                     <button
                       onClick={() => handleUpdateQuantity(item.productId, item.quantity - 1)}
-                      className="w-8 h-8 border rounded flex items-center justify-center hover:bg-gray-100"
-                      style={{ borderColor: design.colors.border }}
+                      className="w-8 h-8 border flex items-center justify-center hover:bg-gray-100"
+                      style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
                     >
                       -
                     </button>
-                    <span className="w-12 text-center font-semibold" style={{ color: design.colors.text }}>
+                    <span className="w-12 text-center font-semibold" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
                       {item.quantity}
                     </span>
                     <button
                       onClick={() => handleUpdateQuantity(item.productId, item.quantity + 1)}
-                      className="w-8 h-8 border rounded flex items-center justify-center hover:bg-gray-100"
-                      style={{ borderColor: design.colors.border }}
+                      className="w-8 h-8 border flex items-center justify-center hover:bg-gray-100"
+                      style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
                     >
                       +
                     </button>
                   </div>
 
                   <div className="text-right">
-                    <p className="text-sm" style={{ color: design.colors.textLight }}>
+                    <p className="text-sm" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
                       ${item.boxCost.toFixed(2)} per box
                     </p>
-                    <p className="text-2xl font-bold" style={{ color: design.colors.secondary }}>
+                    <p className="text-2xl font-bold" style={{ color: design.colors.secondary, fontFamily: design.fonts.titleFont }}>
                       ${(item.boxCost * item.quantity).toFixed(2)}
                     </p>
-                    <p className="text-sm" style={{ color: design.colors.textLight }}>
+                    <p className="text-sm" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
                       {item.quantity * item.unitsPerBox} total units
                     </p>
                   </div>
@@ -162,7 +169,7 @@ export default function CartPage() {
           <Link
             href="/collections"
             className="inline-flex items-center mt-6 hover:opacity-80"
-            style={{ color: design.colors.secondary }}
+            style={{ color: design.colors.secondary, fontFamily: design.fonts.bodyFont }}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -180,20 +187,20 @@ export default function CartPage() {
         {/* Order Summary */}
         <div>
           <div
-            className="border rounded-lg p-6 sticky top-24"
-            style={{ borderColor: design.colors.border }}
+            className="border p-6 sticky top-24"
+            style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px` }}
           >
-            <h2 className="text-2xl font-bold mb-6" style={{ color: design.colors.primary }}>
+            <h2 className="text-2xl font-bold mb-6" style={{ color: design.colors.primary, fontFamily: design.fonts.titleFont }}>
               Order Summary
             </h2>
 
             <div className="space-y-3 mb-6">
               {cart.items.map((item) => (
                 <div key={item.productId} className="flex justify-between text-sm">
-                  <span style={{ color: design.colors.text }}>
+                  <span style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
                     {item.productName} × {item.quantity}
                   </span>
-                  <span style={{ color: design.colors.text }}>
+                  <span style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
                     ${(item.boxCost * item.quantity).toFixed(2)}
                   </span>
                 </div>
@@ -202,10 +209,10 @@ export default function CartPage() {
 
             <div className="border-t pt-4 mb-6" style={{ borderColor: design.colors.border }}>
               <div className="flex justify-between items-center">
-                <span className="text-xl font-bold" style={{ color: design.colors.primary }}>
+                <span className="text-xl font-bold" style={{ color: design.colors.primary, fontFamily: design.fonts.titleFont }}>
                   Total:
                 </span>
-                <span className="text-3xl font-bold" style={{ color: design.colors.secondary }}>
+                <span className="text-3xl font-bold" style={{ color: design.colors.secondary, fontFamily: design.fonts.titleFont }}>
                   ${cart.total.toFixed(2)}
                 </span>
               </div>
@@ -213,8 +220,8 @@ export default function CartPage() {
 
             <button
               onClick={() => router.push('/checkout')}
-              className="w-full py-3 rounded-lg text-white text-lg font-semibold hover:opacity-90 transition-opacity"
-              style={{ backgroundColor: design.colors.secondary }}
+              className="w-full py-3 text-white text-lg font-semibold hover:opacity-90 transition-opacity"
+              style={{ backgroundColor: design.colors.secondary, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
             >
               Proceed to Checkout
             </button>
