@@ -70,6 +70,7 @@ export default function RootLayout({
             footerText={design.descriptions.footer}
             primaryColor={design.colors.primary}
             bodyFont={design.fonts.bodyFont}
+            cornerRadius={design.style.cornerRadius}
           />
         </PasswordProtection>
       </body>

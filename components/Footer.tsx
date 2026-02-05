@@ -6,9 +6,10 @@ interface FooterProps {
   footerText: string;
   primaryColor: string;
   bodyFont?: string;
+  cornerRadius?: number;
 }
 
-export default function Footer({ footerText, primaryColor, bodyFont = 'Inter' }: FooterProps) {
+export default function Footer({ footerText, primaryColor, bodyFont = 'Inter', cornerRadius = 12 }: FooterProps) {
   const version = getVersion();
 
   return (
@@ -47,7 +48,7 @@ export default function Footer({ footerText, primaryColor, bodyFont = 'Inter' }:
             target="_blank"
             rel="noopener noreferrer"
             className="block bg-white rounded-lg p-2 hover:opacity-90 transition-opacity"
-            style={{ borderRadius: '12px' }}
+            style={{ borderRadius: `${cornerRadius}px` }}
           >
             <Image
               src="/lr-paris-logo.svg"
