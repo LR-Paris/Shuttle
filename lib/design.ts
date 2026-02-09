@@ -108,7 +108,7 @@ export function getCompanyName(): string {
     return fs.readFileSync(companyNamePath, 'utf-8').trim();
   } catch (error) {
     console.error('Error reading company name:', error);
-    return 'B2B Storefront';
+    return 'Shuttle';
   }
 }
 
@@ -192,7 +192,7 @@ export function getPassword(): string {
 function getLogoPath(baseName: string): string | null {
   try {
     // Check for multiple image formats
-    const formats = ['.png', '.jpg', '.jpeg'];
+    const formats = ['.png', '.jpg', '.jpeg', '.svg'];
 
     for (const ext of formats) {
       const filename = baseName + ext;
@@ -325,7 +325,7 @@ export function getDesignData(): DesignData {
     password: getPassword(),
     logoPath: getLogoPath('logo'),
     logoWhitePath: getLogoPath('logo-white'),
-    faviconPath: getLogoPath('favicon.ico'),
+    faviconPath: getLogoPath('favicon'),
     heroImages: getHeroImages(),
     collectionShowcaseImages: getCollectionShowcaseImages(),
   };

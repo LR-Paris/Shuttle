@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 interface CollectionCardProps {
   collection: {
@@ -10,38 +10,21 @@ interface CollectionCardProps {
     products: any[];
   };
   design: any;
+  tick: number;
 }
 
-export default function CollectionCard({ collection, design }: CollectionCardProps) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [images, setImages] = useState<string[]>([]);
-
-  useEffect(() => {
-    // Gather all images from products
-    const productImages: string[] = [];
+export default function CollectionCard({ collection, design, tick }: CollectionCardProps) {
+  const images = useMemo(() => {
+    const mainImages: string[] = [];
     collection.products.forEach((product: any) => {
       if (product.images && product.images.length > 0) {
-        productImages.push(...product.images);
+        mainImages.push(product.images[0]);
       }
     });
-
-    setImages(productImages);
-
-    // Start at random image
-    if (productImages.length > 0) {
-      setCurrentImageIndex(Math.floor(Math.random() * productImages.length));
-    }
+    return mainImages;
   }, [collection]);
 
-  useEffect(() => {
-    if (images.length <= 1) return;
-
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % images.length);
-    }, 3000); // Change every 3 seconds
-
-    return () => clearInterval(interval);
-  }, [images.length]);
+  const currentImageIndex = images.length > 0 ? tick % images.length : 0;
 
   return (
     <Link
@@ -70,10 +53,6 @@ export default function CollectionCard({ collection, design }: CollectionCardPro
               />
             </div>
           ))}
-          {/* Image counter overlay */}
-          <div className="absolute bottom-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded">
-            {currentImageIndex + 1} / {images.length}
-          </div>
         </div>
       )}
 

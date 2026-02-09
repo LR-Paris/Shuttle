@@ -20,6 +20,7 @@ export default function Home() {
 
       setDesign(designData);
       setCollections(collectionsData);
+      document.title = designData.companyName;
     }
     loadData();
   }, []);

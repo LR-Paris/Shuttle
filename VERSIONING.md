@@ -29,6 +29,9 @@ Where:
 | STS-0.12 | 2026-01-25 | Improved product display and pricing |
 | STS-0.13 | 2026-02-01 | Added order management system |
 | STS-0.14 | 2026-02-05 | Comprehensive README documentation and PNG/JPG support |
+| STS-0.15 | 2026-02-05 | Restored customization features, showcase photos, collection carousels |
+| STS-0.16 | 2026-02-05 | Password protection, collections dropdown, easter egg, UI refinements |
+| STS-0.21 | 2026-02-09 | Fix all issues: title fallback, back navigation, photo display, synced carousels, favicon, logo dark bg, white item backgrounds |
 
 ## How to Increment Version
 

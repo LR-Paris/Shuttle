@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { addToCart } from '@/lib/cart';
 
 interface Product {
@@ -40,6 +40,8 @@ interface DesignData {
 export default function ProductPage({ params }: { params: Promise<{ productId: string }> }) {
   const { productId } = use(params);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const fromShopAll = searchParams.get('from') === 'shop-all';
   const [product, setProduct] = useState<Product | null>(null);
   const [design, setDesign] = useState<DesignData | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -56,6 +58,9 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
       .then(([productData, designData]) => {
         setProduct(productData);
         setDesign(designData);
+        if (productData && designData) {
+          document.title = `${designData.companyName} - ${productData.name}`;
+        }
       })
       .catch(error => {
         console.error('Error loading product:', error);
@@ -99,7 +104,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
   return (
     <div className="container mx-auto px-4 py-12">
       <Link
-        href={`/collections/${product.collectionId}`}
+        href={fromShopAll ? '/shop-all' : `/collections/${product.collectionId}`}
         className="inline-flex items-center mb-6 hover:opacity-80"
         style={{ color: design.colors.secondary }}
       >
@@ -112,7 +117,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
-        Back to {product.collectionName}
+        {fromShopAll ? 'Back to Shop All' : `Back to ${product.collectionName}`}
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -120,11 +125,11 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
         <div>
           {product.images.length > 0 ? (
             <>
-              <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-4">
+              <div className="aspect-square bg-white rounded-lg overflow-hidden mb-4">
                 <img
                   src={product.images[selectedImage]}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain p-4"
                 />
               </div>
               {product.images.length > 1 && (
@@ -133,7 +138,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
                     <button
                       key={index}
                       onClick={() => setSelectedImage(index)}
-                      className="aspect-square bg-gray-100 rounded-lg overflow-hidden border-2 hover:opacity-80"
+                      className="aspect-square bg-white rounded-lg overflow-hidden border-2 hover:opacity-80"
                       style={{
                         borderColor: index === selectedImage ? design.colors.secondary : design.colors.border,
                       }}
@@ -141,7 +146,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
                       <img
                         src={image}
                         alt={`${product.name} ${index + 1}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain p-1"
                       />
                     </button>
                   ))}

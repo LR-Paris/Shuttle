@@ -7,6 +7,7 @@ import { getCart } from '@/lib/cart';
 interface HeaderProps {
   companyName: string;
   logoPath: string | null;
+  logoWhitePath?: string | null;
   primaryColor: string;
   secondaryColor: string;
   titleFont?: string;
@@ -23,6 +24,7 @@ interface Collection {
 export default function Header({
   companyName,
   logoPath,
+  logoWhitePath,
   primaryColor,
   secondaryColor,
   titleFont = 'Inter',
@@ -68,8 +70,8 @@ export default function Header({
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-3">
-            {logoPath ? (
-              <img src={logoPath} alt={companyName} className="h-10 w-auto" />
+            {(logoWhitePath || logoPath) ? (
+              <img src={(logoWhitePath || logoPath)!} alt={companyName} className="h-10 w-auto" />
             ) : (
               <span className="text-2xl font-bold text-white" style={{ fontFamily: titleFont }}>{companyName}</span>
             )}

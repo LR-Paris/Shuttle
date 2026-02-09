@@ -14,6 +14,7 @@
  * - STS-0.14 - Comprehensive README documentation and PNG/JPG support
  * - STS-0.15 - Restored customization features (fonts, styles, corner radius), showcase photos, and collection carousels
  * - STS-0.16 - Password protection, collections dropdown, easter egg, and UI refinements
+ * - STS-0.21 - Fix all issues: title fallback, back navigation, photo display, synced carousels, favicon, logo dark bg, white item backgrounds
  *
  * To increment version:
  * 1. Update VERSION constant below
@@ -22,13 +23,13 @@
  * 4. Commit with version number in commit message
  */
 
-export const VERSION = 'STS-0.16';
+export const VERSION = 'STS-0.21';
 
 export const VERSION_INFO = {
   name: 'Shop Template System',
   version: VERSION,
   codename: 'Alpha',
-  releaseDate: '2026-02-05',
+  releaseDate: '2026-02-09',
   description: 'Folder-driven B2B storefront system',
   attribution: 'Built with LR Paris Shuttle',
 };

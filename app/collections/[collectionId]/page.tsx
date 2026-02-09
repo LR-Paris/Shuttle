@@ -33,12 +33,13 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
 
       const coll = await collectionResponse.json();
       setCollection(coll);
+      document.title = `${designData.companyName} - ${coll.name}`;
 
-      // Collect all product images for the carousel
+      // Collect main (first) product image for the carousel
       const images: string[] = [];
       coll.products.forEach((product: any) => {
         if (product.images && product.images.length > 0) {
-          images.push(...product.images);
+          images.push(product.images[0]);
         }
       });
       setCollectionImages(images);

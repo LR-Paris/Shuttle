@@ -57,6 +57,7 @@ export default function RootLayout({
           <Header
             companyName={design.companyName}
             logoPath={design.logoPath}
+            logoWhitePath={design.logoWhitePath}
             primaryColor={design.colors.primary}
             secondaryColor={design.colors.secondary}
             titleFont={design.fonts.titleFont}

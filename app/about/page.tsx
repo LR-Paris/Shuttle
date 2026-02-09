@@ -51,6 +51,7 @@ export default function AboutPage() {
       const response = await fetch('/api/design');
       const designData = await response.json();
       setDesign(designData);
+      document.title = `${designData.companyName} - About`;
 
       const versionResponse = await fetch('/api/version');
       const versionData = await versionResponse.json();
