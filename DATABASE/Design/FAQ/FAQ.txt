@@ -6,13 +6,19 @@ Email: g.lupo@lrparis.com
 For finance-related questions:
 Email: finance@lrparis.com
 
-Q: How do I pay for my product?
-A: Once you have checked out via the website, please send a purchase order to s.sacks@lrparis.com if your hotel requires that for invoice.
+Q: How do I pay for my order?
+A: Once you have checked out via the website, please send a purchase order to s.sacks@lrparis.com if your company requires one for invoicing.
 
 We will then send over an invoice for 100% of the total. The invoice will include shipping and taxes.
 
 Q: How much does shipping cost?
-A: Shipping is calculated based on your location and the items in your order.
+A: Shipping is calculated based on your location and the items in your order. Freight details can be provided at checkout.
 
-Q: How can I order less than one case?
-A: We cannot support orders smaller than one case.
+Q: How can I order less than one carton?
+A: We cannot support orders smaller than one carton. All items are shipped in full carton quantities only.
+
+Q: What collections are available?
+A: We currently offer six GWP collections: Evergreen, Holiday, Lunar New Year, Ramadan, Diwali, and Jet Set Cafe. Each collection features items tailored to specific seasonal campaigns.
+
+Q: Can I mix items from different collections in one order?
+A: Yes, you can add items from multiple collections to a single order.

@@ -1,8 +1,8 @@
-primary: #2c3e50
-secondary: #e74c3c
-accent: #3498db
-background: #ffffff
-text: #2c3e50
-textLight: #7f8c8d
-border: #bdc3c7
-success: #27ae60
+primary: #000000
+secondary: #C19A6B
+accent: #B8860B
+background: #FFFFFF
+text: #000000
+textLight: #666666
+border: #E5E5E5
+success: #2E7D32
