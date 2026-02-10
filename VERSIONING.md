@@ -32,6 +32,7 @@ Where:
 | STS-0.15 | 2026-02-05 | Restored customization features, showcase photos, collection carousels |
 | STS-0.16 | 2026-02-05 | Password protection, collections dropdown, easter egg, UI refinements |
 | STS-0.21 | 2026-02-09 | Fix all issues: title fallback, back navigation, photo display, synced carousels, favicon, logo dark bg, white item backgrounds |
+| STS-0.22 | 2026-02-09 | Use logo as favicon, dynamic page titles, capitalize From label |
 
 ## How to Increment Version
 

@@ -15,6 +15,7 @@
  * - STS-0.15 - Restored customization features (fonts, styles, corner radius), showcase photos, and collection carousels
  * - STS-0.16 - Password protection, collections dropdown, easter egg, and UI refinements
  * - STS-0.21 - Fix all issues: title fallback, back navigation, photo display, synced carousels, favicon, logo dark bg, white item backgrounds
+ * - STS-0.22 - Use logo as favicon, dynamic page titles, capitalize From label
  *
  * To increment version:
  * 1. Update VERSION constant below
@@ -23,7 +24,7 @@
  * 4. Commit with version number in commit message
  */
 
-export const VERSION = 'STS-0.21';
+export const VERSION = 'STS-0.22';
 
 export const VERSION_INFO = {
   name: 'Shop Template System',
