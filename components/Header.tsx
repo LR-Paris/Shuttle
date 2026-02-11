@@ -22,19 +22,29 @@ interface Collection {
 }
 
 export default function Header({
-  companyName,
-  logoPath,
-  logoWhitePath,
-  primaryColor,
-  secondaryColor,
-  titleFont = 'Inter',
-  bodyFont = 'Inter',
-  cornerRadius = 12
+  companyName: initialCompanyName,
+  logoPath: initialLogoPath,
+  logoWhitePath: initialLogoWhitePath,
+  primaryColor: initialPrimaryColor,
+  secondaryColor: initialSecondaryColor,
+  titleFont: initialTitleFont = 'Inter',
+  bodyFont: initialBodyFont = 'Inter',
+  cornerRadius: initialCornerRadius = 12
 }: HeaderProps) {
   const [cartItemCount, setCartItemCount] = useState(0);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Design state: start with SSR props, override with client-side fetch
+  const [companyName, setCompanyName] = useState(initialCompanyName);
+  const [logoPath, setLogoPath] = useState(initialLogoPath);
+  const [logoWhitePath, setLogoWhitePath] = useState(initialLogoWhitePath);
+  const [primaryColor, setPrimaryColor] = useState(initialPrimaryColor);
+  const [secondaryColor, setSecondaryColor] = useState(initialSecondaryColor);
+  const [titleFont, setTitleFont] = useState(initialTitleFont);
+  const [bodyFont, setBodyFont] = useState(initialBodyFont);
+  const [cornerRadius, setCornerRadius] = useState(initialCornerRadius);
 
   useEffect(() => {
     const updateCartCount = () => {
@@ -51,13 +61,24 @@ export default function Header({
   }, []);
 
   useEffect(() => {
-    // Fetch collections
-    fetch('/api/collections')
-      .then(r => r.json())
-      .then(data => {
-        // API returns array directly
-        if (Array.isArray(data)) {
-          setCollections(data);
+    // Fetch collections and design data client-side for fresh DATABASE values
+    Promise.all([
+      fetch('/api/collections').then(r => r.json()),
+      fetch('/api/design').then(r => r.json()),
+    ])
+      .then(([collectionsData, designData]) => {
+        if (Array.isArray(collectionsData)) {
+          setCollections(collectionsData);
+        }
+        if (designData && !designData.error) {
+          setCompanyName(designData.companyName);
+          setLogoPath(designData.logoPath);
+          setLogoWhitePath(designData.logoWhitePath);
+          setPrimaryColor(designData.colors.primary);
+          setSecondaryColor(designData.colors.secondary);
+          setTitleFont(designData.fonts.titleFont);
+          setBodyFont(designData.fonts.bodyFont);
+          setCornerRadius(designData.style.cornerRadius);
         }
       })
       .catch(console.error);
