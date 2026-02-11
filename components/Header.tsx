@@ -34,6 +34,7 @@ export default function Header({
   const [cartItemCount, setCartItemCount] = useState(0);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const updateCartCount = () => {
@@ -67,11 +68,137 @@ export default function Header({
       className="shadow-md sticky top-0 z-50"
       style={{ backgroundColor: primaryColor }}
     >
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
+      <div className="container mx-auto px-4 py-3">
+        {/* Mobile Header */}
+        <div className="md:hidden">
+          {/* Logo centered above navigation */}
+          <div className="flex justify-center mb-2">
+            <Link href="/" className="flex items-center">
+              {(logoWhitePath || logoPath) ? (
+                <img src={(logoWhitePath || logoPath)!} alt={companyName} className="h-8 w-auto flex-shrink-0" style={{ objectFit: 'contain' }} />
+              ) : (
+                <span className="text-xl font-bold text-white" style={{ fontFamily: titleFont }}>{companyName}</span>
+              )}
+            </Link>
+          </div>
+
+          {/* Mobile controls row */}
+          <div className="flex items-center justify-between">
+            {/* Hamburger Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-white p-2"
+              aria-label="Toggle menu"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                {mobileMenuOpen ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                )}
+              </svg>
+            </button>
+
+            {/* Cart Button */}
+            <Link
+              href="/cart"
+              className="flex items-center space-x-1 px-3 py-2 text-white"
+              style={{
+                backgroundColor: secondaryColor,
+                borderRadius: `${cornerRadius}px`,
+                fontFamily: bodyFont,
+                fontSize: '0.875rem'
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+              <span>({cartItemCount})</span>
+            </Link>
+          </div>
+
+          {/* Mobile Menu Dropdown */}
+          {mobileMenuOpen && (
+            <nav className="mt-3 pb-2 space-y-2">
+              <Link
+                href="/"
+                className="block py-2 text-white hover:opacity-80 transition-opacity"
+                style={{ fontFamily: bodyFont }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <Link
+                href="/about"
+                className="block py-2 text-white hover:opacity-80 transition-opacity"
+                style={{ fontFamily: bodyFont }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                About
+              </Link>
+              <Link
+                href="/collections"
+                className="block py-2 text-white hover:opacity-80 transition-opacity"
+                style={{ fontFamily: bodyFont }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Collections
+              </Link>
+              {collections.map((collection) => (
+                <Link
+                  key={collection.id}
+                  href={`/collections/${collection.id}`}
+                  className="block py-2 pl-4 text-white hover:opacity-80 transition-opacity text-sm"
+                  style={{ fontFamily: bodyFont }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {collection.name}
+                </Link>
+              ))}
+              <Link
+                href="/shop-all"
+                className="block py-2 text-white hover:opacity-80 transition-opacity"
+                style={{ fontFamily: bodyFont }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Shop All
+              </Link>
+            </nav>
+          )}
+        </div>
+
+        {/* Desktop Header */}
+        <div className="hidden md:flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-3">
             {(logoWhitePath || logoPath) ? (
-              <img src={(logoWhitePath || logoPath)!} alt={companyName} className="h-10 w-auto" />
+              <img src={(logoWhitePath || logoPath)!} alt={companyName} className="h-8 md:h-10 w-auto flex-shrink-0" style={{ objectFit: 'contain' }} />
             ) : (
               <span className="text-2xl font-bold text-white" style={{ fontFamily: titleFont }}>{companyName}</span>
             )}

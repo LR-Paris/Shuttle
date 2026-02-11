@@ -56,6 +56,8 @@ export default function RootLayout({
           bodyFont={design.fonts.bodyFont}
           cornerRadius={design.style.cornerRadius}
           companyName={design.companyName}
+          logoPath={design.logoPath}
+          logoWhitePath={design.logoWhitePath}
         >
           <Header
             companyName={design.companyName}

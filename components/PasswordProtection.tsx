@@ -11,6 +11,8 @@ interface PasswordProtectionProps {
   bodyFont: string;
   cornerRadius: number;
   companyName: string;
+  logoPath: string | null;
+  logoWhitePath?: string | null;
 }
 
 export default function PasswordProtection({
@@ -22,6 +24,8 @@ export default function PasswordProtection({
   bodyFont,
   cornerRadius,
   companyName,
+  logoPath,
+  logoWhitePath,
 }: PasswordProtectionProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
@@ -74,15 +78,26 @@ export default function PasswordProtection({
             borderRadius: `${cornerRadius}px`
           }}
         >
-          <h1
-            className="text-3xl font-bold mb-2 text-center"
-            style={{
-              color: primaryColor,
-              fontFamily: titleFont
-            }}
-          >
-            {companyName}
-          </h1>
+          <div className="flex justify-center mb-2">
+            {logoPath ? (
+              <img
+                src={logoPath}
+                alt={companyName}
+                className="h-12 md:h-16 w-auto flex-shrink-0"
+                style={{ objectFit: 'contain' }}
+              />
+            ) : (
+              <h1
+                className="text-3xl font-bold text-center"
+                style={{
+                  color: primaryColor,
+                  fontFamily: titleFont
+                }}
+              >
+                {companyName}
+              </h1>
+            )}
+          </div>
           <p
             className="text-center mb-6"
             style={{
