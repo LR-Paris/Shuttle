@@ -95,7 +95,24 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
   return (
     <div>
       {/* Collection Hero Carousel */}
-      {collectionImages.length > 0 && (
+      {collectionImages.length > 0 && hasShowcaseImage ? (
+        <div className="relative w-full mb-8 overflow-hidden bg-gray-100">
+          <img
+            src={collectionImages[0]}
+            alt={collection.name}
+            className="w-full h-auto object-cover"
+            style={{ maxHeight: '600px' }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end justify-center pb-8">
+            <h1
+              className="text-5xl font-bold text-white px-4 text-center"
+              style={{ fontFamily: design.fonts.titleFont }}
+            >
+              {collection.name}
+            </h1>
+          </div>
+        </div>
+      ) : collectionImages.length > 0 ? (
         <div className="relative w-full h-[400px] mb-8 overflow-hidden bg-gray-100">
           {collectionImages.map((image: string, index: number) => (
             <div
@@ -108,7 +125,7 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
               <img
                 src={image}
                 alt={`Collection item ${index + 1}`}
-                className={`w-full h-full ${hasShowcaseImage ? 'object-cover' : 'object-contain'}`}
+                className="w-full h-full object-contain"
               />
             </div>
           ))}
@@ -121,7 +138,7 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
             </h1>
           </div>
         </div>
-      )}
+      ) : null}
 
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">

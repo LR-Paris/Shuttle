@@ -15,11 +15,11 @@ interface CollectionCardProps {
 
 export default function CollectionCard({ collection, design, tick }: CollectionCardProps) {
   // Use showcase photo if available, otherwise fall back to product images
-  const images = useMemo(() => {
+  const { images, hasShowcase } = useMemo(() => {
     // Check if there's a showcase image for this collection
     const showcaseImage = design.collectionShowcaseImages?.[collection.id];
     if (showcaseImage) {
-      return [showcaseImage];
+      return { images: [showcaseImage], hasShowcase: true };
     }
 
     // Fall back to product images
@@ -29,7 +29,7 @@ export default function CollectionCard({ collection, design, tick }: CollectionC
         mainImages.push(product.images[0]);
       }
     });
-    return mainImages;
+    return { images: mainImages, hasShowcase: false };
   }, [collection, design]);
 
   const currentImageIndex = images.length > 0 ? tick % images.length : 0;
@@ -44,7 +44,16 @@ export default function CollectionCard({ collection, design, tick }: CollectionC
       }}
     >
       {/* Image Carousel */}
-      {images.length > 0 && (
+      {images.length > 0 && hasShowcase ? (
+        <div className="relative w-full bg-gray-100 overflow-hidden">
+          <img
+            src={images[0]}
+            alt={`${collection.name} showcase`}
+            className="w-full h-auto object-cover"
+            style={{ maxHeight: '400px' }}
+          />
+        </div>
+      ) : images.length > 0 ? (
         <div className="relative w-full aspect-square bg-gray-100 overflow-hidden">
           {images.map((image: string, index: number) => (
             <div
@@ -62,7 +71,7 @@ export default function CollectionCard({ collection, design, tick }: CollectionC
             </div>
           ))}
         </div>
-      )}
+      ) : null}
 
       {/* Collection Info */}
       <div className="p-6">
