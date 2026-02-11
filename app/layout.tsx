@@ -26,6 +26,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {design.fonts.titleFontUrl && (
+          <link rel="stylesheet" href={design.fonts.titleFontUrl} />
+        )}
+        {design.fonts.bodyFontUrl && design.fonts.bodyFontUrl !== design.fonts.titleFontUrl && (
+          <link rel="stylesheet" href={design.fonts.bodyFontUrl} />
+        )}
         <style dangerouslySetInnerHTML={{
           __html: `
             :root {
@@ -43,6 +49,15 @@ export default function RootLayout({
             }
             body {
               font-family: ${design.fonts.bodyFont}, sans-serif;
+              display: flex;
+              flex-direction: column;
+              min-height: 100vh;
+            }
+            .header-mobile { display: block; }
+            .header-desktop { display: none; }
+            @media (min-width: 768px) {
+              .header-mobile { display: none !important; }
+              .header-desktop { display: flex !important; }
             }
           `
         }} />

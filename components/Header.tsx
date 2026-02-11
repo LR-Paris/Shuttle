@@ -66,11 +66,17 @@ export default function Header({
   return (
     <header
       className="shadow-md sticky top-0 z-50"
-      style={{ backgroundColor: primaryColor }}
+      style={{
+        backgroundColor: primaryColor,
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+      }}
     >
-      <div className="container mx-auto px-4 py-3">
+      <div className="container mx-auto px-4 py-3" style={{ maxWidth: '1280px', marginLeft: 'auto', marginRight: 'auto', paddingLeft: '1rem', paddingRight: '1rem', paddingTop: '0.75rem', paddingBottom: '0.75rem' }}>
         {/* Mobile Header */}
-        <div className="md:hidden">
+        <div className="header-mobile md:hidden">
           {/* Logo centered above navigation */}
           <div className="flex justify-center mb-2">
             <Link href="/" className="flex items-center">
@@ -195,7 +201,7 @@ export default function Header({
         </div>
 
         {/* Desktop Header */}
-        <div className="hidden md:flex items-center justify-between">
+        <div className="header-desktop hidden md:flex items-center justify-between" style={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <Link href="/" className="flex items-center space-x-3">
             {(logoWhitePath || logoPath) ? (
               <img src={(logoWhitePath || logoPath)!} alt={companyName} className="h-8 md:h-10 w-auto flex-shrink-0" style={{ objectFit: 'contain' }} />
