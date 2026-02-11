@@ -230,7 +230,7 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
               }}
             >
               {product.images.length > 0 ? (
-                <div className="aspect-square bg-gray-100 relative">
+                <div className="aspect-square bg-gray-100 relative border-b" style={{ borderColor: design.colors.border }}>
                   <img
                     src={product.images[0]}
                     alt={product.name}
@@ -238,7 +238,7 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
                   />
                 </div>
               ) : (
-                <div className="aspect-square bg-gray-100 flex items-center justify-center">
+                <div className="aspect-square bg-gray-100 flex items-center justify-center border-b" style={{ borderColor: design.colors.border }}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-16 w-16 text-gray-300"

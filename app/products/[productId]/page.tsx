@@ -125,7 +125,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
         <div>
           {product.images.length > 0 ? (
             <>
-              <div className="aspect-square bg-white rounded-lg overflow-hidden mb-4">
+              <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-4 border" style={{ borderColor: design.colors.border }}>
                 <img
                   src={product.images[selectedImage]}
                   alt={product.name}
@@ -138,7 +138,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
                     <button
                       key={index}
                       onClick={() => setSelectedImage(index)}
-                      className="aspect-square bg-white rounded-lg overflow-hidden border-2 hover:opacity-80"
+                      className="aspect-square bg-gray-100 rounded-lg overflow-hidden border-2 hover:opacity-80"
                       style={{
                         borderColor: index === selectedImage ? design.colors.secondary : design.colors.border,
                       }}
