@@ -55,11 +55,7 @@ export default function PasswordProtection({
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen" style={{ fontFamily: bodyFont }}>
-        <p style={{ color: primaryColor }}>Loading...</p>
-      </div>
-    );
+    return <>{children}</>;
   }
 
   if (!isAuthenticated) {

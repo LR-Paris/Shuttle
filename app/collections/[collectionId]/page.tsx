@@ -12,6 +12,7 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
   const [collection, setCollection] = useState<any>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [collectionImages, setCollectionImages] = useState<string[]>([]);
+  const [hasShowcaseImage, setHasShowcaseImage] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>('name-asc');
 
   useEffect(() => {
@@ -35,14 +36,20 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
       setCollection(coll);
       document.title = `${designData.companyName} - ${coll.name}`;
 
-      // Collect main (first) product image for the carousel
-      const images: string[] = [];
-      coll.products.forEach((product: any) => {
-        if (product.images && product.images.length > 0) {
-          images.push(product.images[0]);
-        }
-      });
-      setCollectionImages(images);
+      // Use showcase photo if available, otherwise fall back to product images
+      const showcaseImage = designData.collectionShowcaseImages?.[resolvedParams.collectionId];
+      if (showcaseImage) {
+        setCollectionImages([showcaseImage]);
+        setHasShowcaseImage(true);
+      } else {
+        const images: string[] = [];
+        coll.products.forEach((product: any) => {
+          if (product.images && product.images.length > 0) {
+            images.push(product.images[0]);
+          }
+        });
+        setCollectionImages(images);
+      }
     }
     loadData();
   }, [params]);
@@ -101,7 +108,7 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
               <img
                 src={image}
                 alt={`Collection item ${index + 1}`}
-                className="w-full h-full object-contain"
+                className={`w-full h-full ${hasShowcaseImage ? 'object-cover' : 'object-contain'}`}
               />
             </div>
           ))}
