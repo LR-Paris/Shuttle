@@ -14,7 +14,15 @@ interface CollectionCardProps {
 }
 
 export default function CollectionCard({ collection, design, tick }: CollectionCardProps) {
+  // Use showcase photo if available, otherwise fall back to product images
   const images = useMemo(() => {
+    // Check if there's a showcase image for this collection
+    const showcaseImage = design.collectionShowcaseImages?.[collection.id];
+    if (showcaseImage) {
+      return [showcaseImage];
+    }
+
+    // Fall back to product images
     const mainImages: string[] = [];
     collection.products.forEach((product: any) => {
       if (product.images && product.images.length > 0) {
@@ -22,7 +30,7 @@ export default function CollectionCard({ collection, design, tick }: CollectionC
       }
     });
     return mainImages;
-  }, [collection]);
+  }, [collection, design]);
 
   const currentImageIndex = images.length > 0 ? tick % images.length : 0;
 

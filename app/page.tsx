@@ -158,49 +158,63 @@ export default function Home() {
             Our Collections
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {collections.map((collection) => (
-              <Link
-                key={collection.id}
-                href={`/collections/${collection.id}`}
-                className="border hover:shadow-lg transition-shadow overflow-hidden"
-                style={{
-                  borderColor: design.colors.border,
-                  borderRadius: `${design.style.cornerRadius}px`,
-                }}
-              >
-                <div className="p-6">
-                  <h3
-                    className="text-2xl font-bold mb-2"
-                    style={{
-                      color: design.colors.primary,
-                      fontFamily: design.fonts.titleFont,
-                    }}
-                  >
-                    {collection.name}
-                  </h3>
-                  <p
-                    style={{
-                      color: design.colors.textLight,
-                      fontFamily: design.fonts.bodyFont,
-                    }}
-                  >
-                    {collection.products.length}{' '}
-                    {collection.products.length === 1 ? 'product' : 'products'}
-                  </p>
-                  <div className="mt-4">
-                    <span
-                      className="text-sm font-semibold"
+            {collections.map((collection) => {
+              const showcaseImage = design.collectionShowcaseImages?.[collection.id];
+              return (
+                <Link
+                  key={collection.id}
+                  href={`/collections/${collection.id}`}
+                  className="border hover:shadow-lg transition-shadow overflow-hidden"
+                  style={{
+                    borderColor: design.colors.border,
+                    borderRadius: `${design.style.cornerRadius}px`,
+                  }}
+                >
+                  {/* Showcase Image */}
+                  {showcaseImage && (
+                    <div className="relative w-full aspect-square bg-gray-100 overflow-hidden">
+                      <img
+                        src={showcaseImage}
+                        alt={collection.name}
+                        className="w-full h-full object-contain p-4"
+                      />
+                    </div>
+                  )}
+
+                  <div className="p-6">
+                    <h3
+                      className="text-2xl font-bold mb-2"
                       style={{
-                        color: design.colors.secondary,
+                        color: design.colors.primary,
+                        fontFamily: design.fonts.titleFont,
+                      }}
+                    >
+                      {collection.name}
+                    </h3>
+                    <p
+                      style={{
+                        color: design.colors.textLight,
                         fontFamily: design.fonts.bodyFont,
                       }}
                     >
-                      View Collection →
-                    </span>
+                      {collection.products.length}{' '}
+                      {collection.products.length === 1 ? 'product' : 'products'}
+                    </p>
+                    <div className="mt-4">
+                      <span
+                        className="text-sm font-semibold"
+                        style={{
+                          color: design.colors.secondary,
+                          fontFamily: design.fonts.bodyFont,
+                        }}
+                      >
+                        View Collection →
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>

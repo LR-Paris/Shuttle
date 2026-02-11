@@ -210,20 +210,28 @@ function getLogoPath(baseName: string): string | null {
 export function getHeroImages(): string[] {
   try {
     const showcasePath = path.join(DESIGN_PATH, 'ShowcasePhotos');
-    const formats = ['.png', '.jpg', '.jpeg'];
-    const heroImages: string[] = [];
+    if (!fs.existsSync(showcasePath)) {
+      return [];
+    }
 
-    // Look for hero1, hero2, hero3, etc.
-    for (let i = 1; i <= 10; i++) {
-      for (const ext of formats) {
-        const filename = `hero${i}${ext}`;
-        const imagePath = path.join(showcasePath, filename);
-        if (fs.existsSync(imagePath)) {
-          heroImages.push(`/api/images/showcase/${filename}`);
-          break;
-        }
+    const heroImages: string[] = [];
+    const formats = /\.(png|jpg|jpeg|webp|gif)$/i;
+
+    // Read all files in the ShowcasePhotos root directory
+    const files = fs.readdirSync(showcasePath);
+
+    for (const file of files) {
+      const filePath = path.join(showcasePath, file);
+      const stats = fs.statSync(filePath);
+
+      // Only include files (not directories) that match image formats
+      if (stats.isFile() && formats.test(file)) {
+        heroImages.push(`/api/images/showcase/${file}`);
       }
     }
+
+    // Sort to ensure consistent order
+    heroImages.sort();
 
     return heroImages;
   } catch (error) {
@@ -243,8 +251,8 @@ export function getCollectionShowcaseImages(): Record<string, string | null> {
     const showcaseImages: Record<string, string | null> = {};
 
     for (const file of files) {
-      if (/\.(png|jpg|jpeg)$/i.test(file)) {
-        const collectionId = file.replace(/\.(png|jpg|jpeg)$/i, '');
+      if (/\.(png|jpg|jpeg|webp|gif)$/i.test(file)) {
+        const collectionId = file.replace(/\.(png|jpg|jpeg|webp|gif)$/i, '');
         showcaseImages[collectionId] = `/api/images/showcase/Collections/${file}`;
       }
     }
