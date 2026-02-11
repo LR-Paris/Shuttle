@@ -16,6 +16,7 @@
  * - STS-0.16 - Password protection, collections dropdown, easter egg, and UI refinements
  * - STS-0.21 - Fix all issues: title fallback, back navigation, photo display, synced carousels, favicon, logo dark bg, white item backgrounds
  * - STS-0.22 - Use logo as favicon, dynamic page titles, capitalize From label
+ * - STS-0.23 - Showcase photos integration: collections use showcase photos, main page uses any images from root, all image formats supported (jpg, png, jpeg, webp, gif)
  *
  * To increment version:
  * 1. Update VERSION constant below
@@ -24,13 +25,13 @@
  * 4. Commit with version number in commit message
  */
 
-export const VERSION = 'STS-0.22';
+export const VERSION = 'STS-0.23';
 
 export const VERSION_INFO = {
   name: 'Shop Template System',
   version: VERSION,
   codename: 'Alpha',
-  releaseDate: '2026-02-09',
+  releaseDate: '2026-02-11',
   description: 'Folder-driven B2B storefront system',
   attribution: 'Built with LR Paris Shuttle',
 };

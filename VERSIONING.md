@@ -33,6 +33,7 @@ Where:
 | STS-0.16 | 2026-02-05 | Password protection, collections dropdown, easter egg, UI refinements |
 | STS-0.21 | 2026-02-09 | Fix all issues: title fallback, back navigation, photo display, synced carousels, favicon, logo dark bg, white item backgrounds |
 | STS-0.22 | 2026-02-09 | Use logo as favicon, dynamic page titles, capitalize From label |
+| STS-0.23 | 2026-02-11 | Showcase photos integration: collections use showcase photos, main page uses any images from root, all image formats supported (jpg, png, jpeg, webp, gif) |
 
 ## How to Increment Version
 
