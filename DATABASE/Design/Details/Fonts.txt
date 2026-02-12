@@ -1,4 +1,4 @@
-titleFont: Montserrat
-bodyFont: Montserrat
-titleFontUrl: https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap
-bodyFontUrl: https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap
+titleFont: Kors Sans Agate
+bodyFont: Kors Sans Light
+titleFontUrl: /fonts/kors-sans.css
+bodyFontUrl: /fonts/kors-sans.css
