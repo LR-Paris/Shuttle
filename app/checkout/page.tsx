@@ -102,6 +102,16 @@ export default function CheckoutPage() {
 
       const result = await response.json();
 
+      // Save order data for receipt download on success page
+      sessionStorage.setItem('lastOrder', JSON.stringify({
+        orderId: result.orderId,
+        date: new Date().toISOString(),
+        name: `${firstName} ${lastName}`,
+        company,
+        items: cart.items,
+        total: cart.total,
+      }));
+
       // Clear cart
       clearCart();
       window.dispatchEvent(new Event('cartUpdated'));
