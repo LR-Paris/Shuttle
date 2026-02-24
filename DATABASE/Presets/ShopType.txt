@@ -1,0 +1,11 @@
+# Shop Type Configuration
+# Controls the checkout behavior of this Shuttle store.
+#
+# Options:
+#   free   - Basic free shop. No payment or PO required. (Default if this file/folder is missing)
+#   po     - Purchase Order shop. Requires user to upload a PO PDF at checkout.
+#   stripe - Stripe integration. (Coming soon - not yet implemented)
+#
+# Only one value should be set below:
+
+type: free

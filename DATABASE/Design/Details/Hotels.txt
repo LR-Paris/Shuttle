@@ -1,0 +1,10 @@
+# Hotel List
+# One hotel per line. These will appear in a dropdown during checkout
+# when hotel_list is enabled in DATABASE/Presets/DataRequired.txt.
+# Lines starting with # are comments and will be ignored.
+# Empty lines are ignored.
+#
+# Format: Hotel Name - Address (or any format you prefer)
+# Example:
+# The Plaza Hotel - 768 5th Ave, New York, NY 10019
+# Marriott Marquis - 1535 Broadway, New York, NY 10036

@@ -18,6 +18,7 @@
  * - STS-0.22 - Use logo as favicon, dynamic page titles, capitalize From label
  * - STS-0.23 - Showcase photos integration: collections use showcase photos, main page uses any images from root, all image formats supported (jpg, png, jpeg, webp, gif)
  * - STS-0.24 - PDF receipt download on order success page, removed false email confirmation promise
+ * - STS-2.00 - Shop type system (free/po/stripe), DATABASE/Presets config, DataRequired toggles, Hotel list feature, PO upload support, backward-compatible CSV migration
  *
  * To increment version:
  * 1. Update VERSION constant below
@@ -26,14 +27,14 @@
  * 4. Commit with version number in commit message
  */
 
-export const VERSION = 'STS-0.24';
+export const VERSION = 'STS-2.00';
 
 export const VERSION_INFO = {
   name: 'Shop Template System',
   version: VERSION,
-  codename: 'Alpha',
-  releaseDate: '2026-02-12',
-  description: 'Folder-driven B2B storefront system',
+  codename: 'Presets',
+  releaseDate: '2026-02-24',
+  description: 'Folder-driven B2B storefront system with configurable shop types',
   attribution: 'Built with LR Paris Shuttle',
 };
 
