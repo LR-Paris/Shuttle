@@ -1,0 +1,15 @@
+# Data Required Configuration
+# Controls which fields are shown/required during checkout.
+# Each toggle can be: true or false
+#
+# address        - Show shipping address fields (address, city, state, zip, country)
+# details        - Show contact detail fields (email, phone, company)
+# extra_notes    - Show the "Order Notes" text area
+# shipping_handler - Show the freight/shipping handler selection
+# hotel_list     - Show a hotel selection dropdown (hotels defined in DATABASE/Design/Details/Hotels.txt)
+
+address: true
+details: true
+extra_notes: true
+shipping_handler: true
+hotel_list: false
