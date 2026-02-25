@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import FadeImage from '@/components/FadeImage';
 
 export default function Home() {
   const [design, setDesign] = useState<any>(null);
@@ -54,21 +55,23 @@ export default function Home() {
                 opacity: index === currentHeroIndex ? 1 : 0,
               }}
             >
-              <img
+              <FadeImage
                 src={image}
                 alt={`Hero ${index + 1}`}
                 className="w-full h-full object-cover"
+                placeholderColor="#1a1a1a"
               />
             </div>
           ))}
           <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
             <div className="text-center text-white px-4">
               {design.logoWhitePath ? (
-                <img
+                <FadeImage
                   src={design.logoWhitePath}
                   alt={design.companyName}
                   className="w-auto mx-auto mb-4"
                   style={{ height: '4.5rem', objectFit: 'contain' }}
+                  placeholderColor="transparent"
                 />
               ) : (
                 <h1
@@ -182,7 +185,7 @@ export default function Home() {
                   {/* Showcase Image */}
                   {showcaseImage && (
                     <div className="relative w-full bg-gray-100 overflow-hidden border-b" style={{ borderColor: design.colors.border }}>
-                      <img
+                      <FadeImage
                         src={showcaseImage}
                         alt={collection.name}
                         className="w-full h-auto object-cover"

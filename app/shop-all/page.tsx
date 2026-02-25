@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import FadeImage from '@/components/FadeImage';
 
 type SortOption = 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc' | 'units-asc' | 'units-desc' | 'total-asc' | 'total-desc';
 
@@ -133,7 +134,7 @@ export default function ShopAllPage() {
           >
             {product.images.length > 0 ? (
               <div className="aspect-square bg-gray-100 relative border-b" style={{ borderColor: design.colors.border }}>
-                <img
+                <FadeImage
                   src={product.images[0]}
                   alt={product.name}
                   className="w-full h-full object-contain p-4"

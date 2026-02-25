@@ -474,7 +474,7 @@ export default function CheckoutPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-semibold mb-2" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
-                      Upload PO Document *
+                      Upload PO Document (PDF, HTML, TXT, or Word) *
                     </label>
                     <input
                       ref={poFileRef}

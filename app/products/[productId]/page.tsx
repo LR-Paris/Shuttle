@@ -4,6 +4,7 @@ import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { addToCart } from '@/lib/cart';
+import FadeImage from '@/components/FadeImage';
 
 interface Product {
   id: string;
@@ -126,7 +127,8 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
           {product.images.length > 0 ? (
             <>
               <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-4 border" style={{ borderColor: design.colors.border }}>
-                <img
+                <FadeImage
+                  key={selectedImage}
                   src={product.images[selectedImage]}
                   alt={product.name}
                   className="w-full h-full object-contain p-4"
@@ -143,10 +145,11 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
                         borderColor: index === selectedImage ? design.colors.secondary : design.colors.border,
                       }}
                     >
-                      <img
+                      <FadeImage
                         src={image}
                         alt={`${product.name} ${index + 1}`}
                         className="w-full h-full object-contain p-1"
+                        fadeDuration={300}
                       />
                     </button>
                   ))}
