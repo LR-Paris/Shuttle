@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import FadeImage from '@/components/FadeImage';
 
 export default function Home() {
   const [design, setDesign] = useState<any>(null);
@@ -45,7 +46,7 @@ export default function Home() {
     <div>
       {/* Hero Section with Showcase Images */}
       {hasHeroImages ? (
-        <div className="relative w-full h-[500px] mb-16 overflow-hidden">
+        <div className="relative w-full h-[500px] mb-16 overflow-hidden bg-gray-200">
           {design.heroImages.map((image: string, index: number) => (
             <div
               key={image}
@@ -54,7 +55,7 @@ export default function Home() {
                 opacity: index === currentHeroIndex ? 1 : 0,
               }}
             >
-              <img
+              <FadeImage
                 src={image}
                 alt={`Hero ${index + 1}`}
                 className="w-full h-full object-cover"
@@ -182,7 +183,7 @@ export default function Home() {
                   {/* Showcase Image */}
                   {showcaseImage && (
                     <div className="relative w-full bg-gray-100 overflow-hidden border-b" style={{ borderColor: design.colors.border }}>
-                      <img
+                      <FadeImage
                         src={showcaseImage}
                         alt={collection.name}
                         className="w-full h-auto object-cover"

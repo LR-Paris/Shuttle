@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState, useMemo } from 'react';
+import FadeImage from '@/components/FadeImage';
 
 interface CollectionCardProps {
   collection: {
@@ -46,7 +47,7 @@ export default function CollectionCard({ collection, design, tick }: CollectionC
       {/* Image Carousel */}
       {images.length > 0 && hasShowcase ? (
         <div className="relative w-full bg-gray-100 overflow-hidden border-b" style={{ borderColor: design.colors.border }}>
-          <img
+          <FadeImage
             src={images[0]}
             alt={`${collection.name} showcase`}
             className="w-full h-auto object-cover"
@@ -63,7 +64,7 @@ export default function CollectionCard({ collection, design, tick }: CollectionC
                 opacity: index === currentImageIndex ? 1 : 0,
               }}
             >
-              <img
+              <FadeImage
                 src={image}
                 alt={`${collection.name} product ${index + 1}`}
                 className="w-full h-full object-contain p-4"

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import FadeImage from '@/components/FadeImage';
 
 type SortOption = 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc' | 'units-asc' | 'units-desc' | 'total-asc' | 'total-desc';
 
@@ -97,7 +98,7 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
       {/* Collection Hero Carousel */}
       {collectionImages.length > 0 && hasShowcaseImage ? (
         <div className="relative w-full mb-8 overflow-hidden bg-gray-100">
-          <img
+          <FadeImage
             src={collectionImages[0]}
             alt={collection.name}
             className="w-full h-auto object-cover"
@@ -122,7 +123,7 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
                 opacity: index === currentImageIndex ? 1 : 0,
               }}
             >
-              <img
+              <FadeImage
                 src={image}
                 alt={`Collection item ${index + 1}`}
                 className="w-full h-full object-contain"
@@ -231,7 +232,7 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
             >
               {product.images.length > 0 ? (
                 <div className="aspect-square bg-gray-100 relative border-b" style={{ borderColor: design.colors.border }}>
-                  <img
+                  <FadeImage
                     src={product.images[0]}
                     alt={product.name}
                     className="w-full h-full object-contain p-4"
