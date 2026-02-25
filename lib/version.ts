@@ -21,6 +21,7 @@
  * - STS-2.00 - Shop type system (free/po/stripe), DATABASE/Presets config, DataRequired toggles, Hotel list feature, PO upload support, backward-compatible CSV migration
  * - STS-2.01 - PO uploads accept HTML/TXT/Word files, hotel selection fix, name and email always required
  * - STS-2.02 - Image fade-in loading with placeholder color blocks across all pages
+ * - STS-2.03 - Version bump
  *
  * To increment version:
  * 1. Update VERSION constant below
@@ -29,7 +30,7 @@
  * 4. Commit with version number in commit message
  */
 
-export const VERSION = 'STS-2.02';
+export const VERSION = 'STS-2.03';
 
 export const VERSION_INFO = {
   name: 'Shop Template System',
