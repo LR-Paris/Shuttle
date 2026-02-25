@@ -17,10 +17,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate it's a PDF
-    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+    // Validate file type - accept PDF, HTML, TXT, and Word documents
+    const allowedTypes = [
+      'application/pdf',
+      'text/html',
+      'text/plain',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
+    const allowedExtensions = ['.pdf', '.html', '.htm', '.txt', '.doc', '.docx'];
+    const fileExtension = path.extname(file.name).toLowerCase();
+
+    if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
       return NextResponse.json(
-        { error: 'Only PDF files are accepted for Purchase Orders' },
+        { error: 'Only PDF, HTML, TXT, and Word (.doc/.docx) files are accepted for Purchase Orders' },
         { status: 400 }
       );
     }
@@ -33,15 +43,16 @@ export async function POST(request: NextRequest) {
       fs.mkdirSync(ordersDir, { recursive: true });
     }
 
-    // Save PO file as <orderId>.pdf in the Orders folder
-    const filePath = path.join(ordersDir, `${safeOrderId}.pdf`);
+    // Save PO file with its original extension in the Orders folder
+    const ext = allowedExtensions.includes(fileExtension) ? fileExtension : '.pdf';
+    const filePath = path.join(ordersDir, `${safeOrderId}${ext}`);
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     fs.writeFileSync(filePath, buffer);
 
     return NextResponse.json({
       success: true,
-      filename: `${safeOrderId}.pdf`,
+      filename: `${safeOrderId}${ext}`,
     });
   } catch (error) {
     console.error('Error uploading PO file:', error);

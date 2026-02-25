@@ -112,6 +112,18 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
+      // Validate required fields: name and email
+      if (!firstName.trim() || !lastName.trim()) {
+        alert('Please enter your first and last name.');
+        setIsSubmitting(false);
+        return;
+      }
+      if (!email.trim()) {
+        alert('Please enter your email address.');
+        setIsSubmitting(false);
+        return;
+      }
+
       // For PO shop type, validate PO fields
       if (presets?.shopType === 'po') {
         if (!poNumber) {
@@ -120,7 +132,7 @@ export default function CheckoutPage() {
           return;
         }
         if (!poFile) {
-          alert('Please upload a Purchase Order PDF file.');
+          alert('Please upload a Purchase Order file (PDF, HTML, TXT, or Word).');
           setIsSubmitting(false);
           return;
         }
@@ -132,7 +144,7 @@ export default function CheckoutPage() {
 
       const orderData = {
         name: `${firstName} ${lastName}`,
-        email: presets?.dataRequired.details ? email : '',
+        email,
         phone: presets?.dataRequired.details ? phone : '',
         company: presets?.dataRequired.details ? company : '',
         shippingAddress,
@@ -232,7 +244,7 @@ export default function CheckoutPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold mb-2" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
-                    First name
+                    First name *
                   </label>
                   <input
                     type="text"
@@ -245,7 +257,7 @@ export default function CheckoutPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-2" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
-                    Last name
+                    Last name *
                   </label>
                   <input
                     type="text"
@@ -256,21 +268,21 @@ export default function CheckoutPage() {
                     style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
                   />
                 </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-semibold mb-2" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-4 py-2 border focus:outline-none focus:ring-2"
+                    style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
+                  />
+                </div>
                 {dr.details && (
                   <>
-                    <div>
-                      <label className="block text-sm font-semibold mb-2" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-4 py-2 border focus:outline-none focus:ring-2"
-                        style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
-                      />
-                    </div>
                     <div>
                       <label className="block text-sm font-semibold mb-2" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
                         Phone
@@ -284,7 +296,7 @@ export default function CheckoutPage() {
                         style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
                       />
                     </div>
-                    <div className="md:col-span-2">
+                    <div>
                       <label className="block text-sm font-semibold mb-2" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
                         Company
                       </label>
@@ -400,29 +412,41 @@ export default function CheckoutPage() {
             )}
 
             {/* Hotel Selection - conditional on hotel_list toggle */}
-            {dr.hotel_list && presets.hotelList.length > 0 && (
+            {dr.hotel_list && (
               <div className="border p-6" style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px` }}>
                 <h2 className="text-2xl font-bold mb-4" style={{ color: design.colors.primary, fontFamily: design.fonts.titleFont }}>
                   Hotel Selection
                 </h2>
                 <div>
                   <label className="block text-sm font-semibold mb-2" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
-                    Select your hotel
+                    {presets.hotelList.length > 0 ? 'Select your hotel' : 'Enter your hotel'}
                   </label>
-                  <select
-                    required
-                    value={hotelSelection}
-                    onChange={(e) => setHotelSelection(e.target.value)}
-                    className="w-full px-4 py-2 border focus:outline-none focus:ring-2 bg-white"
-                    style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
-                  >
-                    <option value="">-- Select a hotel --</option>
-                    {presets.hotelList.map((hotel, index) => (
-                      <option key={index} value={hotel}>
-                        {hotel}
-                      </option>
-                    ))}
-                  </select>
+                  {presets.hotelList.length > 0 ? (
+                    <select
+                      required
+                      value={hotelSelection}
+                      onChange={(e) => setHotelSelection(e.target.value)}
+                      className="w-full px-4 py-2 border focus:outline-none focus:ring-2 bg-white"
+                      style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
+                    >
+                      <option value="">-- Select a hotel --</option>
+                      {presets.hotelList.map((hotel, index) => (
+                        <option key={index} value={hotel}>
+                          {hotel}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      required
+                      value={hotelSelection}
+                      onChange={(e) => setHotelSelection(e.target.value)}
+                      className="w-full px-4 py-2 border focus:outline-none focus:ring-2"
+                      style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
+                      placeholder="Enter your hotel name"
+                    />
+                  )}
                 </div>
               </div>
             )}
@@ -450,19 +474,19 @@ export default function CheckoutPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-semibold mb-2" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
-                      Upload PO Document (PDF) *
+                      Upload PO Document *
                     </label>
                     <input
                       ref={poFileRef}
                       type="file"
                       required
-                      accept=".pdf,application/pdf"
+                      accept=".pdf,.html,.htm,.txt,.doc,.docx,application/pdf,text/html,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                       onChange={(e) => setPoFile(e.target.files?.[0] || null)}
                       className="w-full px-4 py-2 border focus:outline-none focus:ring-2"
                       style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
                     />
                     <p className="text-xs mt-1" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
-                      Please upload your signed Purchase Order as a PDF file.
+                      Accepted formats: PDF, HTML, TXT, Word (.doc/.docx)
                     </p>
                   </div>
                   {poFile && (
