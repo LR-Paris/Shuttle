@@ -9,7 +9,8 @@ This is the core data storage folder for the entire B2B storefront system. All p
 DATABASE/
 ├── ShopCollections/     # All product collections and individual products
 ├── Design/              # Visual design, branding, and assets
-└── Orders/              # Customer orders (generated automatically)
+├── Orders/              # Customer orders and PO files (generated automatically)
+└── Presets/             # Shop type and checkout configuration (optional)
 ```
 
 ## How It Works
@@ -18,6 +19,7 @@ The system reads from this folder structure at runtime to:
 1. **Display products** - Reads from `ShopCollections/`
 2. **Apply branding** - Reads from `Design/`
 3. **Store orders** - Writes to `Orders/`
+4. **Configure shop behavior** - Reads from `Presets/` (if present, otherwise defaults to free shop)
 
 ## File Format Support
 
@@ -44,6 +46,13 @@ The system automatically detects and serves images in any of these formats.
 1. Add images to `Design/ShowcasePhotos/`
 2. Follow the naming convention in `Design/ShowcasePhotos/README.md`
 
+### To configure shop type and checkout fields:
+1. Edit `Presets/ShopType.txt` to set `type: free`, `type: po`, or `type: stripe`
+2. Edit `Presets/DataRequired.txt` to toggle checkout fields on/off
+3. If `hotel_list: true`, add hotel names (one per line) to `Design/Details/Hotels.txt`
+4. If Presets folder is missing, the shop defaults to a free shop with all checkout fields enabled
+5. See `Presets/README.md` for full documentation
+
 ## Important Rules
 
 1. **Folder names become IDs** - Collection and product folder names are converted to URL-safe slugs
@@ -65,4 +74,5 @@ When working with this system:
 Read the README files in each subfolder:
 - `ShopCollections/README.md` - Product catalog structure
 - `Design/README.md` - Branding and visual design
-- `Orders/README.md` - Order storage format
+- `Orders/README.md` - Order storage format (CSV + PO files)
+- `Presets/README.md` - Shop type and checkout configuration
