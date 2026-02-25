@@ -90,10 +90,17 @@ export async function POST(request: NextRequest) {
   try {
     const orderData: OrderData = await request.json();
 
-    // Validate required fields — name is always required
+    // Validate required fields — name and email are always required
     if (!orderData.name) {
       return NextResponse.json(
         { error: 'Missing required field: name' },
+        { status: 400 }
+      );
+    }
+
+    if (!orderData.email) {
+      return NextResponse.json(
+        { error: 'Missing required field: email' },
         { status: 400 }
       );
     }
@@ -116,10 +123,10 @@ export async function POST(request: NextRequest) {
       ? `Own: ${orderData.freightCompany} (${orderData.freightAccount}) - ${orderData.freightContact}`
       : orderData.freightOption ? 'LR Paris' : '';
 
-    // Determine PO file reference
+    // Determine PO file reference (extension stored after upload completes)
     const shopType = orderData.shopType || 'free';
     const poNumber = orderData.poNumber || '';
-    const poFile = shopType === 'po' && poNumber ? `${orderId}.pdf` : '';
+    const poFileRef = shopType === 'po' && poNumber ? `${orderId} (see Orders folder)` : '';
     const hotelSelection = orderData.hotelSelection || '';
 
     // Create CSV row with new columns
@@ -140,7 +147,7 @@ export async function POST(request: NextRequest) {
       escapeCSVField(orderData.total.toFixed(2)),
       escapeCSVField(shopType),
       escapeCSVField(poNumber),
-      escapeCSVField(poFile),
+      escapeCSVField(poFileRef),
       escapeCSVField(hotelSelection),
     ].join(',');
 
