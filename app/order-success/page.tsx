@@ -16,6 +16,7 @@ interface DesignData {
     success: string;
   };
   companyName: string;
+  contactEmail: string;
 }
 
 interface OrderItem {
@@ -162,6 +163,9 @@ function OrderSuccessContent() {
   const orderId = searchParams.get('orderId');
   const [design, setDesign] = useState<DesignData | null>(null);
   const [lastOrder, setLastOrder] = useState<LastOrder | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [cancelled, setCancelled] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/design')
@@ -188,10 +192,103 @@ function OrderSuccessContent() {
     URL.revokeObjectURL(url);
   };
 
+  const handleCancelOrder = async () => {
+    if (!orderId) return;
+
+    const confirmed = window.confirm(
+      'Are you sure you want to cancel this order? This action cannot be undone.'
+    );
+    if (!confirmed) return;
+
+    setIsCancelling(true);
+    setCancelError(null);
+
+    try {
+      const response = await fetch('/api/orders/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setCancelError(result.error || 'Failed to cancel order');
+        return;
+      }
+
+      setCancelled(true);
+      sessionStorage.removeItem('lastOrder');
+    } catch {
+      setCancelError('Failed to cancel order. Please try again.');
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
   if (!design) {
     return (
       <div className="container mx-auto px-4 py-12">
         <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (cancelled) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-2xl mx-auto text-center">
+          <div
+            className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
+            style={{ backgroundColor: '#DC2626' }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-12 w-12 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </div>
+
+          <h1 className="text-4xl font-bold mb-4" style={{ color: design.colors.primary }}>
+            Order Cancelled
+          </h1>
+
+          <p className="text-xl mb-2" style={{ color: design.colors.text }}>
+            Your order has been cancelled and inventory has been restored.
+          </p>
+
+          {orderId && (
+            <p className="text-lg mb-8" style={{ color: design.colors.textLight }}>
+              Order ID: <span className="font-semibold">{orderId}</span>
+            </p>
+          )}
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/"
+              className="px-8 py-3 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity"
+              style={{ backgroundColor: design.colors.secondary }}
+            >
+              Return to Home
+            </Link>
+            <Link
+              href="/collections"
+              className="px-8 py-3 border rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+              style={{ borderColor: design.colors.border, color: design.colors.primary }}
+            >
+              Continue Shopping
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
@@ -265,15 +362,38 @@ function OrderSuccessContent() {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span>We'll arrange shipping according to your freight preferences.</span>
+              <span>We&apos;ll arrange shipping according to your freight preferences.</span>
             </li>
           </ul>
+        </div>
+
+        {/* Contact email + 2-hour edit window notice */}
+        <div
+          className="border rounded-lg p-6 mb-8 text-left"
+          style={{ borderColor: design.colors.border, backgroundColor: '#FFFBEB' }}
+        >
+          <p className="text-sm" style={{ color: design.colors.text }}>
+            Need to make changes? You have a <strong>2-hour window</strong> to cancel your order using the button below.
+            {design.contactEmail && (
+              <>
+                {' '}After that, please contact{' '}
+                <a
+                  href={`mailto:${design.contactEmail}`}
+                  className="underline font-semibold"
+                  style={{ color: design.colors.secondary }}
+                >
+                  {design.contactEmail}
+                </a>{' '}
+                to request changes.
+              </>
+            )}
+          </p>
         </div>
 
         {lastOrder && (
           <button
             onClick={handleDownloadReceipt}
-            className="w-full mb-6 px-8 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity text-white"
+            className="w-full mb-4 px-8 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity text-white"
             style={{ backgroundColor: design.colors.primary }}
           >
             <svg
@@ -287,6 +407,46 @@ function OrderSuccessContent() {
             </svg>
             Download PDF Receipt
           </button>
+        )}
+
+        {/* Cancel Order Button */}
+        {orderId && (
+          <button
+            onClick={handleCancelOrder}
+            disabled={isCancelling}
+            className="w-full mb-6 px-8 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity border"
+            style={{
+              borderColor: '#DC2626',
+              color: '#DC2626',
+              backgroundColor: 'transparent',
+            }}
+          >
+            {isCancelling ? (
+              'Cancelling...'
+            ) : (
+              <>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Cancel Order
+              </>
+            )}
+          </button>
+        )}
+
+        {cancelError && (
+          <div
+            className="mb-6 p-4 rounded-lg text-sm"
+            style={{ backgroundColor: '#FEF2F2', color: '#DC2626' }}
+          >
+            {cancelError}
+          </div>
         )}
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">

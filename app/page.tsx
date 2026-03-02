@@ -161,7 +161,7 @@ export default function Home() {
 
       <div className="container mx-auto px-4 py-12">
         {/* About Section */}
-        <div className="mb-16 max-w-3xl mx-auto">
+        <div className="mb-16 max-w-3xl mx-auto text-center">
           <h2
             className="text-3xl font-bold mb-4"
             style={{
