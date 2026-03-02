@@ -194,25 +194,29 @@ export default function Header({
               >
                 About
               </Link>
-              <Link
-                href="/collections"
-                className="block py-2 text-white hover:opacity-80 transition-opacity"
-                style={{ fontFamily: bodyFont }}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Collections
-              </Link>
-              {collections.map((collection) => (
-                <Link
-                  key={collection.id}
-                  href={`/collections/${collection.id}`}
-                  className="block py-2 pl-4 text-white hover:opacity-80 transition-opacity text-sm"
-                  style={{ fontFamily: bodyFont }}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {collection.name}
-                </Link>
-              ))}
+              {collections.length > 1 && (
+                <>
+                  <Link
+                    href="/collections"
+                    className="block py-2 text-white hover:opacity-80 transition-opacity"
+                    style={{ fontFamily: bodyFont }}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Collections
+                  </Link>
+                  {collections.map((collection) => (
+                    <Link
+                      key={collection.id}
+                      href={`/collections/${collection.id}`}
+                      className="block py-2 pl-4 text-white hover:opacity-80 transition-opacity text-sm"
+                      style={{ fontFamily: bodyFont }}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {collection.name}
+                    </Link>
+                  ))}
+                </>
+              )}
               <Link
                 href="/shop-all"
                 className="block py-2 text-white hover:opacity-80 transition-opacity"
@@ -250,63 +254,65 @@ export default function Header({
             >
               About
             </Link>
-            {/* Collections Dropdown */}
-            <div
-              className="relative"
-              onMouseEnter={() => setShowDropdown(true)}
-              onMouseLeave={() => setShowDropdown(false)}
-            >
-              <button
-                className="text-white hover:opacity-80 transition-opacity flex items-center space-x-1"
-                style={{ fontFamily: bodyFont }}
+            {/* Collections Dropdown - hidden when single collection */}
+            {collections.length > 1 && (
+              <div
+                className="relative"
+                onMouseEnter={() => setShowDropdown(true)}
+                onMouseLeave={() => setShowDropdown(false)}
               >
-                <span>Collections</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+                <button
+                  className="text-white hover:opacity-80 transition-opacity flex items-center space-x-1"
+                  style={{ fontFamily: bodyFont }}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-              {showDropdown && (
-                <div
-                  className="absolute top-full left-0 w-56 shadow-lg pt-2 pb-2 z-50"
-                  style={{
-                    backgroundColor: 'white',
-                    borderRadius: `${cornerRadius}px`,
-                    marginTop: '2px'
-                  }}
-                  onMouseEnter={() => setShowDropdown(true)}
-                  onMouseLeave={() => setShowDropdown(false)}
-                >
-                  <Link
-                    href="/collections"
-                    className="block px-4 py-2 hover:bg-gray-100 transition-colors"
-                    style={{ fontFamily: bodyFont, color: primaryColor }}
+                  <span>Collections</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                   >
-                    All Collections
-                  </Link>
-                  {collections.map((collection) => (
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+                {showDropdown && (
+                  <div
+                    className="absolute top-full left-0 w-56 shadow-lg pt-2 pb-2 z-50"
+                    style={{
+                      backgroundColor: 'white',
+                      borderRadius: `${cornerRadius}px`,
+                      marginTop: '2px'
+                    }}
+                    onMouseEnter={() => setShowDropdown(true)}
+                    onMouseLeave={() => setShowDropdown(false)}
+                  >
                     <Link
-                      key={collection.id}
-                      href={`/collections/${collection.id}`}
+                      href="/collections"
                       className="block px-4 py-2 hover:bg-gray-100 transition-colors"
                       style={{ fontFamily: bodyFont, color: primaryColor }}
                     >
-                      {collection.name}
+                      All Collections
                     </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+                    {collections.map((collection) => (
+                      <Link
+                        key={collection.id}
+                        href={`/collections/${collection.id}`}
+                        className="block px-4 py-2 hover:bg-gray-100 transition-colors"
+                        style={{ fontFamily: bodyFont, color: primaryColor }}
+                      >
+                        {collection.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             <Link
               href="/shop-all"
               className="text-white hover:opacity-80 transition-opacity"
