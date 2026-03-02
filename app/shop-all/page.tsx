@@ -10,12 +10,14 @@ export default function ShopAllPage() {
   const [design, setDesign] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>('name-asc');
+  const [stockMap, setStockMap] = useState<Record<string, number>>({});
 
   useEffect(() => {
     async function loadData() {
-      const [designResponse, collectionsResponse] = await Promise.all([
+      const [designResponse, collectionsResponse, inventoryResponse] = await Promise.all([
         fetch('/api/design'),
-        fetch('/api/collections')
+        fetch('/api/collections'),
+        fetch('/api/inventory').catch(() => null),
       ]);
 
       const designData = await designResponse.json();
@@ -23,6 +25,14 @@ export default function ShopAllPage() {
 
       setDesign(designData);
       document.title = `${designData.companyName} - Shop All`;
+
+      // Build stock map from inventory
+      if (inventoryResponse?.ok) {
+        const inventoryData = await inventoryResponse.json();
+        const map: Record<string, number> = {};
+        inventoryData.forEach((item: any) => { map[item.productId] = item.stock; });
+        setStockMap(map);
+      }
 
       // Flatten all products from all collections
       const allProducts: any[] = [];
@@ -122,102 +132,131 @@ export default function ShopAllPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {sortedProducts.map((product: any) => (
-          <Link
-            key={product.id}
-            href={`/products/${product.id}?from=shop-all`}
-            className="border overflow-hidden hover:shadow-lg transition-shadow"
-            style={{
-              borderColor: design.colors.border,
-              borderRadius: `${design.style.cornerRadius}px`,
-            }}
-          >
-            {product.images.length > 0 ? (
-              <div className="aspect-square bg-gray-100 relative border-b" style={{ borderColor: design.colors.border }}>
-                <FadeImage
-                  src={product.images[0]}
-                  alt={product.name}
-                  className="w-full h-full object-contain p-4"
-                />
-              </div>
-            ) : (
-              <div className="aspect-square bg-gray-100 flex items-center justify-center border-b" style={{ borderColor: design.colors.border }}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-16 w-16 text-gray-300"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+        {sortedProducts.map((product: any) => {
+          const stock = stockMap[product.id] ?? null;
+          const isOutOfStock = stock !== null && stock <= 0;
+          const isLowStock = stock !== null && stock > 0 && stock <= 5;
+
+          return (
+            <Link
+              key={product.id}
+              href={`/products/${product.id}?from=shop-all`}
+              className="border overflow-hidden hover:shadow-lg transition-shadow"
+              style={{
+                borderColor: design.colors.border,
+                borderRadius: `${design.style.cornerRadius}px`,
+                opacity: isOutOfStock ? 0.6 : 1,
+              }}
+            >
+              {product.images.length > 0 ? (
+                <div className="aspect-square bg-gray-100 relative border-b" style={{ borderColor: design.colors.border }}>
+                  <FadeImage
+                    src={product.images[0]}
+                    alt={product.name}
+                    className="w-full h-full object-contain p-4"
                   />
-                </svg>
-              </div>
-            )}
-            <div className="p-4">
-              <h3
-                className="font-bold text-lg mb-1"
-                style={{
-                  color: design.colors.primary,
-                  fontFamily: design.fonts.titleFont,
-                }}
-              >
-                {product.name}
-              </h3>
-              <p
-                className="text-xs mb-2 italic"
-                style={{
-                  color: design.colors.secondary,
-                  fontFamily: design.fonts.bodyFont,
-                }}
-              >
-                From {product.collectionName}
-              </p>
-              <p
-                className="text-sm mb-2"
-                style={{
-                  color: design.colors.textLight,
-                  fontFamily: design.fonts.bodyFont,
-                }}
-              >
-                SKU: {product.sku}
-              </p>
-              <div className="mb-2">
-                <p
-                  className="text-sm font-semibold"
+                  {stock !== null && (
+                    <span
+                      className="absolute top-2 right-2 text-xs font-semibold px-2 py-1 rounded"
+                      style={{
+                        backgroundColor: isOutOfStock ? '#DC2626' : isLowStock ? design.colors.secondary : design.colors.success,
+                        color: '#FFFFFF',
+                      }}
+                    >
+                      {isOutOfStock ? 'Out of Stock' : isLowStock ? 'Low Stock' : 'In Stock'}
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <div className="aspect-square bg-gray-100 flex items-center justify-center border-b relative" style={{ borderColor: design.colors.border }}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-16 w-16 text-gray-300"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  {stock !== null && (
+                    <span
+                      className="absolute top-2 right-2 text-xs font-semibold px-2 py-1 rounded"
+                      style={{
+                        backgroundColor: isOutOfStock ? '#DC2626' : isLowStock ? design.colors.secondary : design.colors.success,
+                        color: '#FFFFFF',
+                      }}
+                    >
+                      {isOutOfStock ? 'Out of Stock' : isLowStock ? 'Low Stock' : 'In Stock'}
+                    </span>
+                  )}
+                </div>
+              )}
+              <div className="p-4">
+                <h3
+                  className="font-bold text-lg mb-1"
                   style={{
-                    color: design.colors.text,
-                    fontFamily: design.fonts.bodyFont,
-                  }}
-                >
-                  Box of {product.unitsPerBox} units
-                </p>
-                <p
-                  className="text-2xl font-bold"
-                  style={{
-                    color: design.colors.secondary,
+                    color: design.colors.primary,
                     fontFamily: design.fonts.titleFont,
                   }}
                 >
-                  ${product.boxCost.toFixed(2)}
+                  {product.name}
+                </h3>
+                <p
+                  className="text-xs mb-2 italic"
+                  style={{
+                    color: design.colors.secondary,
+                    fontFamily: design.fonts.bodyFont,
+                  }}
+                >
+                  From {product.collectionName}
                 </p>
                 <p
-                  className="text-sm"
+                  className="text-sm mb-2"
                   style={{
                     color: design.colors.textLight,
                     fontFamily: design.fonts.bodyFont,
                   }}
                 >
-                  ${product.itemCost.toFixed(2)} per unit
+                  SKU: {product.sku}
                 </p>
+                <div className="mb-2">
+                  <p
+                    className="text-sm font-semibold"
+                    style={{
+                      color: design.colors.text,
+                      fontFamily: design.fonts.bodyFont,
+                    }}
+                  >
+                    Box of {product.unitsPerBox} units
+                  </p>
+                  <p
+                    className="text-2xl font-bold"
+                    style={{
+                      color: design.colors.secondary,
+                      fontFamily: design.fonts.titleFont,
+                    }}
+                  >
+                    ${product.boxCost.toFixed(2)}
+                  </p>
+                  <p
+                    className="text-sm"
+                    style={{
+                      color: design.colors.textLight,
+                      fontFamily: design.fonts.bodyFont,
+                    }}
+                  >
+                    ${product.itemCost.toFixed(2)} per unit
+                  </p>
+                </div>
               </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
