@@ -25,6 +25,7 @@
  * - STS-2.04 - Inventory tracking via CSV, stock display on product pages, auto-deduction on order placement
  * - STS-2.05 - White footer logo, single-collection auto-detection for streamlined shop experience
  * - STS-2.6.0 - Inventory tracking improvements, cart stock validation, order cancellation with 2-hour window, contact email, centered About Us
+ * - STS-2.6.1 - Stock badges on product cards now show actual box count (e.g. "12 boxes left", "Only 3 left")
  *
  * To increment version:
  * 1. Update VERSION constant below
@@ -33,14 +34,14 @@
  * 4. Commit with version number in commit message
  */
 
-export const VERSION = 'STS-2.6.0';
+export const VERSION = 'STS-2.6.1';
 
 export const VERSION_INFO = {
   name: 'Shop Template System',
   version: VERSION,
   codename: 'Guardian',
   releaseDate: '2026-03-02',
-  description: 'Inventory tracking improvements, cart stock validation, order cancellation, and contact email support',
+  description: 'Stock badges now show actual box counts on all product cards',
   attribution: 'Built with LR Paris Shuttle',
 };
 

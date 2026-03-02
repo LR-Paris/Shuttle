@@ -261,7 +261,7 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
                           color: '#FFFFFF',
                         }}
                       >
-                        {isOutOfStock ? 'Out of Stock' : isLowStock ? 'Low Stock' : 'In Stock'}
+                        {isOutOfStock ? 'Out of Stock' : isLowStock ? `Only ${stock} left` : `${stock} boxes left`}
                       </span>
                     )}
                   </div>
@@ -289,7 +289,7 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
                           color: '#FFFFFF',
                         }}
                       >
-                        {isOutOfStock ? 'Out of Stock' : isLowStock ? 'Low Stock' : 'In Stock'}
+                        {isOutOfStock ? 'Out of Stock' : isLowStock ? `Only ${stock} left` : `${stock} boxes left`}
                       </span>
                     )}
                   </div>
