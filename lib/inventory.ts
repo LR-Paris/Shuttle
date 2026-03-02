@@ -159,6 +159,27 @@ export function deductStock(items: { productId: string; quantity: number }[]): v
 }
 
 /**
+ * Restore stock for cancelled order items. Updates Last Updated timestamp.
+ * Non-blocking: if a product is not found, it's skipped with a warning.
+ */
+export function restoreStock(items: { productId: string; quantity: number }[]): void {
+  const records = getInventory();
+  const now = new Date().toISOString();
+
+  for (const item of items) {
+    const record = records.find(r => r.productId === item.productId);
+    if (!record) {
+      console.warn(`Inventory: product ${item.productId} not found, skipping restoration`);
+      continue;
+    }
+    record.stock = record.stock + item.quantity;
+    record.lastUpdated = now;
+  }
+
+  fs.writeFileSync(INVENTORY_CSV, serializeInventory(records), 'utf-8');
+}
+
+/**
  * Seed inventory CSV from the product catalog.
  * Only adds products that are not already in the inventory.
  * Existing rows are preserved.

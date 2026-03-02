@@ -24,6 +24,7 @@
  * - STS-2.03 - Version bump
  * - STS-2.04 - Inventory tracking via CSV, stock display on product pages, auto-deduction on order placement
  * - STS-2.05 - White footer logo, single-collection auto-detection for streamlined shop experience
+ * - STS-2.6.0 - Inventory tracking improvements, cart stock validation, order cancellation with 2-hour window, contact email, centered About Us
  *
  * To increment version:
  * 1. Update VERSION constant below
@@ -32,14 +33,14 @@
  * 4. Commit with version number in commit message
  */
 
-export const VERSION = 'STS-2.05';
+export const VERSION = 'STS-2.6.0';
 
 export const VERSION_INFO = {
   name: 'Shop Template System',
   version: VERSION,
-  codename: 'Streamline',
+  codename: 'Guardian',
   releaseDate: '2026-03-02',
-  description: 'Folder-driven B2B storefront with single-collection auto-detection and branding updates',
+  description: 'Inventory tracking improvements, cart stock validation, order cancellation, and contact email support',
   attribution: 'Built with LR Paris Shuttle',
 };
 

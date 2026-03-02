@@ -45,6 +45,7 @@ export interface DesignData {
   fonts: Fonts;
   style: Style;
   password: string;
+  contactEmail: string;
   logoPath: string | null;
   logoWhitePath: string | null;
   faviconPath: string | null;
@@ -323,6 +324,17 @@ export function getFAQData(): FAQEntry[] {
   }
 }
 
+export function getContactEmail(): string {
+  try {
+    const emailPath = path.join(DESIGN_PATH, 'Details', 'Email.txt');
+    const content = fs.readFileSync(emailPath, 'utf-8');
+    const parsed = parseKeyValueFile(content);
+    return parsed.contact || '';
+  } catch {
+    return '';
+  }
+}
+
 export function getDesignData(): DesignData {
   return {
     colors: getColors(),
@@ -331,6 +343,7 @@ export function getDesignData(): DesignData {
     fonts: getFonts(),
     style: getStyle(),
     password: getPassword(),
+    contactEmail: getContactEmail(),
     logoPath: getLogoPath('logo'),
     logoWhitePath: getLogoPath('logo-white'),
     faviconPath: getLogoPath('favicon'),

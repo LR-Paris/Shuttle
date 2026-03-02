@@ -29,17 +29,27 @@ export default function CartPage() {
   const router = useRouter();
   const [cart, setCart] = useState<Cart>({ items: [], total: 0 });
   const [design, setDesign] = useState<DesignData | null>(null);
+  const [stockMap, setStockMap] = useState<Record<string, number>>({});
 
   useEffect(() => {
     setCart(getCart());
 
-    fetch('/api/design')
-      .then(r => r.json())
-      .then(setDesign)
-      .catch(console.error);
+    Promise.all([
+      fetch('/api/design').then(r => r.json()),
+      fetch('/api/inventory').then(r => r.ok ? r.json() : []).catch(() => []),
+    ]).then(([designData, inventoryData]) => {
+      setDesign(designData);
+      const map: Record<string, number> = {};
+      inventoryData.forEach((item: any) => { map[item.productId] = item.stock; });
+      setStockMap(map);
+    }).catch(console.error);
   }, []);
 
   const handleUpdateQuantity = (productId: string, newQuantity: number) => {
+    const stock = stockMap[productId];
+    if (stock !== undefined && newQuantity > stock) {
+      newQuantity = stock;
+    }
     const updatedCart = updateCartItemQuantity(productId, newQuantity);
     setCart(updatedCart);
     window.dispatchEvent(new Event('cartUpdated'));
@@ -79,6 +89,16 @@ export default function CartPage() {
     );
   }
 
+  const hasOutOfStockItems = cart.items.some(item => {
+    const stock = stockMap[item.productId];
+    return stock !== undefined && stock <= 0;
+  });
+
+  const hasOverStockItems = cart.items.some(item => {
+    const stock = stockMap[item.productId];
+    return stock !== undefined && item.quantity > stock;
+  });
+
   return (
     <div className="container mx-auto px-4 py-12">
       <h1 className="text-4xl font-bold mb-8" style={{ color: design.colors.primary, fontFamily: design.fonts.titleFont }}>
@@ -89,81 +109,116 @@ export default function CartPage() {
         {/* Cart Items */}
         <div className="lg:col-span-2">
           <div className="space-y-4">
-            {cart.items.map((item) => (
-              <div
-                key={item.productId}
-                className="border p-6"
-                style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px` }}
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-xl font-bold mb-1" style={{ color: design.colors.primary, fontFamily: design.fonts.titleFont }}>
-                      {item.productName}
-                    </h3>
-                    <p className="text-sm mb-2" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
-                      SKU: {item.sku}
-                    </p>
-                    <p className="text-sm" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
-                      Box of {item.unitsPerBox} units
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handleRemove(item.productId)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      />
-                    </svg>
-                  </button>
-                </div>
+            {cart.items.map((item) => {
+              const stock = stockMap[item.productId] ?? null;
+              const isOutOfStock = stock !== null && stock <= 0;
+              const isLowStock = stock !== null && stock > 0 && stock <= 5;
+              const isOverStock = stock !== null && item.quantity > stock;
+              const maxQty = stock !== null && stock > 0 ? stock : undefined;
 
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center space-x-4">
-                    <span className="text-sm" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>Quantity:</span>
+              return (
+                <div
+                  key={item.productId}
+                  className="border p-6"
+                  style={{
+                    borderColor: isOutOfStock ? '#DC2626' : design.colors.border,
+                    borderRadius: `${design.style.cornerRadius}px`,
+                    opacity: isOutOfStock ? 0.5 : 1,
+                    backgroundColor: isOutOfStock ? '#f9f9f9' : undefined,
+                  }}
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h3 className="text-xl font-bold mb-1" style={{ color: design.colors.primary, fontFamily: design.fonts.titleFont }}>
+                        {item.productName}
+                      </h3>
+                      <p className="text-sm mb-2" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
+                        SKU: {item.sku}
+                      </p>
+                      <p className="text-sm" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
+                        Box of {item.unitsPerBox} units
+                      </p>
+                      {/* Stock status */}
+                      {stock !== null && (
+                        <p
+                          className="text-sm font-semibold mt-1"
+                          style={{
+                            color: isOutOfStock ? '#DC2626' : isLowStock ? design.colors.secondary : design.colors.success,
+                          }}
+                        >
+                          {isOutOfStock
+                            ? 'Out of Stock'
+                            : isLowStock
+                              ? `Only ${stock} ${stock === 1 ? 'box' : 'boxes'} available`
+                              : `${stock} boxes available`}
+                        </p>
+                      )}
+                      {isOverStock && !isOutOfStock && (
+                        <p className="text-sm mt-1" style={{ color: '#DC2626' }}>
+                          Quantity exceeds available stock. Please reduce to {stock}.
+                        </p>
+                      )}
+                    </div>
                     <button
-                      onClick={() => handleUpdateQuantity(item.productId, item.quantity - 1)}
-                      className="w-8 h-8 border flex items-center justify-center hover:bg-gray-100"
-                      style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
+                      onClick={() => handleRemove(item.productId)}
+                      className="text-red-500 hover:text-red-700"
                     >
-                      -
-                    </button>
-                    <span className="w-12 text-center font-semibold" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() => handleUpdateQuantity(item.productId, item.quantity + 1)}
-                      className="w-8 h-8 border flex items-center justify-center hover:bg-gray-100"
-                      style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
-                    >
-                      +
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
+                      </svg>
                     </button>
                   </div>
 
-                  <div className="text-right">
-                    <p className="text-sm" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
-                      ${item.boxCost.toFixed(2)} per box
-                    </p>
-                    <p className="text-2xl font-bold" style={{ color: design.colors.secondary, fontFamily: design.fonts.titleFont }}>
-                      ${(item.boxCost * item.quantity).toFixed(2)}
-                    </p>
-                    <p className="text-sm" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
-                      {item.quantity * item.unitsPerBox} total units
-                    </p>
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center space-x-4">
+                      <span className="text-sm" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>Quantity:</span>
+                      <button
+                        onClick={() => handleUpdateQuantity(item.productId, item.quantity - 1)}
+                        disabled={isOutOfStock}
+                        className="w-8 h-8 border flex items-center justify-center hover:bg-gray-100 disabled:opacity-50"
+                        style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
+                      >
+                        -
+                      </button>
+                      <span className="w-12 text-center font-semibold" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
+                        {item.quantity}
+                      </span>
+                      <button
+                        onClick={() => handleUpdateQuantity(item.productId, item.quantity + 1)}
+                        disabled={isOutOfStock || (maxQty !== undefined && item.quantity >= maxQty)}
+                        className="w-8 h-8 border flex items-center justify-center hover:bg-gray-100 disabled:opacity-50"
+                        style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <div className="text-right">
+                      <p className="text-sm" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
+                        ${item.boxCost.toFixed(2)} per box
+                      </p>
+                      <p className="text-2xl font-bold" style={{ color: design.colors.secondary, fontFamily: design.fonts.titleFont }}>
+                        ${(item.boxCost * item.quantity).toFixed(2)}
+                      </p>
+                      <p className="text-sm" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
+                        {item.quantity * item.unitsPerBox} total units
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <Link
@@ -195,16 +250,25 @@ export default function CartPage() {
             </h2>
 
             <div className="space-y-3 mb-6">
-              {cart.items.map((item) => (
-                <div key={item.productId} className="flex justify-between text-sm">
-                  <span style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
-                    {item.productName} × {item.quantity}
-                  </span>
-                  <span style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
-                    ${(item.boxCost * item.quantity).toFixed(2)}
-                  </span>
-                </div>
-              ))}
+              {cart.items.map((item) => {
+                const stock = stockMap[item.productId] ?? null;
+                const isOutOfStock = stock !== null && stock <= 0;
+
+                return (
+                  <div key={item.productId} className="flex justify-between text-sm">
+                    <span style={{
+                      color: isOutOfStock ? '#DC2626' : design.colors.text,
+                      fontFamily: design.fonts.bodyFont,
+                      textDecoration: isOutOfStock ? 'line-through' : undefined,
+                    }}>
+                      {item.productName} x {item.quantity}
+                    </span>
+                    <span style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
+                      ${(item.boxCost * item.quantity).toFixed(2)}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
 
             <div className="border-t pt-4 mb-6" style={{ borderColor: design.colors.border }}>
@@ -218,9 +282,21 @@ export default function CartPage() {
               </div>
             </div>
 
+            {(hasOutOfStockItems || hasOverStockItems) && (
+              <div
+                className="mb-4 p-3 rounded text-sm"
+                style={{ backgroundColor: '#FEF2F2', color: '#DC2626', borderRadius: `${design.style.cornerRadius}px` }}
+              >
+                {hasOutOfStockItems
+                  ? 'Some items in your cart are out of stock. Please remove them before checking out.'
+                  : 'Some items exceed available stock. Please adjust quantities before checking out.'}
+              </div>
+            )}
+
             <button
               onClick={() => router.push('/checkout')}
-              className="w-full py-3 text-white text-lg font-semibold hover:opacity-90 transition-opacity"
+              disabled={hasOutOfStockItems || hasOverStockItems}
+              className="w-full py-3 text-white text-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ backgroundColor: design.colors.secondary, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
             >
               Proceed to Checkout
