@@ -116,7 +116,6 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
   const totalPrice = product.boxCost * quantity;
   const stock = inventory?.stock ?? null;
   const isOutOfStock = stock !== null && stock <= 0;
-  const isLowStock = stock !== null && stock > 0 && stock <= 5;
   const maxQuantity = stock !== null && stock > 0 ? stock : undefined;
 
   return (
@@ -206,22 +205,6 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
             <p className="text-sm mb-2" style={{ color: design.colors.textLight }}>
               SKU: {product.sku}
             </p>
-
-            {/* Stock Status */}
-            {stock !== null && (
-              <p
-                className="text-sm font-semibold mb-2"
-                style={{
-                  color: isOutOfStock ? '#DC2626' : isLowStock ? design.colors.secondary : design.colors.success,
-                }}
-              >
-                {isOutOfStock
-                  ? 'Out of Stock'
-                  : isLowStock
-                    ? `Only ${stock} ${stock === 1 ? 'box' : 'boxes'} left`
-                    : `${stock} boxes in stock`}
-              </p>
-            )}
 
             <p className="text-lg font-semibold mb-2" style={{ color: design.colors.text }}>
               Box of {product.unitsPerBox} units
