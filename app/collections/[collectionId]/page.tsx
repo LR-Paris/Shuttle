@@ -233,7 +233,6 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
           {sortedProducts.map((product: any) => {
             const stock = stockMap[product.id] ?? null;
             const isOutOfStock = stock !== null && stock <= 0;
-            const isLowStock = stock !== null && stock > 0 && stock <= 5;
 
             return (
               <Link
@@ -253,17 +252,6 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
                       alt={product.name}
                       className="w-full h-full object-contain p-4"
                     />
-                    {stock !== null && (
-                      <span
-                        className="absolute top-2 right-2 text-xs font-semibold px-2 py-1 rounded"
-                        style={{
-                          backgroundColor: isOutOfStock ? '#DC2626' : isLowStock ? design.colors.secondary : design.colors.success,
-                          color: '#FFFFFF',
-                        }}
-                      >
-                        {isOutOfStock ? 'Out of Stock' : isLowStock ? `Only ${stock} left` : `${stock} boxes left`}
-                      </span>
-                    )}
                   </div>
                 ) : (
                   <div className="aspect-square bg-gray-100 flex items-center justify-center border-b relative" style={{ borderColor: design.colors.border }}>
@@ -281,17 +269,6 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
                         d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                       />
                     </svg>
-                    {stock !== null && (
-                      <span
-                        className="absolute top-2 right-2 text-xs font-semibold px-2 py-1 rounded"
-                        style={{
-                          backgroundColor: isOutOfStock ? '#DC2626' : isLowStock ? design.colors.secondary : design.colors.success,
-                          color: '#FFFFFF',
-                        }}
-                      >
-                        {isOutOfStock ? 'Out of Stock' : isLowStock ? `Only ${stock} left` : `${stock} boxes left`}
-                      </span>
-                    )}
                   </div>
                 )}
                 <div className="p-4">
@@ -342,6 +319,11 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
                       ${product.itemCost.toFixed(2)} per unit
                     </p>
                   </div>
+                  {stock !== null && (
+                    <p className="text-xs" style={{ color: isOutOfStock ? '#DC2626' : design.colors.success }}>
+                      {isOutOfStock ? 'Out of Stock' : 'In Stock'}
+                    </p>
+                  )}
                 </div>
               </Link>
             );
