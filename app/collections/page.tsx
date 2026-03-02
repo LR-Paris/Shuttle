@@ -1,12 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import CollectionCard from './CollectionCard';
 
 export default function CollectionsPage() {
   const [design, setDesign] = useState<any>(null);
   const [collections, setCollections] = useState<any[]>([]);
   const [tick, setTick] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
     async function loadData() {
@@ -18,12 +20,18 @@ export default function CollectionsPage() {
       const designData = await designResponse.json();
       const collectionsData = await collectionsResponse.json();
 
+      // Redirect to shop-all if only one collection
+      if (collectionsData.length <= 1) {
+        router.replace('/shop-all');
+        return;
+      }
+
       setDesign(designData);
       setCollections(collectionsData);
       document.title = `${designData.companyName} - Collections`;
     }
     loadData();
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     const interval = setInterval(() => {

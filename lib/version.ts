@@ -23,6 +23,7 @@
  * - STS-2.02 - Image fade-in loading with placeholder color blocks across all pages
  * - STS-2.03 - Version bump
  * - STS-2.04 - Inventory tracking via CSV, stock display on product pages, auto-deduction on order placement
+ * - STS-2.05 - White footer logo, single-collection auto-detection for streamlined shop experience
  *
  * To increment version:
  * 1. Update VERSION constant below
@@ -31,14 +32,14 @@
  * 4. Commit with version number in commit message
  */
 
-export const VERSION = 'STS-2.04';
+export const VERSION = 'STS-2.05';
 
 export const VERSION_INFO = {
   name: 'Shop Template System',
   version: VERSION,
-  codename: 'Inventory',
+  codename: 'Streamline',
   releaseDate: '2026-03-02',
-  description: 'Folder-driven B2B storefront system with inventory tracking and stock management',
+  description: 'Folder-driven B2B storefront with single-collection auto-detection and branding updates',
   attribution: 'Built with LR Paris Shuttle',
 };
 
