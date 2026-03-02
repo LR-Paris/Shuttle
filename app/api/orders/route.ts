@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { deductStock } from '@/lib/inventory';
 
 interface OrderItem {
   productId: string;
@@ -159,6 +160,16 @@ export async function POST(request: NextRequest) {
 
     // Append the order
     fs.appendFileSync(ordersPath, csvRow + '\n', 'utf-8');
+
+    // Deduct stock from inventory (non-blocking — order succeeds regardless)
+    try {
+      deductStock(orderData.items.map(item => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      })));
+    } catch (e) {
+      console.warn('Stock deduction failed (non-blocking):', e);
+    }
 
     return NextResponse.json({
       success: true,

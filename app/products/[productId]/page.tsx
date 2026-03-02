@@ -38,6 +38,16 @@ interface DesignData {
   };
 }
 
+interface InventoryData {
+  sku: string;
+  productId: string;
+  productName: string;
+  collection: string;
+  stock: number;
+  lastUpdated: string;
+  notes: string;
+}
+
 export default function ProductPage({ params }: { params: Promise<{ productId: string }> }) {
   const { productId } = use(params);
   const router = useRouter();
@@ -45,20 +55,23 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
   const fromShopAll = searchParams.get('from') === 'shop-all';
   const [product, setProduct] = useState<Product | null>(null);
   const [design, setDesign] = useState<DesignData | null>(null);
+  const [inventory, setInventory] = useState<InventoryData | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
-    // Fetch product and design data
+    // Fetch product, design, and inventory data
     Promise.all([
       fetch(`/api/products/${productId}`).then(r => r.json()),
       fetch('/api/design').then(r => r.json()),
+      fetch(`/api/inventory?productId=${productId}`).then(r => r.ok ? r.json() : null).catch(() => null),
     ])
-      .then(([productData, designData]) => {
+      .then(([productData, designData, inventoryData]) => {
         setProduct(productData);
         setDesign(designData);
+        setInventory(inventoryData);
         if (productData && designData) {
           document.title = `${designData.companyName} - ${productData.name}`;
         }
@@ -101,6 +114,10 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
   }
 
   const totalPrice = product.boxCost * quantity;
+  const stock = inventory?.stock ?? null;
+  const isOutOfStock = stock !== null && stock <= 0;
+  const isLowStock = stock !== null && stock > 0 && stock <= 5;
+  const maxQuantity = stock !== null && stock > 0 ? stock : undefined;
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -189,6 +206,23 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
             <p className="text-sm mb-2" style={{ color: design.colors.textLight }}>
               SKU: {product.sku}
             </p>
+
+            {/* Stock Status */}
+            {stock !== null && (
+              <p
+                className="text-sm font-semibold mb-2"
+                style={{
+                  color: isOutOfStock ? '#DC2626' : isLowStock ? design.colors.secondary : design.colors.success,
+                }}
+              >
+                {isOutOfStock
+                  ? 'Out of Stock'
+                  : isLowStock
+                    ? `Only ${stock} ${stock === 1 ? 'box' : 'boxes'} left`
+                    : `${stock} boxes in stock`}
+              </p>
+            )}
+
             <p className="text-lg font-semibold mb-2" style={{ color: design.colors.text }}>
               Box of {product.unitsPerBox} units
             </p>
@@ -208,7 +242,8 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-10 h-10 border rounded-lg flex items-center justify-center hover:bg-gray-100"
+                disabled={isOutOfStock}
+                className="w-10 h-10 border rounded-lg flex items-center justify-center hover:bg-gray-100 disabled:opacity-50"
                 style={{ borderColor: design.colors.border }}
               >
                 -
@@ -216,14 +251,25 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
               <input
                 type="number"
                 min="1"
+                max={maxQuantity}
                 value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-20 h-10 border rounded-lg text-center"
+                onChange={(e) => {
+                  let val = Math.max(1, parseInt(e.target.value) || 1);
+                  if (maxQuantity !== undefined) val = Math.min(val, maxQuantity);
+                  setQuantity(val);
+                }}
+                disabled={isOutOfStock}
+                className="w-20 h-10 border rounded-lg text-center disabled:opacity-50"
                 style={{ borderColor: design.colors.border }}
               />
               <button
-                onClick={() => setQuantity(quantity + 1)}
-                className="w-10 h-10 border rounded-lg flex items-center justify-center hover:bg-gray-100"
+                onClick={() => {
+                  const next = quantity + 1;
+                  if (maxQuantity !== undefined && next > maxQuantity) return;
+                  setQuantity(next);
+                }}
+                disabled={isOutOfStock || (maxQuantity !== undefined && quantity >= maxQuantity)}
+                className="w-10 h-10 border rounded-lg flex items-center justify-center hover:bg-gray-100 disabled:opacity-50"
                 style={{ borderColor: design.colors.border }}
               >
                 +
@@ -247,11 +293,11 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
           {/* Add to Cart Button */}
           <button
             onClick={handleAddToCart}
-            disabled={isAdding}
+            disabled={isAdding || isOutOfStock}
             className="w-full py-4 rounded-lg text-white text-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
-            style={{ backgroundColor: design.colors.secondary }}
+            style={{ backgroundColor: isOutOfStock ? '#9CA3AF' : design.colors.secondary }}
           >
-            {isAdding ? 'Adding...' : 'Add to Cart'}
+            {isOutOfStock ? 'Out of Stock' : isAdding ? 'Adding...' : 'Add to Cart'}
           </button>
 
           {/* Success Message */}

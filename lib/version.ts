@@ -22,6 +22,7 @@
  * - STS-2.01 - PO uploads accept HTML/TXT/Word files, hotel selection fix, name and email always required
  * - STS-2.02 - Image fade-in loading with placeholder color blocks across all pages
  * - STS-2.03 - Version bump
+ * - STS-2.04 - Inventory tracking via CSV, stock display on product pages, auto-deduction on order placement
  *
  * To increment version:
  * 1. Update VERSION constant below
@@ -30,14 +31,14 @@
  * 4. Commit with version number in commit message
  */
 
-export const VERSION = 'STS-2.03';
+export const VERSION = 'STS-2.04';
 
 export const VERSION_INFO = {
   name: 'Shop Template System',
   version: VERSION,
-  codename: 'Presets',
-  releaseDate: '2026-02-26',
-  description: 'Folder-driven B2B storefront system with configurable shop types',
+  codename: 'Inventory',
+  releaseDate: '2026-03-02',
+  description: 'Folder-driven B2B storefront system with inventory tracking and stock management',
   attribution: 'Built with LR Paris Shuttle',
 };
 
