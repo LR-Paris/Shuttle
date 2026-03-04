@@ -197,7 +197,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
             {product.name}
           </h1>
 
-          <p className="text-lg mb-6" style={{ color: design.colors.text }}>
+          <p className="text-lg mb-6 whitespace-pre-line" style={{ color: design.colors.text }}>
             {product.description}
           </p>
 
@@ -215,6 +215,11 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
             <p style={{ color: design.colors.textLight }}>
               ${product.itemCost.toFixed(2)} per unit
             </p>
+            {stock !== null && (
+              <p className="text-sm mt-2 font-semibold" style={{ color: stock > 0 ? design.colors.success : '#EF4444' }}>
+                {stock > 0 ? `${stock} in stock` : 'Out of stock'}
+              </p>
+            )}
           </div>
 
           {/* Quantity Selector */}

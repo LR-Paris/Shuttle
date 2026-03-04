@@ -151,7 +151,7 @@ export function deductStock(items: { productId: string; quantity: number }[]): v
       console.warn(`Inventory: product ${item.productId} not found, skipping deduction`);
       continue;
     }
-    record.stock = Math.max(0, record.stock - item.quantity);
+    record.stock = record.stock - item.quantity;
     record.lastUpdated = now;
   }
 

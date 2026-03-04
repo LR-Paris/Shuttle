@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import { deductStock } from '@/lib/inventory';
+import { deductStock, getStockMap } from '@/lib/inventory';
 
 interface OrderItem {
   productId: string;
@@ -110,6 +110,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'No items in order' },
         { status: 400 }
+      );
+    }
+
+    // Re-validate inventory at checkout time to prevent overselling
+    const stockMap = getStockMap();
+    const outOfStockItems: { productName: string; requested: number; available: number }[] = [];
+
+    for (const item of orderData.items) {
+      const currentStock = stockMap.get(item.productId);
+      if (currentStock !== undefined && currentStock < item.quantity) {
+        outOfStockItems.push({
+          productName: item.productName,
+          requested: item.quantity,
+          available: Math.max(0, currentStock),
+        });
+      }
+    }
+
+    if (outOfStockItems.length > 0) {
+      return NextResponse.json(
+        {
+          error: 'Some items in your cart are no longer available in the requested quantity. Please update your cart and try again.',
+          outOfStockItems,
+        },
+        { status: 409 }
       );
     }
 
