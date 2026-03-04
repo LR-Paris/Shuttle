@@ -31,7 +31,7 @@ interface OrderData {
   hotelSelection?: string;
 }
 
-const CSV_HEADER = 'Order ID,Date,Customer Name,Email,Phone,Company,Shipping Address,Freight Option,Freight Company,Freight Account,Freight Contact,Order Notes,Items,Total,Shop Type,PO Number,PO File,Hotel Selection';
+const CSV_HEADER = 'Order ID,Date,Customer Name,Email,Phone,Company,Shipping Address,Freight Option,Freight Company,Freight Account,Freight Contact,Order Notes,Items,Total,Shop Type,PO Number,PO File,Hotel Selection,Status,Tracking Number';
 
 function generateOrderId(): string {
   const timestamp = Date.now();
@@ -68,20 +68,24 @@ function ensureCSVHeader(ordersPath: string): void {
   const content = fs.readFileSync(ordersPath, 'utf-8');
   const firstLine = content.split('\n')[0] || '';
 
-  // If header already has the new columns, nothing to do
-  if (firstLine.includes('Shop Type')) {
+  // If header already has Status column, nothing to do
+  if (firstLine.includes('Status')) {
     return;
   }
 
-  // Migrate: replace old header with new, pad existing data rows with empty new columns
   const lines = content.split('\n');
   const migrated: string[] = [CSV_HEADER];
 
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line) continue;
-    // Append 4 empty columns for: Shop Type, PO Number, PO File, Hotel Selection
-    migrated.push(line + ',free,,,');
+    if (firstLine.includes('Shop Type')) {
+      // Has Shop Type columns but missing Status/Tracking Number — append 2 columns
+      migrated.push(line + ',Pending,');
+    } else {
+      // Old format — append Shop Type + PO + Hotel + Status + Tracking
+      migrated.push(line + ',free,,,,Pending,');
+    }
   }
 
   fs.writeFileSync(ordersPath, migrated.join('\n') + '\n', 'utf-8');
@@ -175,6 +179,8 @@ export async function POST(request: NextRequest) {
       escapeCSVField(poNumber),
       escapeCSVField(poFileRef),
       escapeCSVField(hotelSelection),
+      'Pending',
+      '',
     ].join(',');
 
     // Append to orders.csv
@@ -194,6 +200,17 @@ export async function POST(request: NextRequest) {
       })));
     } catch (e) {
       console.warn('Stock deduction failed (non-blocking):', e);
+    }
+
+    // Fire-and-forget: notify Launchpad for email notifications
+    const launchpadUrl = process.env.LAUNCHPAD_API_URL;
+    const shopSlug = process.env.SHOP_SLUG;
+    if (launchpadUrl && shopSlug) {
+      fetch(`${launchpadUrl}/api/shops/${shopSlug}/orders/notify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderData: { orderId, date: orderDate, ...orderData } }),
+      }).catch(err => console.warn('Launchpad notify failed (non-blocking):', err));
     }
 
     return NextResponse.json({

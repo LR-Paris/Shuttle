@@ -27,6 +27,7 @@
  * - STS-2.6.0 - Inventory tracking improvements, cart stock validation, order cancellation with 2-hour window, contact email, centered About Us
  * - STS-2.6.1 - Stock badges show actual box counts, populated inventory CSV with real stock levels
  * - STS-2.6.2 - Checkout inventory re-validation to prevent overselling, stock count on product page, negative stock allowed in CSV, description newline support
+ * - STS-2.6.3 - Launchpad email integration: order notify webhook, Status/Tracking columns in CSV, AdminEmail.txt support
  *
  * To increment version:
  * 1. Update VERSION constant below
@@ -35,14 +36,14 @@
  * 4. Commit with version number in commit message
  */
 
-export const VERSION = 'STS-2.6.2';
+export const VERSION = 'STS-2.6.3';
 
 export const VERSION_INFO = {
   name: 'Shop Template System',
   version: VERSION,
   codename: 'Guardian',
   releaseDate: '2026-03-04',
-  description: 'Checkout inventory re-validation to prevent overselling, stock count on product page, negative stock allowed in CSV, description newline support',
+  description: 'Launchpad email integration: order notify webhook, Status/Tracking columns in CSV, AdminEmail.txt support',
   attribution: 'Built with LR Paris Shuttle',
 };
 
