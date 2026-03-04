@@ -46,6 +46,7 @@ export interface DesignData {
   style: Style;
   password: string;
   contactEmail: string;
+  adminEmail: string;
   logoPath: string | null;
   logoWhitePath: string | null;
   faviconPath: string | null;
@@ -335,6 +336,16 @@ export function getContactEmail(): string {
   }
 }
 
+export function getAdminEmail(): string {
+  try {
+    const adminEmailPath = path.join(DESIGN_PATH, 'Details', 'AdminEmail.txt');
+    const content = fs.readFileSync(adminEmailPath, 'utf-8').trim();
+    return content || '';
+  } catch {
+    return '';
+  }
+}
+
 export function getDesignData(): DesignData {
   return {
     colors: getColors(),
@@ -344,6 +355,7 @@ export function getDesignData(): DesignData {
     style: getStyle(),
     password: getPassword(),
     contactEmail: getContactEmail(),
+    adminEmail: getAdminEmail(),
     logoPath: getLogoPath('logo'),
     logoWhitePath: getLogoPath('logo-white'),
     faviconPath: getLogoPath('favicon'),
