@@ -168,11 +168,22 @@ export default function CheckoutPage() {
         body: JSON.stringify(orderData),
       });
 
+      const result = await response.json();
+
+      if (response.status === 409 && result.outOfStockItems) {
+        const itemLines = result.outOfStockItems
+          .map((item: { productName: string; requested: number; available: number }) =>
+            `- ${item.productName}: requested ${item.requested}, only ${item.available} left in stock`
+          )
+          .join('\n');
+        alert(`Some items are no longer available:\n\n${itemLines}\n\nPlease go back to your cart and update quantities.`);
+        setIsSubmitting(false);
+        return;
+      }
+
       if (!response.ok) {
         throw new Error('Failed to submit order');
       }
-
-      const result = await response.json();
 
       // Upload PO file if this is a PO shop
       if (presets?.shopType === 'po' && poFile) {
