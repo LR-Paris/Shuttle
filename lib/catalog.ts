@@ -3,6 +3,13 @@ import path from 'path';
 
 const DATABASE_PATH = path.join(process.cwd(), 'DATABASE');
 const COLLECTIONS_PATH = path.join(DATABASE_PATH, 'ShopCollections');
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '';
+
+export interface ProductVariant {
+  id: string;
+  name: string;
+  values: string[];  // e.g., ["Black"] or ["Camel", "Small"]
+}
 
 export interface Product {
   id: string;
@@ -15,6 +22,11 @@ export interface Product {
   images: string[];
   collectionId: string;
   collectionName: string;
+  // Variant fields (only set when product has 2+ siblings with the same base name)
+  variantGroup?: string;         // Base name, e.g., "Dopp Kit"
+  variantDimensions?: string[];  // Labels from VariantType.txt, e.g., ["Color", "Size"]
+  variantValues?: string[];      // This product's values, e.g., ["Black"]
+  variants?: ProductVariant[];   // All variants in the group (sorted)
 }
 
 export interface Collection {
@@ -49,10 +61,27 @@ function getProductImages(photosPath: string, productId: string): string[] {
       return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext);
     });
 
-    return imageFiles.map(file => `/api/images/products/${productId}/${file}`);
+    return imageFiles.map(file => `${BASE_PATH}/api/images/products/${productId}/${file}`);
   } catch (error) {
     return [];
   }
+}
+
+/**
+ * Parse a folder name into its base name and variant values.
+ * "Dopp Kit (Black)"      -> { baseName: "Dopp Kit", values: ["Black"] }
+ * "Dopp Kit (Camel, Small)" -> { baseName: "Dopp Kit", values: ["Camel", "Small"] }
+ * "Atomizer"              -> { baseName: "Atomizer", values: [] }
+ */
+function parseVariantInfo(folderName: string): { baseName: string; values: string[] } {
+  const match = folderName.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
+  if (!match) {
+    return { baseName: folderName, values: [] };
+  }
+  return {
+    baseName: match[1].trim(),
+    values: match[2].split(',').map(v => v.trim()).filter(Boolean),
+  };
 }
 
 function parseProduct(
@@ -105,7 +134,9 @@ function parseCollection(collectionName: string, collectionPath: string): Collec
   try {
     const items = fs.readdirSync(collectionPath, { withFileTypes: true });
     const collectionId = slugify(collectionName);
-    const products: Product[] = [];
+
+    // Parse all products, keeping track of their folder names for variant detection
+    const productEntries: Array<{ folderName: string; product: Product }> = [];
 
     for (const item of items) {
       if (!item.isDirectory()) continue;
@@ -114,13 +145,68 @@ function parseCollection(collectionName: string, collectionPath: string): Collec
       const product = parseProduct(collectionName, collectionId, item.name, itemPath);
 
       if (product) {
-        products.push(product);
+        productEntries.push({ folderName: item.name, product });
       }
     }
 
-    if (products.length === 0) {
+    if (productEntries.length === 0) {
       return null;
     }
+
+    // Detect variant groups: products with the same base name within this collection
+    const groups = new Map<string, Array<{ folderName: string; product: Product }>>();
+
+    for (const entry of productEntries) {
+      const { baseName, values } = parseVariantInfo(entry.folderName);
+      if (values.length > 0) {
+        if (!groups.has(baseName)) groups.set(baseName, []);
+        groups.get(baseName)!.push(entry);
+      }
+    }
+
+    // Assign variant data to groups with 2+ members
+    for (const [baseName, entries] of groups.entries()) {
+      if (entries.length < 2) continue; // single product with parens is not a group
+
+      // Read dimension labels from VariantType.txt (check all entries, use first found)
+      let dimensions: string[] = [];
+      for (const entry of entries) {
+        const vtPath = path.join(collectionPath, entry.folderName, 'Details', 'VariantType.txt');
+        if (fs.existsSync(vtPath)) {
+          const content = fs.readFileSync(vtPath, 'utf-8').trim();
+          dimensions = content.split(',').map(d => d.trim()).filter(Boolean);
+          break;
+        }
+      }
+
+      // Fall back to auto-labels based on value count
+      if (dimensions.length === 0) {
+        const valueCount = parseVariantInfo(entries[0].folderName).values.length;
+        if (valueCount === 1) dimensions = ['Color'];
+        else if (valueCount === 2) dimensions = ['Color', 'Size'];
+        else dimensions = Array.from({ length: valueCount }, (_, i) => `Option ${i + 1}`);
+      }
+
+      // Build sorted variant summaries
+      const variantSummaries: ProductVariant[] = entries
+        .map(entry => ({
+          id: entry.product.id,
+          name: entry.product.name,
+          values: parseVariantInfo(entry.folderName).values,
+        }))
+        .sort((a, b) => a.values.join(', ').localeCompare(b.values.join(', ')));
+
+      // Assign to each product in the group
+      for (const entry of entries) {
+        const values = parseVariantInfo(entry.folderName).values;
+        entry.product.variantGroup = baseName;
+        entry.product.variantDimensions = dimensions;
+        entry.product.variantValues = values;
+        entry.product.variants = variantSummaries;
+      }
+    }
+
+    const products = productEntries.map(e => e.product);
 
     return {
       id: collectionId,

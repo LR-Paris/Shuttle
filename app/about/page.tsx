@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch , basePath } from '@/lib/api';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
@@ -22,7 +23,7 @@ function formatAnswer(answer: string, secondaryColor: string, bodyFont: string) 
           <a
             key={`email-${lineIndex}-${partIndex}`}
             href={`mailto:${part}`}
-            className="underline hover:opacity-80"
+            className="underline hover:opacity-80 font-semibold"
             style={{ color: secondaryColor, fontFamily: bodyFont }}
           >
             {part}
@@ -48,16 +49,16 @@ export default function AboutPage() {
 
   useEffect(() => {
     async function loadData() {
-      const response = await fetch('/api/design');
+      const response = await apiFetch('/design');
       const designData = await response.json();
       setDesign(designData);
       document.title = `${designData.companyName} - About`;
 
-      const versionResponse = await fetch('/api/version');
+      const versionResponse = await apiFetch('/version');
       const versionData = await versionResponse.json();
       setVersionInfo(versionData);
 
-      const faqResponse = await fetch('/api/faq');
+      const faqResponse = await apiFetch('/faq');
       const faqData = await faqResponse.json();
       setFaqs(faqData);
     }
@@ -85,27 +86,16 @@ export default function AboutPage() {
         >
           About {design.companyName}
         </h1>
-        <div className="max-w-3xl">
-          <p
-            className="text-lg leading-relaxed mb-4"
-            style={{
-              color: design.colors.text,
-              fontFamily: design.fonts.bodyFont,
-            }}
-          >
-            {design.descriptions.about}
-          </p>
-          <p
-            className="text-lg leading-relaxed"
-            style={{
-              color: design.colors.text,
-              fontFamily: design.fonts.bodyFont,
-            }}
-          >
-            We are committed to providing exceptional wholesale products and outstanding service
-            to our business partners. Our streamlined ordering system makes it easy to browse,
-            select, and purchase products for your business needs.
-          </p>
+        <div className="max-w-3xl space-y-5">
+          {(design.descriptions.aboutParagraphs || [design.descriptions.about]).map((para: string, i: number) => (
+            <div
+              key={i}
+              className="text-lg leading-relaxed"
+              style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}
+            >
+              {formatAnswer(para, design.colors.secondary, design.fonts.bodyFont)}
+            </div>
+          ))}
         </div>
       </section>
 
@@ -245,7 +235,7 @@ export default function AboutPage() {
         >
           <div className="bg-white rounded-lg p-3" style={{ borderRadius: '12px' }}>
             <img
-              src="/lr-paris-logo.svg"
+              src={`${basePath}/lr-paris-logo.svg`}
               alt="LR Paris"
               className="w-16 h-16"
             />

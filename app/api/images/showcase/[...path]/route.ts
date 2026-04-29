@@ -41,7 +41,7 @@ export async function GET(
       status: 200,
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=31536000, immutable',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
       },
     });
   } catch (error) {

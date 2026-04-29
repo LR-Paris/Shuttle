@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api';
 import { useEffect, useState } from 'react';
 import CollectionCard from './CollectionCard';
 
@@ -11,8 +12,8 @@ export default function CollectionsPage() {
   useEffect(() => {
     async function loadData() {
       const [designResponse, collectionsResponse] = await Promise.all([
-        fetch('/api/design'),
-        fetch('/api/collections')
+        apiFetch('/design'),
+        apiFetch('/collections')
       ]);
 
       const designData = await designResponse.json();

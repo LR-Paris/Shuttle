@@ -1,18 +1,17 @@
+import { assetUrl } from '@/lib/api';
 import type { Metadata } from "next";
 import "./globals.css";
 import { getDesignData } from "@/lib/design";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PasswordProtection from "@/components/PasswordProtection";
+import AnalyticsTracker from "@/components/Analytics";
 
 export async function generateMetadata(): Promise<Metadata> {
   const design = getDesignData();
   return {
     title: design.companyName,
     description: design.descriptions.tagline,
-    icons: {
-      icon: '/favicon.ico',
-    },
   };
 }
 
@@ -27,10 +26,10 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {design.fonts.titleFontUrl && (
-          <link rel="stylesheet" href={design.fonts.titleFontUrl} />
+          <link rel="stylesheet" href={assetUrl(design.fonts.titleFontUrl)} />
         )}
         {design.fonts.bodyFontUrl && design.fonts.bodyFontUrl !== design.fonts.titleFontUrl && (
-          <link rel="stylesheet" href={design.fonts.bodyFontUrl} />
+          <link rel="stylesheet" href={assetUrl(design.fonts.bodyFontUrl)} />
         )}
         <style dangerouslySetInnerHTML={{
           __html: `
@@ -92,8 +91,10 @@ export default function RootLayout({
             primaryColor={design.colors.primary}
             bodyFont={design.fonts.bodyFont}
             cornerRadius={design.style.cornerRadius}
+            logoWhitePath={design.logoWhitePath}
           />
         </PasswordProtection>
+        <AnalyticsTracker />
       </body>
     </html>
   );

@@ -1,0 +1,14 @@
+version: "3"
+services:
+  web:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - /root/Launchpad/shops/michael-kors:/app
+    ports:
+      - "8109:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_BASE_PATH=/michael-kors
+    command: sh -c "npm install --include=dev && npm run build && npm start"
+    restart: on-failure

@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -67,8 +68,8 @@ export default function Header({
   useEffect(() => {
     // Fetch collections and design data client-side for fresh DATABASE values
     Promise.all([
-      fetch('/api/collections').then(r => r.json()),
-      fetch('/api/design').then(r => r.json()),
+      apiFetch('/collections').then(r => r.json()),
+      apiFetch('/design').then(r => r.json()),
     ])
       .then(([collectionsData, designData]) => {
         if (Array.isArray(collectionsData)) {

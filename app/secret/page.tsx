@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch , basePath } from '@/lib/api';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
@@ -28,7 +29,7 @@ export default function SecretPage() {
   const [design, setDesign] = useState<DesignData | null>(null);
 
   useEffect(() => {
-    fetch('/api/design')
+    apiFetch('/design')
       .then(r => r.json())
       .then(setDesign)
       .catch(console.error);
@@ -75,7 +76,7 @@ export default function SecretPage() {
 
           <div className="mb-8">
             <img
-              src="/basil-cat.jpg"
+              src={`${basePath}/basil-cat.jpg`}
               alt="Basil the Cat"
               className="w-full max-w-2xl mx-auto rounded-lg shadow-lg"
               style={{ borderRadius: `${design.style.cornerRadius}px` }}

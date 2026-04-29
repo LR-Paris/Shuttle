@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -11,8 +12,8 @@ export default function Home() {
   useEffect(() => {
     async function loadData() {
       const [designResponse, collectionsResponse] = await Promise.all([
-        fetch('/api/design'),
-        fetch('/api/collections')
+        apiFetch('/design'),
+        apiFetch('/collections')
       ]);
 
       const designData = await designResponse.json();
@@ -144,15 +145,20 @@ export default function Home() {
           >
             About Us
           </h2>
-          <p
-            className="text-lg leading-relaxed"
-            style={{
-              color: design.colors.text,
-              fontFamily: design.fonts.bodyFont,
-            }}
-          >
-            {design.descriptions.about}
-          </p>
+          <div className="space-y-4">
+            {(design.descriptions.aboutParagraphs || [design.descriptions.about]).map((para: string, i: number) => (
+              <p
+                key={i}
+                className="text-lg leading-relaxed whitespace-pre-line"
+                style={{
+                  color: design.colors.text,
+                  fontFamily: design.fonts.bodyFont,
+                }}
+              >
+                {para}
+              </p>
+            ))}
+          </div>
         </div>
 
         {/* Collections Preview */}

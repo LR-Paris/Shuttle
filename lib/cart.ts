@@ -12,7 +12,7 @@ export interface Cart {
   total: number;
 }
 
-const CART_KEY = 'b2b_cart';
+const CART_KEY = 'b2b_cart_michael-kors';
 
 export function getCart(): Cart {
   if (typeof window === 'undefined') {

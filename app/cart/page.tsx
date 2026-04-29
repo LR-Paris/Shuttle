@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -33,7 +34,7 @@ export default function CartPage() {
   useEffect(() => {
     setCart(getCart());
 
-    fetch('/api/design')
+    apiFetch('/design')
       .then(r => r.json())
       .then(setDesign)
       .catch(console.error);

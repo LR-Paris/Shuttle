@@ -4,6 +4,10 @@ import path from 'path';
 const DATABASE_PATH = path.join(process.cwd(), 'DATABASE');
 const DESIGN_PATH = path.join(DATABASE_PATH, 'Design');
 
+// Get base path from env or default to empty
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '';
+const IMAGE_VERSION = Date.now().toString(36).slice(-6); // cache-bust on server restart
+
 export interface Colors {
   primary: string;
   secondary: string;
@@ -18,6 +22,7 @@ export interface Colors {
 export interface Descriptions {
   tagline: string;
   about: string;
+  aboutParagraphs: string[];
   footer: string;
 }
 
@@ -118,9 +123,19 @@ export function getDescriptions(): Descriptions {
     const content = fs.readFileSync(descriptionsPath, 'utf-8');
     const parsed = parseKeyValueFile(content);
 
+    // About text: prefer dedicated About.txt (supports multiline) over single-line about: field
+    let aboutText = parsed.about || 'We provide quality products for businesses.';
+    try {
+      const aboutPath = path.join(DESIGN_PATH, 'Details', 'About.txt');
+      if (fs.existsSync(aboutPath)) {
+        aboutText = fs.readFileSync(aboutPath, 'utf-8').trimEnd();
+      }
+    } catch {}
+
     return {
       tagline: parsed.tagline || 'Quality products for your business',
-      about: parsed.about || 'We provide quality products for businesses.',
+      about: aboutText,
+      aboutParagraphs: aboutText.split('\n\n').map((p: string) => p.trim()).filter((p: string) => p.length > 0),
       footer: parsed.footer || '© 2026 All rights reserved.',
     };
   } catch (error) {
@@ -128,6 +143,7 @@ export function getDescriptions(): Descriptions {
     return {
       tagline: 'Quality products for your business',
       about: 'We provide quality products for businesses.',
+      aboutParagraphs: ['We provide quality products for businesses.'],
       footer: '© 2026 All rights reserved.',
     };
   }
@@ -198,7 +214,7 @@ function getLogoPath(baseName: string): string | null {
       const filename = baseName + ext;
       const logoPath = path.join(DESIGN_PATH, 'Logos', filename);
       if (fs.existsSync(logoPath)) {
-        return `/api/images/logos/${filename}`;
+        return `${BASE_PATH}/api/images/logos/${filename}?v=${IMAGE_VERSION}`;
       }
     }
     return null;
@@ -226,7 +242,7 @@ export function getHeroImages(): string[] {
 
       // Only include files (not directories) that match image formats
       if (stats.isFile() && formats.test(file)) {
-        heroImages.push(`/api/images/showcase/${file}`);
+        heroImages.push(`${BASE_PATH}/api/images/showcase/${file}?v=${IMAGE_VERSION}`);
       }
     }
 
@@ -253,7 +269,7 @@ export function getCollectionShowcaseImages(): Record<string, string | null> {
     for (const file of files) {
       if (/\.(png|jpg|jpeg|webp|gif)$/i.test(file)) {
         const collectionId = file.replace(/\.(png|jpg|jpeg|webp|gif)$/i, '');
-        showcaseImages[collectionId] = `/api/images/showcase/Collections/${file}`;
+        showcaseImages[collectionId] = `${BASE_PATH}/api/images/showcase/Collections/${file}?v=${IMAGE_VERSION}`;
       }
     }
 

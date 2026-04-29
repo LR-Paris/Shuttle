@@ -1,3 +1,4 @@
+import { basePath } from '@/lib/api';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getVersion } from '@/lib/version';
@@ -7,9 +8,10 @@ interface FooterProps {
   primaryColor: string;
   bodyFont?: string;
   cornerRadius?: number;
+  logoWhitePath?: string | null;
 }
 
-export default function Footer({ footerText, primaryColor, bodyFont = 'Inter', cornerRadius = 12 }: FooterProps) {
+export default function Footer({ footerText, primaryColor, bodyFont = 'Inter', cornerRadius = 12, logoWhitePath }: FooterProps) {
   const version = getVersion();
 
   return (
@@ -27,14 +29,10 @@ export default function Footer({ footerText, primaryColor, bodyFont = 'Inter', c
                 About
               </Link>
             </p>
-            {/* Easter Egg - subtle SVG */}
-            <Link
-              href="/secret"
-              className="hover:opacity-100 transition-opacity"
-              title="?"
-            >
+            {/* Easter Egg */}
+            <Link href="/secret" className="hover:opacity-100 transition-opacity" title="?">
               <Image
-                src="/egg.svg"
+                src={`${basePath}/egg.svg`}
                 alt=""
                 width={12}
                 height={15}
@@ -42,20 +40,21 @@ export default function Footer({ footerText, primaryColor, bodyFont = 'Inter', c
               />
             </Link>
           </div>
-          {/* LR Paris Logo */}
+          {/* LR Paris Logo - white on black */}
           <a
             href="https://lrparis.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="block bg-white rounded-lg p-2 hover:opacity-90 transition-opacity"
-            style={{ borderRadius: `${cornerRadius}px` }}
+            className="block hover:opacity-90 transition-opacity rounded-lg p-2"
+            style={{ backgroundColor: '#000000', borderRadius: `${cornerRadius}px` }}
           >
             <Image
-              src="/lr-paris-logo.svg"
+              src={`${basePath}/lr-paris-logo.svg`}
               alt="LR Paris"
               width={60}
               height={60}
               className="block"
+              style={{ filter: 'invert(1)' }}
             />
           </a>
         </div>

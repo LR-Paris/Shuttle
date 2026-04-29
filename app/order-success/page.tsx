@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api';
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -164,7 +165,7 @@ function OrderSuccessContent() {
   const [lastOrder, setLastOrder] = useState<LastOrder | null>(null);
 
   useEffect(() => {
-    fetch('/api/design')
+    apiFetch('/design')
       .then(r => r.json())
       .then(setDesign)
       .catch(console.error);

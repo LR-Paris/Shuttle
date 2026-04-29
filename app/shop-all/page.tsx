@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -13,8 +14,8 @@ export default function ShopAllPage() {
   useEffect(() => {
     async function loadData() {
       const [designResponse, collectionsResponse] = await Promise.all([
-        fetch('/api/design'),
-        fetch('/api/collections')
+        apiFetch('/design'),
+        apiFetch('/collections')
       ]);
 
       const designData = await designResponse.json();
@@ -212,6 +213,15 @@ export default function ShopAllPage() {
                   }}
                 >
                   ${product.itemCost.toFixed(2)} per unit
+                </p>
+                <p
+                  className="text-xs mt-2 italic"
+                  style={{
+                    color: design.colors.textLight,
+                    fontFamily: design.fonts.bodyFont,
+                  }}
+                >
+                  Pricing does not include shipping and taxes
                 </p>
               </div>
             </div>
