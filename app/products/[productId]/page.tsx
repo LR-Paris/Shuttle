@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api';
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -73,9 +74,9 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
 
   useEffect(() => {
     Promise.all([
-      fetch(`/api/products/${productId}`).then(r => r.json()),
-      fetch('/api/design').then(r => r.json()),
-      fetch(`/api/inventory?productId=${productId}`).then(r => r.ok ? r.json() : null).catch(() => null),
+      apiFetch(`products/${productId}`).then(r => r.json()),
+      apiFetch('design').then(r => r.json()),
+      apiFetch(`inventory?productId=${productId}`).then(r => r.ok ? r.json() : null).catch(() => null),
     ])
       .then(([productData, designData, inventoryData]) => {
         setProduct(productData);

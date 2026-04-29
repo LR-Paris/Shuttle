@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -43,9 +44,9 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
       setCollectionId(resolvedParams.collectionId);
 
       const [designResponse, collectionResponse, inventoryResponse] = await Promise.all([
-        fetch('/api/design'),
-        fetch(`/api/collections/${resolvedParams.collectionId}`),
-        fetch('/api/inventory').catch(() => null),
+        apiFetch('design'),
+        apiFetch(`collections/${resolvedParams.collectionId}`),
+        apiFetch('inventory').catch(() => null),
       ]);
 
       const designData = await designResponse.json();
