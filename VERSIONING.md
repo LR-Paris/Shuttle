@@ -77,6 +77,7 @@ Add new entry to the Version History table:
 
 ```markdown
 | STS-0.15 | 2026-02-XX | Your update description |
+| STS-3.00 | 2026-04-29 | Product variant selector — 2-level Color/Size picker, variant grouping in catalog, collection card chips |
 ```
 
 ### 3. Commit Changes
