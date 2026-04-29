@@ -1,6 +1,6 @@
 'use client';
 
-import { apiFetch } from '@/lib/api';
+import { apiFetch, apiUrl } from '@/lib/api';
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -71,6 +71,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [variantStockMap, setVariantStockMap] = useState<Record<string, number>>({});
 
   useEffect(() => {
     Promise.all([
@@ -83,6 +84,18 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
         setDesign(designData);
         setInventory(inventoryData);
         setSelectedImage(0); // reset when product changes (variant navigation)
+
+        // If this product has variants, fetch full inventory to show stock per pill
+        if (productData?.variants?.length > 1) {
+          fetch(apiUrl('inventory'))
+            .then(r => r.ok ? r.json() : [])
+            .then((allInventory: Array<{productId: string; stock: number}>) => {
+              const map: Record<string, number> = {};
+              allInventory.forEach(item => { map[item.productId] = item.stock; });
+              setVariantStockMap(map);
+            })
+            .catch(() => {});
+        }
         if (productData && designData) {
           document.title = `${designData.companyName} - ${productData.name}`;
         }
@@ -242,18 +255,32 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
                     <div className="flex flex-wrap gap-2">
                       {values.map(value => {
                         const isSelected = value === currentValue;
+
+                        // Find the target variant this pill would navigate to
+                        const targetValues = [...product.variantValues!];
+                        targetValues[dimIndex] = value;
+                        const targetVariant =
+                          product.variants!.find(v => v.values.every((val, i) => val === targetValues[i])) ||
+                          product.variants!.find(v => v.values[dimIndex] === value);
+                        const targetStock = targetVariant ? variantStockMap[targetVariant.id] : undefined;
+                        const pillOOS = targetStock !== undefined && targetStock <= 0;
+
                         return (
                           <button
                             key={value}
-                            onClick={() => handleVariantSelect(dimIndex, value)}
+                            onClick={() => !pillOOS && handleVariantSelect(dimIndex, value)}
+                            disabled={pillOOS}
                             className="px-4 py-1.5 text-sm border transition-colors"
                             style={{
                               borderRadius: `${(design as any).style?.cornerRadius ?? 8}px`,
                               backgroundColor: isSelected ? design.colors.secondary : 'transparent',
-                              borderColor: isSelected ? design.colors.secondary : design.colors.border,
-                              color: isSelected ? '#ffffff' : design.colors.text,
-                              cursor: isSelected ? 'default' : 'pointer',
+                              borderColor: isSelected ? design.colors.secondary : pillOOS ? design.colors.border : design.colors.border,
+                              color: isSelected ? '#ffffff' : pillOOS ? design.colors.border : design.colors.text,
+                              cursor: isSelected ? 'default' : pillOOS ? 'not-allowed' : 'pointer',
+                              opacity: pillOOS ? 0.4 : 1,
+                              textDecoration: pillOOS ? 'line-through' : 'none',
                             }}
+                            title={pillOOS ? 'Out of stock' : undefined}
                           >
                             {value}
                           </button>
