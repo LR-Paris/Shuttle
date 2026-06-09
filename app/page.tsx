@@ -23,7 +23,7 @@ export default function Home() {
 
       setDesign(designData);
       setCollections(collectionsData);
-      document.title = designData.companyName;
+      document.title = designData.companyName || 'Shuttle';
 
       // If single collection, flatten products and fetch inventory for stock badges
       if (collectionsData.length >= 1 && collectionsData.length <= 1) {
@@ -95,7 +95,7 @@ export default function Home() {
                   src={design.logoWhitePath}
                   alt={design.companyName}
                   className="w-auto mx-auto mb-4"
-                  style={{ height: '4.5rem', objectFit: 'contain' }}
+                  style={{ height: `${4.5 * (design.style?.logoSize || 1)}rem`, objectFit: 'contain' }}
                 />
               ) : (
                 <h1

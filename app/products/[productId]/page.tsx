@@ -73,7 +73,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
         setDesign(designData);
         setInventory(inventoryData);
         if (productData && designData) {
-          document.title = `${designData.companyName} - ${productData.name}`;
+          document.title = `${designData.companyName || 'Shuttle'} - ${productData.name}`;
         }
       })
       .catch(error => {

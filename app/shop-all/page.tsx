@@ -24,7 +24,7 @@ export default function ShopAllPage() {
       const collectionsData = await collectionsResponse.json();
 
       setDesign(designData);
-      document.title = `${designData.companyName} - Shop All`;
+      document.title = `${designData.companyName || 'Shuttle'} - Shop All`;
 
       // Build stock map from inventory
       if (inventoryResponse?.ok) {

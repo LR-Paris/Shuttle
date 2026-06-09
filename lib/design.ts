@@ -31,6 +31,8 @@ export interface Fonts {
 export interface Style {
   cornerRadius: number;
   style: string;
+  /** Logo size multiplier (1 = default). Applies to the header logo and home page hero logo. */
+  logoSize: number;
 }
 
 export interface FAQEntry {
@@ -168,15 +170,22 @@ export function getStyle(): Style {
     const content = fs.readFileSync(stylePath, 'utf-8');
     const parsed = parseKeyValueFile(content);
 
+    // logoSize is a multiplier (e.g. 1 = default, 1.5 = 50% bigger). Clamped to a sane range.
+    let logoSize = parseFloat(parsed.logoSize || '1');
+    if (isNaN(logoSize) || logoSize <= 0) logoSize = 1;
+    logoSize = Math.min(Math.max(logoSize, 0.25), 4);
+
     return {
       cornerRadius: parseInt(parsed.cornerRadius || '12', 10),
       style: parsed.style || 'rounded',
+      logoSize,
     };
   } catch (error) {
     console.error('Error reading style:', error);
     return {
       cornerRadius: 12,
       style: 'rounded',
+      logoSize: 1,
     };
   }
 }

@@ -28,7 +28,7 @@ export default function CollectionsPage() {
 
       setDesign(designData);
       setCollections(collectionsData);
-      document.title = `${designData.companyName} - Collections`;
+      document.title = `${designData.companyName || 'Shuttle'} - Collections`;
     }
     loadData();
   }, [router]);

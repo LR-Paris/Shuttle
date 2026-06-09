@@ -1,2 +1,3 @@
 cornerRadius: 12
 style: rounded
+logoSize: 1

@@ -14,6 +14,7 @@ interface HeaderProps {
   titleFont?: string;
   bodyFont?: string;
   cornerRadius?: number;
+  logoSize?: number;
 }
 
 interface Collection {
@@ -30,7 +31,8 @@ export default function Header({
   secondaryColor: initialSecondaryColor,
   titleFont: initialTitleFont = 'Inter',
   bodyFont: initialBodyFont = 'Inter',
-  cornerRadius: initialCornerRadius = 12
+  cornerRadius: initialCornerRadius = 12,
+  logoSize: initialLogoSize = 1
 }: HeaderProps) {
   const [cartItemCount, setCartItemCount] = useState(0);
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -46,6 +48,7 @@ export default function Header({
   const [titleFont, setTitleFont] = useState(initialTitleFont);
   const [bodyFont, setBodyFont] = useState(initialBodyFont);
   const [cornerRadius, setCornerRadius] = useState(initialCornerRadius);
+  const [logoSize, setLogoSize] = useState(initialLogoSize);
 
   const pathname = usePathname();
   const isHome = pathname === '/';
@@ -83,6 +86,7 @@ export default function Header({
           setTitleFont(designData.fonts.titleFont);
           setBodyFont(designData.fonts.bodyFont);
           setCornerRadius(designData.style.cornerRadius);
+          setLogoSize(designData.style.logoSize || 1);
         }
       })
       .catch(console.error);
@@ -106,7 +110,7 @@ export default function Header({
           <div className="flex justify-center mb-2" style={{ opacity: isHome ? 0 : 1, transition: 'opacity 0.3s ease', pointerEvents: isHome ? 'none' : 'auto' }}>
             <Link href="/" className="flex items-center">
               {(logoWhitePath || logoPath) ? (
-                <img src={(logoWhitePath || logoPath)!} alt={companyName} className="h-8 w-auto flex-shrink-0" style={{ objectFit: 'contain' }} />
+                <img src={(logoWhitePath || logoPath)!} alt={companyName} className="w-auto flex-shrink-0" style={{ objectFit: 'contain', height: `${2 * logoSize}rem` }} />
               ) : (
                 <span className="text-xl font-bold text-white" style={{ fontFamily: titleFont }}>{companyName}</span>
               )}
@@ -233,7 +237,7 @@ export default function Header({
         <div className="header-desktop hidden md:flex items-center justify-between" style={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <Link href="/" className="flex items-center space-x-3" style={{ opacity: isHome ? 0 : 1, transition: 'opacity 0.3s ease', pointerEvents: isHome ? 'none' : 'auto' }}>
             {(logoWhitePath || logoPath) ? (
-              <img src={(logoWhitePath || logoPath)!} alt={companyName} className="h-8 md:h-10 w-auto flex-shrink-0" style={{ objectFit: 'contain' }} />
+              <img src={(logoWhitePath || logoPath)!} alt={companyName} className="w-auto flex-shrink-0" style={{ objectFit: 'contain', height: `${2.5 * logoSize}rem` }} />
             ) : (
               <span className="text-2xl font-bold text-white" style={{ fontFamily: titleFont }}>{companyName}</span>
             )}

@@ -83,7 +83,10 @@ export default function CheckoutPage() {
 
     fetch('/api/design')
       .then(r => r.json())
-      .then(setDesign)
+      .then((designData) => {
+        setDesign(designData);
+        document.title = `${designData.companyName || 'Shuttle'} - Checkout`;
+      })
       .catch(console.error);
 
     fetch('/api/presets')

@@ -45,7 +45,7 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
 
       const coll = await collectionResponse.json();
       setCollection(coll);
-      document.title = `${designData.companyName} - ${coll.name}`;
+      document.title = `${designData.companyName || 'Shuttle'} - ${coll.name}`;
 
       // Use showcase photo if available, otherwise fall back to product images
       const showcaseImage = designData.collectionShowcaseImages?.[resolvedParams.collectionId];
