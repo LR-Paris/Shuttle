@@ -1,2 +1,3 @@
 cornerRadius: 0
 style: sharp
+logoSize: 1

@@ -39,6 +39,7 @@ export default function CartPage() {
       fetch('/api/inventory').then(r => r.ok ? r.json() : []).catch(() => []),
     ]).then(([designData, inventoryData]) => {
       setDesign(designData);
+      document.title = `${designData.companyName || 'Shuttle'} - Cart`;
       const map: Record<string, number> = {};
       inventoryData.forEach((item: any) => { map[item.productId] = item.stock; });
       setStockMap(map);

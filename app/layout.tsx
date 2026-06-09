@@ -5,10 +5,14 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PasswordProtection from "@/components/PasswordProtection";
 
+// Always render per-request so the title/branding reflect the current
+// DATABASE contents instead of whatever was present at build time.
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata(): Promise<Metadata> {
   const design = getDesignData();
   return {
-    title: design.companyName,
+    title: design.companyName || 'Shuttle',
     description: design.descriptions.tagline,
     icons: {
       icon: '/favicon.ico',
@@ -83,6 +87,7 @@ export default function RootLayout({
             titleFont={design.fonts.titleFont}
             bodyFont={design.fonts.bodyFont}
             cornerRadius={design.style.cornerRadius}
+            logoSize={design.style.logoSize}
           />
           <main className="flex-grow">
             {children}

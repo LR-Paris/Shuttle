@@ -30,7 +30,10 @@ export default function SecretPage() {
   useEffect(() => {
     fetch('/api/design')
       .then(r => r.json())
-      .then(setDesign)
+      .then((designData) => {
+        setDesign(designData);
+        document.title = designData.companyName || 'Shuttle';
+      })
       .catch(console.error);
   }, []);
 
