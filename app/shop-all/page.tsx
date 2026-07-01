@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import FadeImage from '@/components/FadeImage';
+import { dedupeVariantGroups } from '@/lib/variants';
 
 type SortOption = 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc' | 'units-asc' | 'units-desc' | 'total-asc' | 'total-desc';
 
@@ -42,7 +43,7 @@ export default function ShopAllPage() {
         });
       });
 
-      setProducts(allProducts);
+      setProducts(dedupeVariantGroups(allProducts));
     }
     loadData();
   }, []);

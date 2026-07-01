@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import FadeImage from '@/components/FadeImage';
+import { countDistinctProducts, dedupeVariantGroups } from '@/lib/variants';
 
 export default function Home() {
   const [design, setDesign] = useState<any>(null);
@@ -33,7 +34,7 @@ export default function Home() {
             products.push(product);
           });
         });
-        setAllProducts(products);
+        setAllProducts(dedupeVariantGroups(products));
 
         try {
           const inventoryResponse = await fetch('/api/inventory');
@@ -299,8 +300,8 @@ export default function Home() {
                           fontFamily: design.fonts.bodyFont,
                         }}
                       >
-                        {collection.products.length}{' '}
-                        {collection.products.length === 1 ? 'product' : 'products'}
+                        {countDistinctProducts(collection.products)}{' '}
+                        {countDistinctProducts(collection.products) === 1 ? 'product' : 'products'}
                       </p>
                       <div className="mt-4">
                         <span

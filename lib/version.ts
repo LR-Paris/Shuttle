@@ -36,7 +36,7 @@
  * 4. Commit with version number in commit message
  */
 
-export const VERSION = 'STS-2.6.3';
+export const VERSION = 'STS-3.0.1';
 
 export const VERSION_INFO = {
   name: 'Shop Template System',

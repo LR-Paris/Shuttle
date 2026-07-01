@@ -214,3 +214,4 @@ Potential future additions to version system:
 ## Questions?
 
 For questions about the versioning system, see the About page or contact via the FAQ section.
+| STS-3.0.1 | 2026-07-01 | Variant groups count & list as one item across all pages (shared lib/variants.ts helper) |
