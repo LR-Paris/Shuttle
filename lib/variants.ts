@@ -23,3 +23,9 @@ export function dedupeVariantGroups<T extends VariantLike>(products: T[]): T[] {
 export function countDistinctProducts(products: VariantLike[]): number {
   return dedupeVariantGroups(products).length;
 }
+
+// Display name for a card: the variant group base name (e.g. "Branded Sneakers")
+// rather than the folder name of one variant ("Branded Sneakers (10)").
+export function variantDisplayName(product: { name: string; variantGroup?: string }): string {
+  return product.variantGroup || product.name;
+}

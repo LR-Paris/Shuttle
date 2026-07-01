@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import FadeImage from '@/components/FadeImage';
-import { dedupeVariantGroups } from '@/lib/variants';
+import VariantChips from '@/components/VariantChips';
+import { dedupeVariantGroups, variantDisplayName } from '@/lib/variants';
 
 type SortOption = 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc' | 'units-asc' | 'units-desc' | 'total-asc' | 'total-desc';
 
@@ -152,7 +153,7 @@ export default function ShopAllPage() {
                 <div className="aspect-square bg-gray-100 relative border-b" style={{ borderColor: design.colors.border }}>
                   <FadeImage
                     src={product.images[0]}
-                    alt={product.name}
+                    alt={variantDisplayName(product)}
                     className="w-full h-full object-contain p-4"
                   />
                 </div>
@@ -182,8 +183,9 @@ export default function ShopAllPage() {
                     fontFamily: design.fonts.titleFont,
                   }}
                 >
-                  {product.name}
+                  {variantDisplayName(product)}
                 </h3>
+                <VariantChips product={product} design={design} stockMap={stockMap} />
                 <p
                   className="text-xs mb-2 italic"
                   style={{
