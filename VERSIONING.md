@@ -77,6 +77,7 @@ Add new entry to the Version History table:
 
 ```markdown
 | STS-0.15 | 2026-02-XX | Your update description |
+| STS-4.0.0 | 2026-07-06 | Hidden items: Details/Hidden.txt flag hides products from the storefront |
 ```
 
 ### 3. Commit Changes

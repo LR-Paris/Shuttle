@@ -28,6 +28,7 @@
  * - STS-2.6.1 - Stock badges show actual box counts, populated inventory CSV with real stock levels
  * - STS-2.6.2 - Checkout inventory re-validation to prevent overselling, stock count on product page, negative stock allowed in CSV, description newline support
  * - STS-2.6.3 - Launchpad email integration: order notify webhook, Status/Tracking columns in CSV, AdminEmail.txt support
+ * - STS-4.0.0 - Hidden items: Details/Hidden.txt flag hides products from the storefront
  *
  * To increment version:
  * 1. Update VERSION constant below
@@ -36,14 +37,14 @@
  * 4. Commit with version number in commit message
  */
 
-export const VERSION = 'STS-2.6.3';
+export const VERSION = 'STS-4.0.0';
 
 export const VERSION_INFO = {
   name: 'Shop Template System',
   version: VERSION,
-  codename: 'Guardian',
-  releaseDate: '2026-03-04',
-  description: 'Launchpad email integration: order notify webhook, Status/Tracking columns in CSV, AdminEmail.txt support',
+  codename: 'Eclipse',
+  releaseDate: '2026-07-06',
+  description: 'Hidden items: Details/Hidden.txt flag hides products from the storefront',
   attribution: 'Built with LR Paris Shuttle',
 };
 

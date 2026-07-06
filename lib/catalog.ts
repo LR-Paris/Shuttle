@@ -76,6 +76,11 @@ function parseProduct(
     const boxCost = parseFloat(readDetailsFile(detailsPath, 'BoxCost.txt') || '0');
     const unitsPerBox = parseInt(readDetailsFile(detailsPath, 'UnitsPerBox.txt') || '1', 10);
 
+    // Hidden flag — Details/Hidden.txt containing "true" hides the product from the storefront
+    if (readDetailsFile(detailsPath, 'Hidden.txt').toLowerCase() === 'true') {
+      return null;
+    }
+
     if (!name || !sku) {
       return null;
     }
