@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState, useMemo } from 'react';
 import FadeImage from '@/components/FadeImage';
+import { countDistinctProducts } from '@/lib/variants';
 
 interface CollectionCardProps {
   collection: {
@@ -92,8 +93,8 @@ export default function CollectionCard({ collection, design, tick }: CollectionC
             fontFamily: design.fonts.bodyFont,
           }}
         >
-          {collection.products.length}{' '}
-          {collection.products.length === 1 ? 'product' : 'products'}
+          {countDistinctProducts(collection.products)}{' '}
+          {countDistinctProducts(collection.products) === 1 ? 'product' : 'products'}
         </p>
         <div className="mt-4">
           <span

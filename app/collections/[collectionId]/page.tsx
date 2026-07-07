@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import FadeImage from '@/components/FadeImage';
+import { dedupeVariantGroups } from '@/lib/variants';
 
 type SortOption = 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc' | 'units-asc' | 'units-desc' | 'total-asc' | 'total-desc';
 
@@ -113,11 +114,8 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
     }
   });
 
-  // One card per variant group — keep only the first variant (index 0 in sorted variants array)
-  const displayProducts = sortedProducts.filter((product: Product) => {
-    if (!product.variants || product.variants.length === 0) return true;
-    return product.variants[0].id === product.id;
-  });
+  // One card per variant group (shared helper — see lib/variants.ts)
+  const displayProducts = dedupeVariantGroups(sortedProducts);
 
   return (
     <div>
