@@ -29,6 +29,7 @@
  * - STS-2.6.2 - Checkout inventory re-validation to prevent overselling, stock count on product page, negative stock allowed in CSV, description newline support
  * - STS-2.6.3 - Launchpad email integration: order notify webhook, Status/Tracking columns in CSV, AdminEmail.txt support
  * - STS-4.0.0 - Hidden items: Details/Hidden.txt flag hides products from the storefront
+ * - STS-4.1.0 - Request shops: Presets/Display.txt hides prices site-wide and switches cart/checkout copy to request language; new checkout fields (brand dropdown from Design/Details/Brands.txt, billing address, in-hand date, estimated budget, standalone PO number, custom art link); five new orders.csv columns with backward-compatible migration
  *
  * To increment version:
  * 1. Update VERSION constant below
@@ -37,14 +38,14 @@
  * 4. Commit with version number in commit message
  */
 
-export const VERSION = 'STS-4.0.0';
+export const VERSION = 'STS-4.1.0';
 
 export const VERSION_INFO = {
   name: 'Shop Template System',
   version: VERSION,
   codename: 'Eclipse',
-  releaseDate: '2026-07-06',
-  description: 'Hidden items: Details/Hidden.txt flag hides products from the storefront',
+  releaseDate: '2026-08-26',
+  description: 'Request shops: price hiding, request language, and an extended checkout field set',
   attribution: 'Built with LR Paris Shuttle',
 };
 

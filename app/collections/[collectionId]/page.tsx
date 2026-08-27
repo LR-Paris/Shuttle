@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import FadeImage from '@/components/FadeImage';
+import { useShopPresets } from '@/lib/useShopPresets';
 
 type SortOption = 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc' | 'units-asc' | 'units-desc' | 'total-asc' | 'total-desc';
 
@@ -13,6 +14,7 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
   const [collection, setCollection] = useState<any>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [collectionImages, setCollectionImages] = useState<string[]>([]);
+  const { showPrices } = useShopPresets();
   const [hasShowcaseImage, setHasShowcaseImage] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>('name-asc');
   const [stockMap, setStockMap] = useState<Record<string, number>>({});
@@ -219,12 +221,20 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
             >
               <option value="name-asc">Name (A-Z)</option>
               <option value="name-desc">Name (Z-A)</option>
-              <option value="price-asc">Price per unit (Low to High)</option>
-              <option value="price-desc">Price per unit (High to Low)</option>
+              {showPrices && (
+                <>
+                  <option value="price-asc">Price per unit (Low to High)</option>
+                  <option value="price-desc">Price per unit (High to Low)</option>
+                </>
+              )}
               <option value="units-asc">Units per box (Low to High)</option>
               <option value="units-desc">Units per box (High to Low)</option>
-              <option value="total-asc">Box price (Low to High)</option>
-              <option value="total-desc">Box price (High to Low)</option>
+              {showPrices && (
+                <>
+                  <option value="total-asc">Box price (Low to High)</option>
+                  <option value="total-desc">Box price (High to Low)</option>
+                </>
+              )}
             </select>
           </div>
         </div>
@@ -300,24 +310,28 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
                     >
                       Box of {product.unitsPerBox} units
                     </p>
-                    <p
-                      className="text-2xl font-bold"
-                      style={{
-                        color: design.colors.secondary,
-                        fontFamily: design.fonts.titleFont,
-                      }}
-                    >
-                      ${product.boxCost.toFixed(2)}
-                    </p>
-                    <p
-                      className="text-sm"
-                      style={{
-                        color: design.colors.textLight,
-                        fontFamily: design.fonts.bodyFont,
-                      }}
-                    >
-                      ${product.itemCost.toFixed(2)} per unit
-                    </p>
+                    {showPrices && (
+                      <>
+                        <p
+                          className="text-2xl font-bold"
+                          style={{
+                            color: design.colors.secondary,
+                            fontFamily: design.fonts.titleFont,
+                          }}
+                        >
+                          ${product.boxCost.toFixed(2)}
+                        </p>
+                        <p
+                          className="text-sm"
+                          style={{
+                            color: design.colors.textLight,
+                            fontFamily: design.fonts.bodyFont,
+                          }}
+                        >
+                          ${product.itemCost.toFixed(2)} per unit
+                        </p>
+                      </>
+                    )}
                   </div>
                   {stock !== null && (
                     <p className="text-xs" style={{ color: isOutOfStock ? '#DC2626' : design.colors.success }}>

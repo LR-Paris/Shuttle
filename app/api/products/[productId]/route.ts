@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getProduct } from '@/lib/catalog';
+import { redactProduct } from '@/lib/pricing';
 
 export async function GET(
   request: NextRequest,
@@ -16,7 +17,7 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(product);
+    return NextResponse.json(redactProduct(product));
   } catch (error) {
     console.error('Error fetching product:', error);
     return NextResponse.json(

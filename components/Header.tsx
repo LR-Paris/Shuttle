@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { getCart } from '@/lib/cart';
+import { useShopPresets, requestWords } from '@/lib/useShopPresets';
 
 interface HeaderProps {
   companyName: string;
@@ -33,6 +34,8 @@ export default function Header({
   cornerRadius: initialCornerRadius = 12
 }: HeaderProps) {
   const [cartItemCount, setCartItemCount] = useState(0);
+  const { isRequest } = useShopPresets();
+  const words = requestWords(isRequest);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -343,7 +346,7 @@ export default function Header({
                   d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                 />
               </svg>
-              <span>Cart ({cartItemCount})</span>
+              <span>{words.Cart} ({cartItemCount})</span>
             </Link>
           </nav>
         </div>

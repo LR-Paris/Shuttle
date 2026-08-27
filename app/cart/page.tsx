@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getCart, updateCartItemQuantity, removeFromCart, type Cart } from '@/lib/cart';
+import { useShopPresets, requestWords } from '@/lib/useShopPresets';
 
 interface DesignData {
   colors: {
@@ -30,6 +31,8 @@ export default function CartPage() {
   const [cart, setCart] = useState<Cart>({ items: [], total: 0 });
   const [design, setDesign] = useState<DesignData | null>(null);
   const [stockMap, setStockMap] = useState<Record<string, number>>({});
+  const { showPrices, isRequest } = useShopPresets();
+  const words = requestWords(isRequest);
 
   useEffect(() => {
     setCart(getCart());
@@ -73,10 +76,12 @@ export default function CartPage() {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
         <h1 className="text-4xl font-bold mb-4" style={{ color: design.colors.primary, fontFamily: design.fonts.titleFont }}>
-          Your Cart is Empty
+          {isRequest ? 'Your Request is Empty' : 'Your Cart is Empty'}
         </h1>
         <p className="mb-8" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
-          Browse our collections to add items to your cart.
+          {isRequest
+            ? 'Browse the catalog to add items to your request.'
+            : 'Browse our collections to add items to your cart.'}
         </p>
         <Link
           href="/collections"
@@ -102,7 +107,7 @@ export default function CartPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       <h1 className="text-4xl font-bold mb-8" style={{ color: design.colors.primary, fontFamily: design.fonts.titleFont }}>
-        Shopping Cart
+        {isRequest ? 'Your Request' : 'Shopping Cart'}
       </h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -205,12 +210,16 @@ export default function CartPage() {
                     </div>
 
                     <div className="text-right">
-                      <p className="text-sm" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
-                        ${item.boxCost.toFixed(2)} per box
-                      </p>
-                      <p className="text-2xl font-bold" style={{ color: design.colors.secondary, fontFamily: design.fonts.titleFont }}>
-                        ${(item.boxCost * item.quantity).toFixed(2)}
-                      </p>
+                      {showPrices && (
+                        <>
+                          <p className="text-sm" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
+                            ${item.boxCost.toFixed(2)} per box
+                          </p>
+                          <p className="text-2xl font-bold" style={{ color: design.colors.secondary, fontFamily: design.fonts.titleFont }}>
+                            ${(item.boxCost * item.quantity).toFixed(2)}
+                          </p>
+                        </>
+                      )}
                       <p className="text-sm" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
                         {item.quantity * item.unitsPerBox} total units
                       </p>
@@ -235,7 +244,7 @@ export default function CartPage() {
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            Continue Shopping
+            {isRequest ? 'Keep Browsing' : 'Continue Shopping'}
           </Link>
         </div>
 
@@ -246,7 +255,7 @@ export default function CartPage() {
             style={{ borderColor: design.colors.border, borderRadius: `${design.style.cornerRadius}px` }}
           >
             <h2 className="text-2xl font-bold mb-6" style={{ color: design.colors.primary, fontFamily: design.fonts.titleFont }}>
-              Order Summary
+              {isRequest ? 'Request Summary' : 'Order Summary'}
             </h2>
 
             <div className="space-y-3 mb-6">
@@ -263,9 +272,11 @@ export default function CartPage() {
                     }}>
                       {item.productName} x {item.quantity}
                     </span>
-                    <span style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
-                      ${(item.boxCost * item.quantity).toFixed(2)}
-                    </span>
+                    {showPrices && (
+                      <span style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
+                        ${(item.boxCost * item.quantity).toFixed(2)}
+                      </span>
+                    )}
                   </div>
                 );
               })}
@@ -274,10 +285,12 @@ export default function CartPage() {
             <div className="border-t pt-4 mb-6" style={{ borderColor: design.colors.border }}>
               <div className="flex justify-between items-center">
                 <span className="text-xl font-bold" style={{ color: design.colors.primary, fontFamily: design.fonts.titleFont }}>
-                  Total:
+                  {showPrices ? 'Total:' : 'Total units:'}
                 </span>
                 <span className="text-3xl font-bold" style={{ color: design.colors.secondary, fontFamily: design.fonts.titleFont }}>
-                  ${cart.total.toFixed(2)}
+                  {showPrices
+                    ? `$${cart.total.toFixed(2)}`
+                    : cart.items.reduce((sum, i) => sum + i.quantity * i.unitsPerBox, 0)}
                 </span>
               </div>
             </div>
@@ -288,8 +301,8 @@ export default function CartPage() {
                 style={{ backgroundColor: '#FEF2F2', color: '#DC2626', borderRadius: `${design.style.cornerRadius}px` }}
               >
                 {hasOutOfStockItems
-                  ? 'Some items in your cart are out of stock. Please remove them before checking out.'
-                  : 'Some items exceed available stock. Please adjust quantities before checking out.'}
+                  ? `Some items in your ${words.cart} are out of stock. Please remove them before continuing.`
+                  : 'Some items exceed available stock. Please adjust quantities before continuing.'}
               </div>
             )}
 
@@ -299,7 +312,7 @@ export default function CartPage() {
               className="w-full py-3 text-white text-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ backgroundColor: design.colors.secondary, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
             >
-              Proceed to Checkout
+              {isRequest ? 'Review Request' : 'Proceed to Checkout'}
             </button>
           </div>
         </div>

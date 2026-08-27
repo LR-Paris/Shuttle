@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useShopPresets } from '@/lib/useShopPresets';
 
 interface DesignData {
   colors: {
@@ -41,7 +42,12 @@ function sanitize(str: string): string {
   return str.replace(/[^\x20-\x7E]/g, '');
 }
 
-function generateReceiptPDF(order: LastOrder, companyName: string): Blob {
+function generateReceiptPDF(
+  order: LastOrder,
+  companyName: string,
+  opts: { showPrices: boolean; isRequest: boolean } = { showPrices: true, isRequest: false },
+): Blob {
+  const { showPrices, isRequest } = opts;
   const W = 612;
   const H = 792;
   const M = 50;
@@ -93,8 +99,12 @@ function generateReceiptPDF(order: LastOrder, companyName: string): Blob {
 
   text('Item', colItem, y, 10, true);
   text('Qty', colQty, y, 10, true);
-  text('Price', colPrice, y, 10, true);
-  text('Total', colTotal, y, 10, true);
+  if (showPrices) {
+    text('Price', colPrice, y, 10, true);
+    text('Total', colTotal, y, 10, true);
+  } else {
+    text('Units', colPrice, y, 10, true);
+  }
   y -= 6;
   line(M, y, W - M, y);
   y -= 16;
@@ -106,8 +116,12 @@ function generateReceiptPDF(order: LastOrder, companyName: string): Blob {
       : item.productName;
     text(name, colItem, y, 10);
     text(`${item.quantity}`, colQty, y, 10);
-    text(`$${item.boxCost.toFixed(2)}`, colPrice, y, 10);
-    text(`$${(item.boxCost * item.quantity).toFixed(2)}`, colTotal, y, 10);
+    if (showPrices) {
+      text(`$${item.boxCost.toFixed(2)}`, colPrice, y, 10);
+      text(`$${(item.boxCost * item.quantity).toFixed(2)}`, colTotal, y, 10);
+    } else {
+      text(`${item.quantity * item.unitsPerBox}`, colPrice, y, 10);
+    }
     y -= 14;
     text(`SKU: ${item.sku}  |  ${item.quantity * item.unitsPerBox} units (${item.unitsPerBox}/box)`, colItem + 8, y, 8);
     y -= 20;
@@ -116,14 +130,29 @@ function generateReceiptPDF(order: LastOrder, companyName: string): Blob {
   // Total
   line(M, y, W - M, y, 1);
   y -= 22;
-  text('Total:', colPrice, y, 13, true);
-  text(`$${order.total.toFixed(2)}`, colTotal, y, 13, true);
+  if (showPrices) {
+    text('Total:', colPrice, y, 13, true);
+    text(`$${order.total.toFixed(2)}`, colTotal, y, 13, true);
+  } else {
+    const units = order.items.reduce((s, i) => s + i.quantity * i.unitsPerBox, 0);
+    text('Total units:', colQty, y, 13, true);
+    text(`${units}`, colTotal, y, 13, true);
+  }
   y -= 40;
 
   // Footer
-  text('Thank you for your order!', M, y, 11);
+  text(isRequest ? 'Thank you for your request.' : 'Thank you for your order!', M, y, 11);
   y -= 16;
-  text('This receipt serves as confirmation of your order submission.', M, y, 9);
+  text(
+    isRequest
+      ? 'This confirms your request was received. It is not an order confirmation.'
+      : 'This receipt serves as confirmation of your order submission.',
+    M, y, 9,
+  );
+  if (isRequest) {
+    y -= 14;
+    text('Nothing is produced or shipped until specifications, pricing and lead time are confirmed.', M, y, 9);
+  }
 
   // Build PDF document
   const objs = [
@@ -166,6 +195,7 @@ function OrderSuccessContent() {
   const [isCancelling, setIsCancelling] = useState(false);
   const [cancelled, setCancelled] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
+  const { showPrices, isRequest } = useShopPresets();
 
   useEffect(() => {
     fetch('/api/design')
@@ -183,7 +213,7 @@ function OrderSuccessContent() {
 
   const handleDownloadReceipt = () => {
     if (!lastOrder || !design) return;
-    const blob = generateReceiptPDF(lastOrder, design.companyName);
+    const blob = generateReceiptPDF(lastOrder, design.companyName, { showPrices, isRequest });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -317,11 +347,13 @@ function OrderSuccessContent() {
         </div>
 
         <h1 className="text-4xl font-bold mb-4" style={{ color: design.colors.primary }}>
-          Order Submitted Successfully!
+          {isRequest ? 'Request Submitted' : 'Order Submitted Successfully!'}
         </h1>
 
         <p className="text-xl mb-2" style={{ color: design.colors.text }}>
-          Thank you for your order.
+          {isRequest
+            ? 'Thank you. This is a request for approval, not an order confirmation. Nothing is produced or shipped until specifications, pricing and lead time are confirmed in writing.'
+            : 'Thank you for your order.'}
         </p>
 
         {orderId && (
@@ -405,7 +437,7 @@ function OrderSuccessContent() {
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            Download PDF Receipt
+            {isRequest ? 'Download PDF Summary' : 'Download PDF Receipt'}
           </button>
         )}
 

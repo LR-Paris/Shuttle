@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
+import { useShopPresets, requestWords } from '@/lib/useShopPresets';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { addToCart } from '@/lib/cart';
@@ -60,6 +61,8 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const { showPrices, isRequest } = useShopPresets();
+  const words = requestWords(isRequest);
 
   useEffect(() => {
     // Fetch product, design, and inventory data
@@ -209,12 +212,21 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
             <p className="text-lg font-semibold mb-2" style={{ color: design.colors.text }}>
               Box of {product.unitsPerBox} units
             </p>
-            <p className="text-4xl font-bold mb-1" style={{ color: design.colors.secondary }}>
-              ${product.boxCost.toFixed(2)}
-            </p>
-            <p style={{ color: design.colors.textLight }}>
-              ${product.itemCost.toFixed(2)} per unit
-            </p>
+            {showPrices && (
+              <>
+                <p className="text-4xl font-bold mb-1" style={{ color: design.colors.secondary }}>
+                  ${product.boxCost.toFixed(2)}
+                </p>
+                <p style={{ color: design.colors.textLight }}>
+                  ${product.itemCost.toFixed(2)} per unit
+                </p>
+              </>
+            )}
+            {!showPrices && (
+              <p className="text-sm" style={{ color: design.colors.textLight }}>
+                Pricing quoted after approval
+              </p>
+            )}
             {stock !== null && (
               <p className="text-sm mt-2 font-semibold" style={{ color: stock > 0 ? design.colors.success : '#EF4444' }}>
                 {stock > 0 ? `${stock} in stock` : 'Out of stock'}
@@ -268,11 +280,15 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
           {/* Total */}
           <div className="mb-6">
             <p className="text-sm" style={{ color: design.colors.textLight }}>
-              Total ({quantity} {quantity === 1 ? 'box' : 'boxes'}):
+              {showPrices
+                ? `Total (${quantity} ${quantity === 1 ? 'box' : 'boxes'}):`
+                : `${quantity} ${quantity === 1 ? 'box' : 'boxes'} selected`}
             </p>
-            <p className="text-3xl font-bold" style={{ color: design.colors.primary }}>
-              ${totalPrice.toFixed(2)}
-            </p>
+            {showPrices && (
+              <p className="text-3xl font-bold" style={{ color: design.colors.primary }}>
+                ${totalPrice.toFixed(2)}
+              </p>
+            )}
             <p className="text-sm" style={{ color: design.colors.textLight }}>
               {quantity * product.unitsPerBox} total units
             </p>
@@ -285,7 +301,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
             className="w-full py-4 rounded-lg text-white text-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
             style={{ backgroundColor: isOutOfStock ? '#9CA3AF' : design.colors.secondary }}
           >
-            {isOutOfStock ? 'Out of Stock' : isAdding ? 'Adding...' : 'Add to Cart'}
+            {isOutOfStock ? 'Out of Stock' : isAdding ? 'Adding...' : `Add to ${words.Cart}`}
           </button>
 
           {/* Success Message */}
@@ -294,7 +310,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
               className="mt-4 p-4 rounded-lg text-white"
               style={{ backgroundColor: design.colors.success }}
             >
-              Added to cart successfully!
+              {isRequest ? 'Added to your request' : 'Added to cart successfully!'}
             </div>
           )}
         </div>

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { deductStock, getStockMap } from '@/lib/inventory';
+import { recomputeTotal } from '@/lib/pricing';
 
 interface OrderItem {
   productId: string;
@@ -25,13 +26,22 @@ interface OrderData {
   orderNotes: string;
   items: OrderItem[];
   total: number;
-  // STS-2.00 new fields
+  // STS-2.00 fields
   shopType?: string;
   poNumber?: string;
   hotelSelection?: string;
+  // STS-4.1.0 request-shop fields
+  brand?: string;
+  billingAddress?: string;
+  inHandDate?: string;
+  estimatedBudget?: string;
+  artLink?: string;
 }
 
-const CSV_HEADER = 'Order ID,Date,Customer Name,Email,Phone,Company,Shipping Address,Freight Option,Freight Company,Freight Account,Freight Contact,Order Notes,Items,Total,Shop Type,PO Number,PO File,Hotel Selection,Status,Tracking Number';
+const CSV_HEADER = 'Order ID,Date,Customer Name,Email,Phone,Company,Shipping Address,Freight Option,Freight Company,Freight Account,Freight Contact,Order Notes,Items,Total,Shop Type,PO Number,PO File,Hotel Selection,Status,Tracking Number,Brand,Billing Address,In Hand Date,Estimated Budget,Art Link';
+
+/** Number of columns appended by each schema step, used when migrating old files. */
+const STS_410_COLUMNS = 5; // Brand, Billing Address, In Hand Date, Estimated Budget, Art Link
 
 function generateOrderId(): string {
   const timestamp = Date.now();
@@ -49,9 +59,11 @@ function escapeCSVField(field: string): string {
 }
 
 /**
- * Ensures the orders.csv file exists with the correct STS-2.00 header.
- * If the file already exists with the old header, it migrates by prepending the new header
- * and appending empty columns to existing rows.
+ * Ensures orders.csv exists with the current header, migrating older files in
+ * place by padding existing rows with empty columns.
+ *
+ * The sentinel is the LAST column added, not an earlier one. Checking for an
+ * older column name would short-circuit the migration and leave rows short.
  */
 function ensureCSVHeader(ordersPath: string): void {
   const ordersDir = path.dirname(ordersPath);
@@ -60,7 +72,6 @@ function ensureCSVHeader(ordersPath: string): void {
   }
 
   if (!fs.existsSync(ordersPath)) {
-    // Fresh file — write new header
     fs.writeFileSync(ordersPath, CSV_HEADER + '\n', 'utf-8');
     return;
   }
@@ -68,23 +79,30 @@ function ensureCSVHeader(ordersPath: string): void {
   const content = fs.readFileSync(ordersPath, 'utf-8');
   const firstLine = content.split('\n')[0] || '';
 
-  // If header already has Status column, nothing to do
-  if (firstLine.includes('Status')) {
+  // Already current.
+  if (firstLine.includes('Art Link')) {
     return;
   }
 
   const lines = content.split('\n');
   const migrated: string[] = [CSV_HEADER];
 
+  const hasStatus = firstLine.includes('Status');
+  const hasShopType = firstLine.includes('Shop Type');
+  const pad = ','.repeat(STS_410_COLUMNS);
+
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line) continue;
-    if (firstLine.includes('Shop Type')) {
-      // Has Shop Type columns but missing Status/Tracking Number — append 2 columns
-      migrated.push(line + ',Pending,');
+    if (hasStatus) {
+      // STS-2.00 with Status/Tracking — only the 4.1.0 columns are missing.
+      migrated.push(line + pad);
+    } else if (hasShopType) {
+      // Has Shop Type block but no Status/Tracking.
+      migrated.push(line + ',Pending,' + pad.slice(1));
     } else {
-      // Old format — append Shop Type + PO + Hotel + Status + Tracking
-      migrated.push(line + ',free,,,,Pending,');
+      // Original format — append Shop Type + PO + Hotel + Status + Tracking + 4.1.0.
+      migrated.push(line + ',free,,,,Pending,' + pad.slice(1));
     }
   }
 
@@ -145,6 +163,11 @@ export async function POST(request: NextRequest) {
     const orderId = generateOrderId();
     const orderDate = new Date().toISOString();
 
+    // Never trust the client's total. On a price-hidden shop the browser only
+    // ever saw zeros, so the submitted figure is zero; on any shop it is a
+    // number the client could have edited. Recompute from the catalog.
+    const orderTotal = recomputeTotal(orderData.items);
+
     // Format items as JSON string for CSV
     const itemsJson = JSON.stringify(orderData.items);
 
@@ -174,13 +197,18 @@ export async function POST(request: NextRequest) {
       escapeCSVField(orderData.freightContact || ''),
       escapeCSVField(orderData.orderNotes || ''),
       escapeCSVField(itemsJson),
-      escapeCSVField(orderData.total.toFixed(2)),
+      escapeCSVField(orderTotal.toFixed(2)),
       escapeCSVField(shopType),
       escapeCSVField(poNumber),
       escapeCSVField(poFileRef),
       escapeCSVField(hotelSelection),
       'Pending',
       '',
+      escapeCSVField(orderData.brand || ''),
+      escapeCSVField(orderData.billingAddress || ''),
+      escapeCSVField(orderData.inHandDate || ''),
+      escapeCSVField(orderData.estimatedBudget || ''),
+      escapeCSVField(orderData.artLink || ''),
     ].join(',');
 
     // Append to orders.csv
@@ -209,7 +237,7 @@ export async function POST(request: NextRequest) {
       fetch(`${launchpadUrl}/api/shops/${shopSlug}/orders/notify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderData: { orderId, date: orderDate, ...orderData } }),
+        body: JSON.stringify({ orderData: { orderId, date: orderDate, ...orderData, total: orderTotal } }),
       }).catch(err => console.warn('Launchpad notify failed (non-blocking):', err));
     }
 
