@@ -29,6 +29,7 @@
  * - STS-2.6.2 - Checkout inventory re-validation to prevent overselling, stock count on product page, negative stock allowed in CSV, description newline support
  * - STS-2.6.3 - Launchpad email integration: order notify webhook, Status/Tracking columns in CSV, AdminEmail.txt support
  * - STS-4.0.0 - Hidden items: Details/Hidden.txt flag hides products from the storefront
+ * - STS-4.2.1 - Product page renders a real not-found state instead of crashing: the product fetch had no r.ok check, so a 404 body became the product and product.images.length threw an unhandled client exception
  * - STS-4.2.0 - Shop All search across name, SKU, description and collection; 20-per-page pagination; inventory endpoint answers 200 with stock: null for untracked products instead of 404
  * - STS-4.1.0 - Request shops: Presets/Display.txt hides prices site-wide and switches cart/checkout copy to request language; new checkout fields (brand dropdown from Design/Details/Brands.txt, billing address, in-hand date, estimated budget, standalone PO number, custom art link); five new orders.csv columns with backward-compatible migration
  *
@@ -39,14 +40,14 @@
  * 4. Commit with version number in commit message
  */
 
-export const VERSION = 'STS-4.2.0';
+export const VERSION = 'STS-4.2.1';
 
 export const VERSION_INFO = {
   name: 'Shop Template System',
   version: VERSION,
   codename: 'Eclipse',
   releaseDate: '2026-09-01',
-  description: 'Shop All search and pagination, and a non-erroring inventory endpoint',
+  description: 'Graceful product not-found state, Shop All search and pagination',
   attribution: 'Built with LR Paris Shuttle',
 };
 
