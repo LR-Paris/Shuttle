@@ -11,11 +11,15 @@ export async function GET(request: NextRequest) {
     if (productId) {
       const stock = getStockByProductId(productId);
       if (stock === null) {
-        return NextResponse.json({ error: 'Product not found in inventory' }, { status: 404 });
+        // Not an error. A product absent from inventory.csv is untracked, which
+        // checkout already treats as unlimited. Answering 404 made every
+        // product page on a stock-free shop log a console 404 and look broken.
+        // stock: null is what the client reads as "no stock data".
+        return NextResponse.json({ productId, stock: null, tracked: false });
       }
       const inventory = getInventory();
       const record = inventory.find(r => r.productId === productId);
-      return NextResponse.json(record);
+      return NextResponse.json({ ...record, tracked: true });
     }
 
     const inventory = getInventory();
