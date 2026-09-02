@@ -337,7 +337,7 @@ export default function CheckoutPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       <h1 className="text-4xl font-bold mb-2" style={headingStyle}>
-        {isRequest ? 'Request Order' : 'Checkout'}
+        Checkout
       </h1>
       {isRequest && (
         <p className="mb-8 max-w-2xl" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>

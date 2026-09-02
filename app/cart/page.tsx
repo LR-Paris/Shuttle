@@ -76,11 +76,11 @@ export default function CartPage() {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
         <h1 className="text-4xl font-bold mb-4" style={{ color: design.colors.primary, fontFamily: design.fonts.titleFont }}>
-          {isRequest ? 'Your Request is Empty' : 'Your Cart is Empty'}
+          Your Cart is Empty
         </h1>
         <p className="mb-8" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
           {isRequest
-            ? 'Browse the catalog to add items to your request.'
+            ? 'Browse the catalog to add items to your cart.'
             : 'Browse our collections to add items to your cart.'}
         </p>
         <Link
@@ -107,7 +107,7 @@ export default function CartPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       <h1 className="text-4xl font-bold mb-8" style={{ color: design.colors.primary, fontFamily: design.fonts.titleFont }}>
-        {isRequest ? 'Your Request' : 'Shopping Cart'}
+        Shopping Cart
       </h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -244,7 +244,7 @@ export default function CartPage() {
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            {isRequest ? 'Keep Browsing' : 'Continue Shopping'}
+            Continue Shopping
           </Link>
         </div>
 
@@ -312,7 +312,7 @@ export default function CartPage() {
               className="w-full py-3 text-white text-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ backgroundColor: design.colors.secondary, borderRadius: `${design.style.cornerRadius}px`, fontFamily: design.fonts.bodyFont }}
             >
-              {isRequest ? 'Review Request' : 'Proceed to Checkout'}
+              Proceed to Checkout
             </button>
           </div>
         </div>

@@ -62,10 +62,17 @@ export default function Header({
 
     updateCartCount();
 
-    // Listen for cart updates
+    // Three triggers, so the badge cannot go stale:
+    //  - cartUpdated, fired by saveCart on every mutation
+    //  - storage, so a second tab stays in sync
+    //  - pathname, so any navigation re-reads the real cart
     window.addEventListener('cartUpdated', updateCartCount);
-    return () => window.removeEventListener('cartUpdated', updateCartCount);
-  }, []);
+    window.addEventListener('storage', updateCartCount);
+    return () => {
+      window.removeEventListener('cartUpdated', updateCartCount);
+      window.removeEventListener('storage', updateCartCount);
+    };
+  }, [pathname]);
 
   useEffect(() => {
     // Fetch collections and design data client-side for fresh DATABASE values

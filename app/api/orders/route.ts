@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
     // Prepare freight info
     const freightInfo = orderData.freightOption === 'own'
       ? `Own: ${orderData.freightCompany} (${orderData.freightAccount}) - ${orderData.freightContact}`
-      : orderData.freightOption ? 'LR Paris' : '';
+      : orderData.freightOption === 'lr' ? 'LR Paris' : '';
 
     // Determine PO file reference (extension stored after upload completes)
     const shopType = orderData.shopType || 'free';

@@ -33,11 +33,25 @@ export function getCart(): Cart {
   }
 }
 
+/**
+ * Notify the rest of the app that the cart changed.
+ *
+ * Dispatched from saveCart rather than from each caller. Callers used to fire
+ * this by hand, so a missed dispatch — or one landing while the header was
+ * between mounts — left the header badge showing items for a cart that had
+ * already been emptied.
+ */
+function notifyCartChanged(): void {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new Event('cartUpdated'));
+}
+
 export function saveCart(cart: Cart): void {
   if (typeof window === 'undefined') return;
 
   try {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    notifyCartChanged();
   } catch (error) {
     console.error('Error saving cart:', error);
   }

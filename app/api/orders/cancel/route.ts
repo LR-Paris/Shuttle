@@ -6,6 +6,31 @@ import { restoreStock } from '@/lib/inventory';
 const ORDERS_CSV = path.join(process.cwd(), 'DATABASE', 'Orders', 'orders.csv');
 const CANCEL_WINDOW_MS = 2 * 60 * 60 * 1000; // 2 hours
 
+/**
+ * Notify Launchpad that an order was cancelled from the storefront.
+ *
+ * Rebuilt from the CSV header rather than a fixed field list, so a shop whose
+ * checkout schema adds columns still reports them and column order changes
+ * cannot silently misalign the e-mail.
+ */
+async function notifyCancelled(header: string, fields: string[]) {
+  const api = process.env.NEXT_PUBLIC_LAUNCHPAD_API;
+  const slug = process.env.NEXT_PUBLIC_SHOP_SLUG;
+  if (!api || !slug) return;
+  try {
+    const keys = parseCSVLine(header);
+    const row: Record<string, string> = {};
+    keys.forEach((k, i) => { row[k] = fields[i] ?? ''; });
+    await fetch(`${api}/${slug}/orders/notify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event: 'cancelled', order: row }),
+    });
+  } catch (e) {
+    console.warn('Cancellation notify failed (non-blocking):', e);
+  }
+}
+
 function parseCSVLine(line: string): string[] {
   const fields: string[] = [];
   let current = '';
@@ -114,6 +139,10 @@ export async function POST(request: NextRequest) {
       if (line) newLines.push(line);
     }
     fs.writeFileSync(ORDERS_CSV, newLines.join('\n') + '\n', 'utf-8');
+
+    // Tell Launchpad the order is gone so the cancellation e-mails go out.
+    // Non-blocking: a shop with no Launchpad configured still cancels cleanly.
+    await notifyCancelled(header, fields);
 
     return NextResponse.json({
       success: true,

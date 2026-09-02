@@ -356,7 +356,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
               className="mt-4 p-4 rounded-lg text-white"
               style={{ backgroundColor: design.colors.success }}
             >
-              {isRequest ? 'Added to your request' : 'Added to cart successfully!'}
+              Added to cart successfully!
             </div>
           )}
         </div>
