@@ -60,6 +60,8 @@ function OrderSuccessContent() {
   const [isCancelling, setIsCancelling] = useState(false);
   const [cancelled, setCancelled] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
+  const [confirmingCancel, setConfirmingCancel] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
   const { showPrices, isRequest } = useShopPresets();
 
   useEffect(() => {
@@ -109,11 +111,6 @@ function OrderSuccessContent() {
   const handleCancelOrder = async () => {
     if (!orderId) return;
 
-    const confirmed = window.confirm(
-      'Are you sure you want to cancel this order? This action cannot be undone.'
-    );
-    if (!confirmed) return;
-
     setIsCancelling(true);
     setCancelError(null);
 
@@ -121,7 +118,7 @@ function OrderSuccessContent() {
       const response = await fetch('/api/orders/cancel', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId }),
+        body: JSON.stringify({ orderId, reason: cancelReason.trim() }),
       });
 
       const result = await response.json();
@@ -173,16 +170,16 @@ function OrderSuccessContent() {
           </div>
 
           <h1 className="text-4xl font-bold mb-4" style={{ color: design.colors.primary }}>
-            Order Cancelled
+            {isRequest ? 'Request Cancelled' : 'Order Cancelled'}
           </h1>
 
           <p className="text-xl mb-2" style={{ color: design.colors.text }}>
-            Your order has been cancelled and inventory has been restored.
+            Your {isRequest ? 'request' : 'order'} has been cancelled and inventory has been restored.
           </p>
 
           {orderId && (
             <p className="text-lg mb-8" style={{ color: design.colors.textLight }}>
-              Order ID: <span className="font-semibold">{orderId}</span>
+              {isRequest ? 'Request' : 'Order'} ID: <span className="font-semibold">{orderId}</span>
             </p>
           )}
 
@@ -327,10 +324,65 @@ function OrderSuccessContent() {
           </button>
         )}
 
+        {/* Cancelling asks why, optionally. A browser confirm() cannot collect a
+            note, and LR Paris wants to know why a request was withdrawn — but
+            requiring a reason would stand between someone and undoing an
+            obvious mistake, so it stays optional. */}
+        {orderId && confirmingCancel && (
+          <div
+            className="w-full mb-6 p-5 rounded-lg border text-left"
+            style={{ borderColor: '#FCA5A5', backgroundColor: '#FEF2F2' }}
+          >
+            <p className="font-semibold mb-1" style={{ color: '#991B1B' }}>
+              Cancel this {isRequest ? 'request' : 'order'}?
+            </p>
+            <p className="text-sm mb-4" style={{ color: '#B91C1C' }}>
+              This cannot be undone.
+            </p>
+            <label
+              htmlFor="cancelReason"
+              className="block text-sm font-medium mb-1"
+              style={{ color: '#7F1D1D' }}
+            >
+              Reason (optional)
+            </label>
+            <textarea
+              id="cancelReason"
+              value={cancelReason}
+              onChange={e => setCancelReason(e.target.value)}
+              rows={3}
+              maxLength={500}
+              placeholder="Wrong quantity, date changed, submitted twice…"
+              className="w-full px-3 py-2 rounded border mb-4 text-sm"
+              style={{ borderColor: '#FCA5A5' }}
+            />
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={handleCancelOrder}
+                disabled={isCancelling}
+                className="flex-1 px-6 py-2.5 rounded-lg font-semibold text-white hover:opacity-90 transition-opacity"
+                style={{ backgroundColor: '#DC2626' }}
+              >
+                {isCancelling
+                  ? 'Cancelling...'
+                  : `Yes, cancel ${isRequest ? 'request' : 'order'}`}
+              </button>
+              <button
+                onClick={() => { setConfirmingCancel(false); setCancelReason(''); }}
+                disabled={isCancelling}
+                className="flex-1 px-6 py-2.5 rounded-lg font-semibold border hover:opacity-90 transition-opacity"
+                style={{ borderColor: '#B91C1C', color: '#B91C1C', backgroundColor: 'transparent' }}
+              >
+                Keep {isRequest ? 'request' : 'order'}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Cancel Order Button */}
-        {orderId && (
+        {orderId && !confirmingCancel && (
           <button
-            onClick={handleCancelOrder}
+            onClick={() => setConfirmingCancel(true)}
             disabled={isCancelling}
             className="w-full mb-6 px-8 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity border"
             style={{

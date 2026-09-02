@@ -14,18 +14,26 @@ const CANCEL_WINDOW_MS = 2 * 60 * 60 * 1000; // 2 hours
  * checkout schema adds columns still reports them and column order changes
  * cannot silently misalign the e-mail.
  */
-async function notifyCancelled(header: string, fields: string[]) {
-  const api = process.env.NEXT_PUBLIC_LAUNCHPAD_API;
-  const slug = process.env.NEXT_PUBLIC_SHOP_SLUG;
-  if (!api || !slug) return;
+async function notifyCancelled(header: string, fields: string[], reason = '') {
+  // Same pair the order route uses. NEXT_PUBLIC_LAUNCHPAD_API is deliberately
+  // blank so the browser talks to relative paths, and it is not what a
+  // server-side route should read: this call is made inside the container over
+  // the Docker bridge, so it needs LAUNCHPAD_API_URL. Reading the public one
+  // meant this notification silently never fired.
+  const api = process.env.LAUNCHPAD_API_URL;
+  const slug = process.env.SHOP_SLUG;
+  if (!api || !slug) {
+    console.warn('[cancel] LAUNCHPAD_API_URL or SHOP_SLUG unset — no cancellation e-mail sent');
+    return;
+  }
   try {
     const keys = parseCSVLine(header);
     const row: Record<string, string> = {};
     keys.forEach((k, i) => { row[k] = fields[i] ?? ''; });
-    await fetch(`${api}/${slug}/orders/notify`, {
+    await fetch(`${api}/api/shops/${slug}/orders/notify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ event: 'cancelled', order: row }),
+      body: JSON.stringify({ event: 'cancelled', orderData: row, reason }),
     });
   } catch (e) {
     console.warn('Cancellation notify failed (non-blocking):', e);
@@ -36,7 +44,7 @@ async function notifyCancelled(header: string, fields: string[]) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { orderId } = await request.json();
+    const { orderId, reason } = await request.json();
 
     if (!orderId) {
       return NextResponse.json({ error: 'Missing orderId' }, { status: 400 });
@@ -114,7 +122,7 @@ export async function POST(request: NextRequest) {
 
     // Tell Launchpad the order is gone so the cancellation e-mails go out.
     // Non-blocking: a shop with no Launchpad configured still cancels cleanly.
-    await notifyCancelled(header, fields);
+    await notifyCancelled(header, fields, typeof reason === 'string' ? reason : '');
 
     return NextResponse.json({
       success: true,
