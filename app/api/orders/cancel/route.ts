@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { restoreStock } from '@/lib/inventory';
+import { splitCsvRecords, parseCSVLine } from '@/lib/csv';
 
 const ORDERS_CSV = path.join(process.cwd(), 'DATABASE', 'Orders', 'orders.csv');
 const CANCEL_WINDOW_MS = 2 * 60 * 60 * 1000; // 2 hours
@@ -31,36 +32,7 @@ async function notifyCancelled(header: string, fields: string[]) {
   }
 }
 
-function parseCSVLine(line: string): string[] {
-  const fields: string[] = [];
-  let current = '';
-  let inQuotes = false;
 
-  for (let i = 0; i < line.length; i++) {
-    const char = line[i];
-    if (inQuotes) {
-      if (char === '"' && line[i + 1] === '"') {
-        current += '"';
-        i++;
-      } else if (char === '"') {
-        inQuotes = false;
-      } else {
-        current += char;
-      }
-    } else {
-      if (char === '"') {
-        inQuotes = true;
-      } else if (char === ',') {
-        fields.push(current);
-        current = '';
-      } else {
-        current += char;
-      }
-    }
-  }
-  fields.push(current);
-  return fields;
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -75,7 +47,7 @@ export async function POST(request: NextRequest) {
     }
 
     const content = fs.readFileSync(ORDERS_CSV, 'utf-8');
-    const lines = content.split('\n');
+    const lines = splitCsvRecords(content);
     const header = lines[0];
 
     let orderLine: string | null = null;

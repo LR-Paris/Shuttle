@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { deductStock, getStockMap } from '@/lib/inventory';
+import { splitCsvRecords } from '@/lib/csv';
 import { recomputeTotal } from '@/lib/pricing';
 
 interface OrderItem {
@@ -77,14 +78,15 @@ function ensureCSVHeader(ordersPath: string): void {
   }
 
   const content = fs.readFileSync(ordersPath, 'utf-8');
-  const firstLine = content.split('\n')[0] || '';
+  const records = splitCsvRecords(content);
+  const firstLine = records[0] || '';
 
   // Already current.
   if (firstLine.includes('Art Link')) {
     return;
   }
 
-  const lines = content.split('\n');
+  const lines = records;
   const migrated: string[] = [CSV_HEADER];
 
   const hasStatus = firstLine.includes('Status');
