@@ -48,8 +48,40 @@ function latin1(s: string): Uint8Array {
   return out;
 }
 
+/**
+ * Reduce a string to what the PDF's WinAnsi-encoded base fonts can actually
+ * draw, one byte per character.
+ *
+ * This used to strip everything outside printable ASCII, which was invisible
+ * while brands were placeholders and wrong the moment the real ELC list
+ * arrived: "Editions de Parfums Frederic Malle" lost both accents, "Estee
+ * Lauder" lost one, and "M-A-C" lost its middle dots entirely. Latin-1 is kept
+ * because WinAnsiEncoding covers it; the punctuation Word and Excel like to
+ * substitute is folded to ASCII rather than dropped, since a missing apostrophe
+ * reads as a typo; anything still unrepresentable becomes '?' so a name is
+ * never silently shortened.
+ */
+const TRANSLITERATE: Record<string, string> = {
+  '\u2018': "'", '\u2019': "'", '\u201A': ',', '\u201B': "'",
+  '\u201C': '"', '\u201D': '"', '\u201E': '"',
+  '\u2013': '-', '\u2014': '-', '\u2212': '-', '\u2010': '-', '\u2011': '-',
+  '\u2026': '...', '\u2022': '\u00B7', '\u00A0': ' ',
+  '\u20AC': 'EUR', '\u2122': 'TM', '\u2039': '<', '\u203A': '>',
+};
+
 function sanitize(s: string): string {
-  return (s ?? '').replace(/[^\x20-\x7E]/g, '');
+  let out = '';
+  for (const ch of (s ?? '')) {
+    const mapped = TRANSLITERATE[ch] ?? ch;
+    for (const c of mapped) {
+      const code = c.charCodeAt(0);
+      // Printable ASCII, or Latin-1 which WinAnsiEncoding renders as-is.
+      if ((code >= 0x20 && code <= 0x7e) || (code >= 0xa0 && code <= 0xff)) out += c;
+      else if (code === 0x09) out += ' ';
+      else if (code > 0x7e) out += '?';
+    }
+  }
+  return out;
 }
 
 function escapePdfText(s: string): string {
@@ -277,8 +309,8 @@ export async function generateOrderPdf(order: PdfOrder): Promise<Blob> {
     `/Resources << /Font << /F1 5 0 R /F2 6 0 R >>${xobjectResources} >> >>\nendobj\n`
   );
   openObj(); push(`4 0 obj\n<< /Length ${latin1(stream).length} >>\nstream\n${stream}endstream\nendobj\n`);
-  openObj(); push('5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n');
-  openObj(); push('6 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>\nendobj\n');
+  openObj(); push('5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>\nendobj\n');
+  openObj(); push('6 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>\nendobj\n');
 
   xobjects.forEach((o, i) => {
     openObj();
