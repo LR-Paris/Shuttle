@@ -12,7 +12,7 @@ export default function ShopAllPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>('name-asc');
   const [stockMap, setStockMap] = useState<Record<string, number>>({});
-  const { showPrices } = useShopPresets();
+  const { showPrices, showUnitLabel } = useShopPresets();
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState('');
   const PER_PAGE = 20;
@@ -29,7 +29,7 @@ export default function ShopAllPage() {
       const collectionsData = await collectionsResponse.json();
 
       setDesign(designData);
-      document.title = `${designData.companyName} - Shop All`;
+      document.title = `${designData.companyName} - Shop`;
 
       // Build stock map from inventory
       if (inventoryResponse?.ok) {
@@ -105,7 +105,7 @@ export default function ShopAllPage() {
           fontFamily: design.fonts.titleFont,
         }}
       >
-        Shop All Products
+        Shop
       </h1>
 
       {/* Sort Options */}
@@ -261,7 +261,7 @@ export default function ShopAllPage() {
                       fontFamily: design.fonts.bodyFont,
                     }}
                   >
-                    Sold individually
+                    {showUnitLabel ? 'Sold individually' : ''}
                   </p>
                   {showPrices && (
                     <>

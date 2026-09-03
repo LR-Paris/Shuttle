@@ -117,7 +117,7 @@ export default function Home() {
                   fontFamily: design.fonts.bodyFont,
                 }}
               >
-                {isSingleCollection ? 'Shop All' : 'Browse Collections'}
+                {isSingleCollection ? 'Shop' : 'Browse Collections'}
               </Link>
             </div>
           </div>
@@ -168,7 +168,7 @@ export default function Home() {
                 fontFamily: design.fonts.bodyFont,
               }}
             >
-              {isSingleCollection ? 'Shop All' : 'Browse Collections'}
+              {isSingleCollection ? 'Shop' : 'Browse Collections'}
             </Link>
           </div>
         </div>

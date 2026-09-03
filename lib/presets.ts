@@ -27,6 +27,17 @@ export interface Display {
   show_prices: boolean;
   /** When true, cart and checkout copy reads "request" instead of "order". */
   request_language: boolean;
+  /**
+   * When false, product cards and pages drop the packaging line entirely.
+   *
+   * A shop selling by the unit shows "Sold individually", which reads as "you
+   * may order one" — wrong wherever minimums exist and are quoted per request.
+   * With no MOQ data to show instead, saying nothing beats saying something
+   * untrue.
+   */
+  show_unit_label: boolean;
+  /** When false, the About page hides the platform and version block. */
+  show_system_info: boolean;
 }
 
 export interface PresetsData {
@@ -159,6 +170,8 @@ export function getDisplay(): Display {
   const defaults: Display = {
     show_prices: true,
     request_language: false,
+    show_unit_label: true,
+    show_system_info: true,
   };
 
   try {
@@ -172,6 +185,8 @@ export function getDisplay(): Display {
     return {
       show_prices: parsed.show_prices !== 'false',
       request_language: parsed.request_language === 'true',
+      show_unit_label: parsed.show_unit_label !== 'false',
+      show_system_info: parsed.show_system_info !== 'false',
     };
   } catch (error) {
     console.error('Error reading display presets:', error);

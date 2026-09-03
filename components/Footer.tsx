@@ -1,6 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { getVersion } from '@/lib/version';
+import { useEffect, useState } from 'react';
 
 interface FooterProps {
   footerText: string;
@@ -10,6 +13,15 @@ interface FooterProps {
 
 export default function Footer({ footerText, primaryColor, bodyFont = 'Inter' }: FooterProps) {
   const version = getVersion();
+  // The Terms of use link only appears once a shop actually has terms on file,
+  // so no shop ships a link to an empty page.
+  const [hasTerms, setHasTerms] = useState(false);
+  useEffect(() => {
+    fetch('/api/terms')
+      .then(r => (r.ok ? r.json() : { terms: '' }))
+      .then(d => setHasTerms(Boolean(d?.terms)))
+      .catch(() => setHasTerms(false));
+  }, []);
 
   return (
     <footer
@@ -25,6 +37,14 @@ export default function Footer({ footerText, primaryColor, bodyFont = 'Inter' }:
               <Link href="/about" className="underline hover:opacity-80">
                 About
               </Link>
+              {hasTerms && (
+                <>
+                  {' • '}
+                  <Link href="/terms" className="underline hover:opacity-80">
+                    Terms of use
+                  </Link>
+                </>
+              )}
             </p>
             {/* Easter Egg - subtle SVG */}
             <Link

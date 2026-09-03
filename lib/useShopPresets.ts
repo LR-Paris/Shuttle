@@ -14,6 +14,8 @@ import { useState, useEffect } from 'react';
 export interface ShopDisplay {
   showPrices: boolean;
   isRequest: boolean;
+  showUnitLabel: boolean;
+  showSystemInfo: boolean;
   /** False until /api/presets has answered, for anything that must not flash. */
   loaded: boolean;
 }
@@ -22,6 +24,8 @@ export function useShopPresets(): ShopDisplay {
   const [display, setDisplay] = useState<ShopDisplay>({
     showPrices: true,
     isRequest: false,
+    showUnitLabel: true,
+    showSystemInfo: true,
     loaded: false,
   });
 
@@ -35,6 +39,8 @@ export function useShopPresets(): ShopDisplay {
         setDisplay({
           showPrices: data?.display?.show_prices !== false,
           isRequest: data?.display?.request_language === true,
+          showUnitLabel: data?.display?.show_unit_label !== false,
+          showSystemInfo: data?.display?.show_system_info !== false,
           loaded: true,
         });
       })
@@ -49,11 +55,20 @@ export function useShopPresets(): ShopDisplay {
 }
 
 /** "request" / "order" and their capitalized forms, for copy that switches. */
+/**
+ * Copy for a request shop.
+ *
+ * `noun` switches: what the customer submits is a request, not an order.
+ * `cart` does not. The client asked for a standard shopping journey — Add to
+ * Cart, Shopping Cart, Cart (n), Proceed to Checkout — with only the submission
+ * framed as a request for approval. A cart called a "Request" also collides
+ * with the submitted request it later becomes.
+ */
 export function requestWords(isRequest: boolean) {
   return {
     noun: isRequest ? 'request' : 'order',
     Noun: isRequest ? 'Request' : 'Order',
-    cart: isRequest ? 'request' : 'cart',
-    Cart: isRequest ? 'Request' : 'Cart',
+    cart: 'cart',
+    Cart: 'Cart',
   };
 }

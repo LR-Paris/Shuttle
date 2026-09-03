@@ -233,7 +233,7 @@ export default function Header({
                 style={{ fontFamily: bodyFont }}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Shop All
+                Shop
               </Link>
             </nav>
           )}
@@ -328,7 +328,7 @@ export default function Header({
               className="text-white hover:opacity-80 transition-opacity"
               style={{ fontFamily: bodyFont }}
             >
-              Shop All
+              Shop
             </Link>
             <Link
               href="/cart"

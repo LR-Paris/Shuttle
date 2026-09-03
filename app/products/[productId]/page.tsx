@@ -62,7 +62,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
   const [isAdding, setIsAdding] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [notFound, setNotFound] = useState(false);
-  const { showPrices, isRequest } = useShopPresets();
+  const { showPrices, isRequest, showUnitLabel } = useShopPresets();
   const words = requestWords(isRequest);
 
   useEffect(() => {
@@ -130,7 +130,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
           <p className="mb-8" style={{ color: design?.colors.textLight }}>
             The link may be out of date, or the item may have been renamed or
             withdrawn from the catalogue. Everything currently available is on
-            Shop All.
+            Shop.
           </p>
           <div className="flex flex-wrap gap-3">
             <Link
@@ -138,7 +138,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
               className="px-6 py-3 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity"
               style={{ backgroundColor: design?.colors.secondary }}
             >
-              Browse Shop All
+              Browse the shop
             </Link>
             <Link
               href="/collections"
@@ -186,7 +186,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
-        {fromShopAll ? 'Back to Shop All' : `Back to ${product.collectionName}`}
+        {fromShopAll ? 'Back to shop' : `Back to ${product.collectionName}`}
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -258,9 +258,11 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
               SKU: {product.sku}
             </p>
 
-            <p className="text-lg font-semibold mb-2" style={{ color: design.colors.text }}>
-              Sold individually
-            </p>
+            {showUnitLabel && (
+              <p className="text-lg font-semibold mb-2" style={{ color: design.colors.text }}>
+                Sold individually
+              </p>
+            )}
             {showPrices ? (
               <>
                 <p className="text-4xl font-bold mb-1" style={{ color: design.colors.secondary }}>
