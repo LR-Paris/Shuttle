@@ -1,5 +1,6 @@
 'use client';
 
+import { useShopPresets, requestWords } from '@/lib/useShopPresets';
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -60,24 +61,35 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [notFound, setNotFound] = useState(false);
+  const { showPrices, isRequest, showUnitLabel } = useShopPresets();
+  const words = requestWords(isRequest);
 
   useEffect(() => {
     // Fetch product, design, and inventory data
     Promise.all([
-      fetch(`/api/products/${productId}`).then(r => r.json()),
+      // r.ok matters: a 404 body is {error: '...'}, and treating that as a
+      // product crashed the page on the first field access.
+      fetch(`/api/products/${productId}`).then(r => r.ok ? r.json() : null),
       fetch('/api/design').then(r => r.json()),
       fetch(`/api/inventory?productId=${productId}`).then(r => r.ok ? r.json() : null).catch(() => null),
     ])
       .then(([productData, designData, inventoryData]) => {
-        setProduct(productData);
         setDesign(designData);
         setInventory(inventoryData);
-        if (productData && designData) {
+        if (!productData || productData.error || !productData.name) {
+          setNotFound(true);
+          if (designData) document.title = `${designData.companyName} - Product not found`;
+          return;
+        }
+        setProduct(productData);
+        if (designData) {
           document.title = `${designData.companyName} - ${productData.name}`;
         }
       })
       .catch(error => {
         console.error('Error loading product:', error);
+        setNotFound(true);
       });
   }, [productId]);
 
@@ -105,6 +117,42 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
     }, 3000);
   };
 
+  if (notFound) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-xl">
+          <h1
+            className="text-3xl font-bold mb-4"
+            style={{ color: design?.colors.primary }}
+          >
+            This product isn&apos;t available
+          </h1>
+          <p className="mb-8" style={{ color: design?.colors.textLight }}>
+            The link may be out of date, or the item may have been renamed or
+            withdrawn from the catalogue. Everything currently available is on
+            Shop.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/shop-all"
+              className="px-6 py-3 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity"
+              style={{ backgroundColor: design?.colors.secondary }}
+            >
+              Browse the shop
+            </Link>
+            <Link
+              href="/collections"
+              className="px-6 py-3 border rounded-lg font-semibold hover:opacity-80 transition-opacity"
+              style={{ borderColor: design?.colors.border, color: design?.colors.text }}
+            >
+              View Collections
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!product || !design) {
     return (
       <div className="container mx-auto px-4 py-12">
@@ -112,6 +160,10 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
       </div>
     );
   }
+
+  // Read the gallery through a local array. A record missing `images` should
+  // show the empty-gallery placeholder, never throw.
+  const images: string[] = Array.isArray(product.images) ? product.images : [];
 
   const totalPrice = product.boxCost * quantity;
   const stock = inventory?.stock ?? null;
@@ -134,25 +186,25 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
-        {fromShopAll ? 'Back to Shop All' : `Back to ${product.collectionName}`}
+        {fromShopAll ? 'Back to shop' : `Back to ${product.collectionName}`}
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Image Gallery */}
         <div>
-          {product.images.length > 0 ? (
+          {images.length > 0 ? (
             <>
               <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-4 border" style={{ borderColor: design.colors.border }}>
                 <FadeImage
-                  key={product.images[selectedImage]}
-                  src={product.images[selectedImage]}
+                  key={images[selectedImage]}
+                  src={images[selectedImage]}
                   alt={product.name}
                   className="w-full h-full object-contain p-4"
                 />
               </div>
-              {product.images.length > 1 && (
+              {images.length > 1 && (
                 <div className="grid grid-cols-4 gap-2">
-                  {product.images.map((image, index) => (
+                  {images.map((image, index) => (
                     <button
                       key={index}
                       onClick={() => setSelectedImage(index)}
@@ -206,15 +258,25 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
               SKU: {product.sku}
             </p>
 
-            <p className="text-lg font-semibold mb-2" style={{ color: design.colors.text }}>
-              Box of {product.unitsPerBox} units
-            </p>
-            <p className="text-4xl font-bold mb-1" style={{ color: design.colors.secondary }}>
-              ${product.boxCost.toFixed(2)}
-            </p>
-            <p style={{ color: design.colors.textLight }}>
-              ${product.itemCost.toFixed(2)} per unit
-            </p>
+            {showUnitLabel && (
+              <p className="text-lg font-semibold mb-2" style={{ color: design.colors.text }}>
+                Sold individually
+              </p>
+            )}
+            {showPrices ? (
+              <>
+                <p className="text-4xl font-bold mb-1" style={{ color: design.colors.secondary }}>
+                  ${product.boxCost.toFixed(2)}
+                </p>
+                <p style={{ color: design.colors.textLight }}>
+                  ${product.itemCost.toFixed(2)} per unit
+                </p>
+              </>
+            ) : (
+              <p className="text-sm" style={{ color: design.colors.textLight }}>
+                Pricing quoted after approval
+              </p>
+            )}
             {stock !== null && (
               <p className="text-sm mt-2 font-semibold" style={{ color: stock > 0 ? design.colors.success : '#EF4444' }}>
                 {stock > 0 ? `${stock} in stock` : 'Out of stock'}
@@ -225,7 +287,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
           {/* Quantity Selector */}
           <div className="mb-6">
             <label className="block text-sm font-semibold mb-2" style={{ color: design.colors.text }}>
-              Quantity (boxes):
+              Quantity (units):
             </label>
             <div className="flex items-center space-x-4">
               <button
@@ -268,14 +330,16 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
           {/* Total */}
           <div className="mb-6">
             <p className="text-sm" style={{ color: design.colors.textLight }}>
-              Total ({quantity} {quantity === 1 ? 'box' : 'boxes'}):
+              {showPrices
+                ? `Total (${quantity} ${quantity === 1 ? 'unit' : 'units'}):`
+                : `${quantity} ${quantity === 1 ? 'unit' : 'units'} selected`}
             </p>
-            <p className="text-3xl font-bold" style={{ color: design.colors.primary }}>
-              ${totalPrice.toFixed(2)}
-            </p>
-            <p className="text-sm" style={{ color: design.colors.textLight }}>
-              {quantity * product.unitsPerBox} total units
-            </p>
+            {showPrices && (
+              <p className="text-3xl font-bold" style={{ color: design.colors.primary }}>
+                ${totalPrice.toFixed(2)}
+              </p>
+            )}
+
           </div>
 
           {/* Add to Cart Button */}
@@ -285,7 +349,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
             className="w-full py-4 rounded-lg text-white text-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
             style={{ backgroundColor: isOutOfStock ? '#9CA3AF' : design.colors.secondary }}
           >
-            {isOutOfStock ? 'Out of Stock' : isAdding ? 'Adding...' : 'Add to Cart'}
+            {isOutOfStock ? 'Out of Stock' : isAdding ? 'Adding...' : `Add to ${words.Cart}`}
           </button>
 
           {/* Success Message */}

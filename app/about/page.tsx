@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useShopPresets } from '@/lib/useShopPresets';
 
 // Helper function to format FAQ answer text with email links
 function formatAnswer(answer: string, secondaryColor: string, bodyFont: string) {
@@ -41,6 +42,7 @@ function formatAnswer(answer: string, secondaryColor: string, bodyFont: string) 
 }
 
 export default function AboutPage() {
+  const { showSystemInfo } = useShopPresets();
   const [design, setDesign] = useState<any>(null);
   const [versionInfo, setVersionInfo] = useState<any>(null);
   const [faqs, setFaqs] = useState<any[]>([]);
@@ -188,47 +190,50 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* System Information */}
-      <section className="mb-8">
-        <div
-          className="border p-6 max-w-3xl"
-          style={{
-            borderColor: design.colors.border,
-            backgroundColor: design.colors.background,
-            borderRadius: `${design.style.cornerRadius}px`,
-          }}
-        >
-          <h3
-            className="text-lg font-semibold mb-3"
-            style={{
-              color: design.colors.primary,
-              fontFamily: design.fonts.titleFont,
-            }}
-          >
-            System Information
-          </h3>
+      {/* System Information — hidden unless the shop opts in. A client
+          portal has no use for a platform name and a build number. */}
+      {showSystemInfo && (
+        <section className="mb-8">
           <div
-            className="space-y-2 text-sm"
+            className="border p-6 max-w-3xl"
             style={{
-              color: design.colors.textLight,
-              fontFamily: design.fonts.bodyFont,
+              borderColor: design.colors.border,
+              backgroundColor: design.colors.background,
+              borderRadius: `${design.style.cornerRadius}px`,
             }}
           >
-            <p>
-              <strong>Platform:</strong> {versionInfo.name}
-            </p>
-            <p>
-              <strong>Version:</strong> {versionInfo.version}
-            </p>
-            <p>
-              <strong>Built with:</strong>{' '}
-              <span style={{ color: design.colors.secondary }} className="font-semibold">
-                LR Paris Shuttle
-              </span>
-            </p>
+            <h3
+              className="text-lg font-semibold mb-3"
+              style={{
+                color: design.colors.primary,
+                fontFamily: design.fonts.titleFont,
+              }}
+            >
+              System Information
+            </h3>
+            <div
+              className="space-y-2 text-sm"
+              style={{
+                color: design.colors.textLight,
+                fontFamily: design.fonts.bodyFont,
+              }}
+            >
+              <p>
+                <strong>Platform:</strong> {versionInfo.name}
+              </p>
+              <p>
+                <strong>Version:</strong> {versionInfo.version}
+              </p>
+              <p>
+                <strong>Built with:</strong>{' '}
+                <span style={{ color: design.colors.secondary }} className="font-semibold">
+                  LR Paris Shuttle
+                </span>
+              </p>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Built by LR Paris */}
       <section className="mb-8">

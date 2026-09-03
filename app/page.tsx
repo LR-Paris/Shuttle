@@ -117,7 +117,7 @@ export default function Home() {
                   fontFamily: design.fonts.bodyFont,
                 }}
               >
-                {isSingleCollection ? 'Shop All' : 'Browse Collections'}
+                {isSingleCollection ? 'Shop' : 'Browse Collections'}
               </Link>
             </div>
           </div>
@@ -126,15 +126,30 @@ export default function Home() {
         <div className="container mx-auto px-4 py-12">
           {/* Hero Section without images */}
           <div className="text-center mb-16">
-            <h1
-              className="text-5xl font-bold mb-4"
-              style={{
-                color: design.colors.primary,
-                fontFamily: design.fonts.titleFont,
-              }}
-            >
-              {design.companyName}
-            </h1>
+            {/* Mirror the with-hero branch: show the logo, fall back to the
+                company name. Without this the header hides its logo on home
+                (by design) and nothing replaces it. */}
+            {design.logoPath ? (
+              <>
+                <h1 className="sr-only">{design.companyName}</h1>
+                <img
+                  src={design.logoPath}
+                  alt={design.companyName}
+                  className="w-auto mx-auto mb-6"
+                  style={{ height: '5rem', objectFit: 'contain' }}
+                />
+              </>
+            ) : (
+              <h1
+                className="text-5xl font-bold mb-4"
+                style={{
+                  color: design.colors.primary,
+                  fontFamily: design.fonts.titleFont,
+                }}
+              >
+                {design.companyName}
+              </h1>
+            )}
             <p
               className="text-2xl mb-8"
               style={{
@@ -153,7 +168,7 @@ export default function Home() {
                 fontFamily: design.fonts.bodyFont,
               }}
             >
-              {isSingleCollection ? 'Shop All' : 'Browse Collections'}
+              {isSingleCollection ? 'Shop' : 'Browse Collections'}
             </Link>
           </div>
         </div>

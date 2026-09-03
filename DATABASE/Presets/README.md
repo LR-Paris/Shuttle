@@ -1,4 +1,4 @@
-# Presets Folder (STS-2.00)
+# Presets Folder (STS-4.1.0)
 
 ## Overview
 This folder controls how the shop behaves at checkout. It determines the shop type (free, PO, or Stripe) and which data fields are shown to the customer.
@@ -21,6 +21,29 @@ type: free
 | `free` | No payment required. Customer submits order directly. **(Default)** |
 | `po` | Customer must enter a PO number and upload a signed PO PDF file. |
 | `stripe` | Stripe payment integration. **(Coming soon - not yet implemented)** |
+
+### Display.txt (STS-4.1.0)
+
+Controls what the storefront shows. Both keys default to the pre-4.1.0
+behavior, so an existing shop is unaffected until this file is added.
+
+```
+show_prices: true
+request_language: false
+```
+
+| Key | Effect |
+|-----|--------|
+| `show_prices: false` | Hides every price, per-unit figure and total across the storefront, cart, checkout and PDF summary. The price/box-price sort options disappear. The product API, collection APIs and the collections list return `itemCost: 0` and `boxCost: 0`, so costs never reach the browser at all. Real costs stay in each product's `Details/` files and are re-read server-side when an order is written, so `orders.csv` still carries a true total. |
+| `request_language: true` | Switches cart and checkout copy from order to request: Add to Request, Your Request, Review Request, Submit Request, Request Submitted. The PDF becomes a summary rather than a receipt and states that it is not an order confirmation. |
+
+Use both together for an approvals portal — a shop where submissions are
+requests for pricing and approval, not orders.
+
+**A price-hidden shop should leave `Inventory/inventory.csv` empty except for
+its header.** Checkout rejects any SKU whose stock is below the requested
+quantity, and a product absent from the file is treated as unlimited. Seeding
+every SKU at stock 0 makes every submission fail with "no longer available".
 
 ### DataRequired.txt
 

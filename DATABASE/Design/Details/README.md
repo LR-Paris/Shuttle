@@ -10,8 +10,27 @@ Details/
 ├── README.md           # This file
 ├── CompanyName.txt     # Your company name (REQUIRED)
 ├── Colors.txt          # Color scheme (REQUIRED)
-└── Descriptions.txt    # Taglines and descriptions (REQUIRED)
+├── Descriptions.txt    # Taglines and descriptions (REQUIRED)
+├── Hotels.txt          # Hotel dropdown, when hotel_list is on
+└── Brands.txt          # Brand dropdown, when brand_list is on (STS-4.1.0)
 ```
+
+### Brands.txt (STS-4.1.0)
+
+Populates the "which brand are you submitting for" dropdown at checkout when
+`brand_list: true` is set in `DATABASE/Presets/DataRequired.txt`.
+
+One brand per line. Lines starting with `#` are comments.
+
+```
+# Brand List
+Clinique
+La Mer
+Jo Malone London
+```
+
+If the file is missing or has no entries, the checkout falls back to a
+free-text input, so an unpopulated list never blocks a submission.
 
 ## File Formats
 
