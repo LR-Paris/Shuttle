@@ -29,6 +29,7 @@
  * - STS-2.6.2 - Checkout inventory re-validation to prevent overselling, stock count on product page, negative stock allowed in CSV, description newline support
  * - STS-2.6.3 - Launchpad email integration: order notify webhook, Status/Tracking columns in CSV, AdminEmail.txt support
  * - STS-4.0.0 - Hidden items: Details/Hidden.txt flag hides products from the storefront
+ * - STS-4.1.0 - Product variants on main: Color/Size folder naming, 2-level picker, variant groups collapse to one card with chips, stock-aware size pills
  *
  * To increment version:
  * 1. Update VERSION constant below
@@ -37,14 +38,14 @@
  * 4. Commit with version number in commit message
  */
 
-export const VERSION = 'STS-4.0.0';
+export const VERSION = 'STS-4.1.0';
 
 export const VERSION_INFO = {
   name: 'Shop Template System',
   version: VERSION,
-  codename: 'Eclipse',
-  releaseDate: '2026-07-06',
-  description: 'Hidden items: Details/Hidden.txt flag hides products from the storefront',
+  codename: 'Polo',
+  releaseDate: '2026-09-10',
+  description: 'Product variants (Color/Size) merged into main with grouped listings and stock-aware pickers',
   attribution: 'Built with LR Paris Shuttle',
 };
 

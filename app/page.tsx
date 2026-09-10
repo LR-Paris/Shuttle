@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import FadeImage from '@/components/FadeImage';
+import VariantChips from '@/components/VariantChips';
+import { countDistinctProducts, dedupeVariantGroups, variantDisplayName } from '@/lib/variants';
 
 export default function Home() {
   const [design, setDesign] = useState<any>(null);
@@ -33,7 +35,7 @@ export default function Home() {
             products.push(product);
           });
         });
-        setAllProducts(products);
+        setAllProducts(dedupeVariantGroups(products));
 
         try {
           const inventoryResponse = await fetch('/api/inventory');
@@ -215,7 +217,7 @@ export default function Home() {
                       <div className="aspect-square bg-gray-100 relative border-b" style={{ borderColor: design.colors.border }}>
                         <FadeImage
                           src={product.images[0]}
-                          alt={product.name}
+                          alt={variantDisplayName(product)}
                           className="w-full h-full object-contain p-4"
                         />
                       </div>
@@ -231,8 +233,9 @@ export default function Home() {
                         className="font-bold text-lg mb-1"
                         style={{ color: design.colors.primary, fontFamily: design.fonts.titleFont }}
                       >
-                        {product.name}
+                        {variantDisplayName(product)}
                       </h3>
+                      <VariantChips product={product} design={design} stockMap={stockMap} />
                       <p className="text-sm mb-2" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
                         SKU: {product.sku}
                       </p>
@@ -299,8 +302,8 @@ export default function Home() {
                           fontFamily: design.fonts.bodyFont,
                         }}
                       >
-                        {collection.products.length}{' '}
-                        {collection.products.length === 1 ? 'product' : 'products'}
+                        {countDistinctProducts(collection.products)}{' '}
+                        {countDistinctProducts(collection.products) === 1 ? 'product' : 'products'}
                       </p>
                       <div className="mt-4">
                         <span

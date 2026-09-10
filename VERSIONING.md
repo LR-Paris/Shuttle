@@ -77,7 +77,10 @@ Add new entry to the Version History table:
 
 ```markdown
 | STS-0.15 | 2026-02-XX | Your update description |
+| STS-3.00 | 2026-04-29 | Product variant selector — 2-level Color/Size picker, variant grouping in catalog, collection card chips |
+| STS-3.0.1 | 2026-07-01 | Variant groups count & list as one item across all pages (shared lib/variants.ts helper) |
 | STS-4.0.0 | 2026-07-06 | Hidden items: Details/Hidden.txt flag hides products from the storefront |
+| STS-4.1.0 | 2026-09-10 | Product variants merged into main: Color/Size folder naming, 2-level picker on product page, variant groups collapse to one card with chips, stock-aware size pills |
 ```
 
 ### 3. Commit Changes
