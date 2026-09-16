@@ -132,9 +132,20 @@ function parseProduct(
     const name = readDetailsFile(detailsPath, 'Name.txt');
     const description = readDetailsFile(detailsPath, 'Description.txt');
     const sku = readDetailsFile(detailsPath, 'SKU.txt');
-    const itemCost = parseFloat(readDetailsFile(detailsPath, 'ItemCost.txt') || '0');
-    const boxCost = parseFloat(readDetailsFile(detailsPath, 'BoxCost.txt') || '0');
-    const unitsPerBox = parseInt(readDetailsFile(detailsPath, 'UnitsPerBox.txt') || '1', 10);
+    // ItemCost, BoxCost and UnitsPerBox are three independent files, so a catalog
+    // can easily supply two of them and leave the third at 0. Derive what is
+    // missing rather than pricing a product at zero.
+    const rawItemCost = parseFloat(readDetailsFile(detailsPath, 'ItemCost.txt') || '0');
+    const rawBoxCost = parseFloat(readDetailsFile(detailsPath, 'BoxCost.txt') || '0');
+    const rawUnitsPerBox = parseInt(readDetailsFile(detailsPath, 'UnitsPerBox.txt') || '1', 10);
+
+    const unitsPerBox = Number.isFinite(rawUnitsPerBox) && rawUnitsPerBox > 0 ? rawUnitsPerBox : 1;
+    const boxCost = rawBoxCost > 0
+      ? rawBoxCost
+      : (rawItemCost > 0 ? rawItemCost * unitsPerBox : 0);
+    const itemCost = rawItemCost > 0
+      ? rawItemCost
+      : (boxCost > 0 ? boxCost / unitsPerBox : 0);
 
     // Hidden flag — Details/Hidden.txt containing "true" hides the product from the storefront
     if (readDetailsFile(detailsPath, 'Hidden.txt').toLowerCase() === 'true') {

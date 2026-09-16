@@ -33,3 +33,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Client data lives in the shop container, not the repo
+/DATABASE/Inventory/inventory.csv
+/DATABASE/Orders/orders.csv

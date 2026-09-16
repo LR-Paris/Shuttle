@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { getCart, clearCart, type Cart } from '@/lib/cart';
+import { unitNoun, totalUnitsLabel } from '@/lib/packaging';
 
 interface DesignData {
   colors: {
@@ -680,11 +681,11 @@ export default function CheckoutPage() {
                     {item.productName}
                   </div>
                   <div className="text-sm flex justify-between" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
-                    <span>{item.quantity} box{item.quantity > 1 ? 'es' : ''} × ${item.boxCost.toFixed(2)}</span>
+                    <span>{item.quantity} {unitNoun(item.unitsPerBox, item.quantity)} × ${item.boxCost.toFixed(2)}</span>
                     <span>${(item.boxCost * item.quantity).toFixed(2)}</span>
                   </div>
                   <div className="text-xs" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
-                    {item.quantity * item.unitsPerBox} total units
+                    {totalUnitsLabel(item.quantity, item.unitsPerBox)}
                   </div>
                 </div>
               ))}

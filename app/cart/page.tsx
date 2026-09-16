@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getCart, updateCartItemQuantity, removeFromCart, type Cart } from '@/lib/cart';
+import { packLabel, unitNoun, perUnitLabel, totalUnitsLabel } from '@/lib/packaging';
 
 interface DesignData {
   colors: {
@@ -136,7 +137,7 @@ export default function CartPage() {
                         SKU: {item.sku}
                       </p>
                       <p className="text-sm" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
-                        Box of {item.unitsPerBox} units
+                        {packLabel(item.unitsPerBox)}
                       </p>
                       {/* Stock status */}
                       {stock !== null && (
@@ -149,8 +150,8 @@ export default function CartPage() {
                           {isOutOfStock
                             ? 'Out of Stock'
                             : isLowStock
-                              ? `Only ${stock} ${stock === 1 ? 'box' : 'boxes'} available`
-                              : `${stock} boxes available`}
+                              ? `Only ${stock} ${unitNoun(item.unitsPerBox, stock)} available`
+                              : `${stock} ${unitNoun(item.unitsPerBox, stock)} available`}
                         </p>
                       )}
                       {isOverStock && !isOutOfStock && (
@@ -206,13 +207,13 @@ export default function CartPage() {
 
                     <div className="text-right">
                       <p className="text-sm" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
-                        ${item.boxCost.toFixed(2)} per box
+                        ${item.boxCost.toFixed(2)} {perUnitLabel(item.unitsPerBox)}
                       </p>
                       <p className="text-2xl font-bold" style={{ color: design.colors.secondary, fontFamily: design.fonts.titleFont }}>
                         ${(item.boxCost * item.quantity).toFixed(2)}
                       </p>
                       <p className="text-sm" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
-                        {item.quantity * item.unitsPerBox} total units
+                        {totalUnitsLabel(item.quantity, item.unitsPerBox)}
                       </p>
                     </div>
                   </div>

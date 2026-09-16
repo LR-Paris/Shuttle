@@ -1,4 +1,4 @@
-titleFont: Kors Sans Agate
-bodyFont: Kors Sans Light
-titleFontUrl: /fonts/kors-sans.css
-bodyFontUrl: /fonts/kors-sans.css
+titleFont: Inter
+bodyFont: Inter
+titleFontUrl:
+bodyFontUrl:

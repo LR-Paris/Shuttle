@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import FadeImage from '@/components/FadeImage';
 import VariantChips from '@/components/VariantChips';
 import { countDistinctProducts, dedupeVariantGroups, variantDisplayName } from '@/lib/variants';
+import { packLabel } from '@/lib/packaging';
 
 export default function Home() {
   const [design, setDesign] = useState<any>(null);
@@ -241,7 +242,7 @@ export default function Home() {
                       </p>
                       <div className="mb-2">
                         <p className="text-sm font-semibold" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
-                          Box of {product.unitsPerBox} units
+                          {packLabel(product.unitsPerBox)}
                         </p>
                         <p className="text-2xl font-bold" style={{ color: design.colors.secondary, fontFamily: design.fonts.titleFont }}>
                           ${product.boxCost.toFixed(2)}

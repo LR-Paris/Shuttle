@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import FadeImage from '@/components/FadeImage';
 import VariantChips from '@/components/VariantChips';
 import { dedupeVariantGroups, variantDisplayName } from '@/lib/variants';
+import { packLabel } from '@/lib/packaging';
 
 type SortOption = 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc' | 'units-asc' | 'units-desc' | 'total-asc' | 'total-desc';
 
@@ -212,7 +213,7 @@ export default function ShopAllPage() {
                       fontFamily: design.fonts.bodyFont,
                     }}
                   >
-                    Box of {product.unitsPerBox} units
+                    {packLabel(product.unitsPerBox)}
                   </p>
                   <p
                     className="text-2xl font-bold"

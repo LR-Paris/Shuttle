@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { addToCart } from '@/lib/cart';
 import FadeImage from '@/components/FadeImage';
+import { packLabel, unitNoun, isSingleUnit, totalUnitsLabel } from '@/lib/packaging';
 
 interface ProductVariant {
   id: string;
@@ -301,7 +302,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
               SKU: {product.sku}
             </p>
             <p className="text-lg font-semibold mb-2" style={{ color: design.colors.text }}>
-              Box of {product.unitsPerBox} units
+              {packLabel(product.unitsPerBox)}
             </p>
             <p className="text-4xl font-bold mb-1" style={{ color: design.colors.secondary }}>
               ${product.boxCost.toFixed(2)}
@@ -319,7 +320,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
           {/* Quantity Selector */}
           <div className="mb-6">
             <label className="block text-sm font-semibold mb-2" style={{ color: design.colors.text }}>
-              Quantity (boxes):
+              Quantity ({isSingleUnit(product.unitsPerBox) ? 'items' : 'boxes'}):
             </label>
             <div className="flex items-center space-x-4">
               <button
@@ -362,13 +363,13 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
           {/* Total */}
           <div className="mb-6">
             <p className="text-sm" style={{ color: design.colors.textLight }}>
-              Total ({quantity} {quantity === 1 ? 'box' : 'boxes'}):
+              Total ({quantity} {unitNoun(product.unitsPerBox, quantity)}):
             </p>
             <p className="text-3xl font-bold" style={{ color: design.colors.primary }}>
               ${totalPrice.toFixed(2)}
             </p>
             <p className="text-sm" style={{ color: design.colors.textLight }}>
-              {quantity * product.unitsPerBox} total units
+              {totalUnitsLabel(quantity, product.unitsPerBox)}
             </p>
           </div>
 

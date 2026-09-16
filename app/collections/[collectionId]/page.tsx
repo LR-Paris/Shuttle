@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import FadeImage from '@/components/FadeImage';
 import { dedupeVariantGroups } from '@/lib/variants';
+import { packLabel } from '@/lib/packaging';
 
 type SortOption = 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc' | 'units-asc' | 'units-desc' | 'total-asc' | 'total-desc';
 
@@ -284,7 +285,7 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
                   </p>
                   <div className="mb-2">
                     <p className="text-sm font-semibold" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
-                      Box of {product.unitsPerBox} units
+                      {packLabel(product.unitsPerBox)}
                     </p>
                     <p className="text-2xl font-bold" style={{ color: design.colors.secondary, fontFamily: design.fonts.titleFont }}>
                       ${product.boxCost.toFixed(2)}
