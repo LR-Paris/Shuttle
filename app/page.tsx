@@ -107,7 +107,7 @@ export default function Home() {
                   {design.companyName}
                 </h1>
               )}
-              <p className="text-2xl mb-8" style={{ fontFamily: design.fonts.bodyFont }}>
+              <p className="text-2xl mb-8" style={{ fontFamily: design.fonts.taglineFont || design.fonts.bodyFont }}>
                 {design.descriptions.tagline}
               </p>
               <Link
@@ -119,7 +119,7 @@ export default function Home() {
                   fontFamily: design.fonts.bodyFont,
                 }}
               >
-                {isSingleCollection ? 'Shop All' : 'Browse Collections'}
+                {design.descriptions.heroButton || (isSingleCollection ? 'Shop All' : 'Browse Collections')}
               </Link>
             </div>
           </div>
@@ -141,7 +141,7 @@ export default function Home() {
               className="text-2xl mb-8"
               style={{
                 color: design.colors.textLight,
-                fontFamily: design.fonts.bodyFont,
+                fontFamily: design.fonts.taglineFont || design.fonts.bodyFont,
               }}
             >
               {design.descriptions.tagline}
@@ -155,7 +155,7 @@ export default function Home() {
                 fontFamily: design.fonts.bodyFont,
               }}
             >
-              {isSingleCollection ? 'Shop All' : 'Browse Collections'}
+              {design.descriptions.heroButton || (isSingleCollection ? 'Shop All' : 'Browse Collections')}
             </Link>
           </div>
         </div>
@@ -171,17 +171,22 @@ export default function Home() {
               fontFamily: design.fonts.titleFont,
             }}
           >
-            About Us
+            {design.descriptions.aboutTitle || 'About Us'}
           </h2>
-          <p
-            className="text-lg leading-relaxed"
-            style={{
-              color: design.colors.text,
-              fontFamily: design.fonts.bodyFont,
-            }}
-          >
-            {design.descriptions.about}
-          </p>
+          <div className="space-y-4">
+            {(design.descriptions.aboutParagraphs || [design.descriptions.about]).map((para: string, i: number) => (
+              <p
+                key={i}
+                className="text-lg leading-relaxed"
+                style={{
+                  color: design.colors.text,
+                  fontFamily: design.fonts.bodyFont,
+                }}
+              >
+                {para}
+              </p>
+            ))}
+          </div>
         </div>
 
         {/* Collections Preview or Product Grid */}

@@ -10,7 +10,10 @@ Details/
 ├── README.md           # This file
 ├── CompanyName.txt     # Your company name (REQUIRED)
 ├── Colors.txt          # Color scheme (REQUIRED)
-└── Descriptions.txt    # Taglines and descriptions (REQUIRED)
+├── Descriptions.txt    # Taglines and descriptions (REQUIRED)
+├── Fonts.txt           # Fonts (optional)
+├── About.txt           # About text with paragraphs (optional)
+└── OrderEmail.txt      # Order confirmation email wording (optional, Launchpad)
 ```
 
 ## File Formats
@@ -114,6 +117,10 @@ footer: © 2026 Whiskers & Co. B2B Supply. All rights reserved.
 - `about` - About section content (longer description)
 - `footer` - Footer copyright/legal text
 
+**Optional Keys:**
+- `heroButton` - Label of the home page hero button. Default: `Browse Collections`, or `Shop All` for a shop with one collection.
+- `aboutTitle` - Heading of the About section on the home page and on the About page. Default: `About Us` on the home page, `About <company name>` on the About page.
+
 **Format Rules:**
 - Each description starts with key: (on the same line)
 - Value follows the colon on the same line
@@ -147,6 +154,76 @@ footer: © 2026 Whiskers & Co. B2B Supply. All rights reserved.
 - `tagline`: Homepage hero section (below company name)
 - `about`: Homepage about section (dedicated section)
 - `footer`: Bottom of every page
+- `heroButton`: Homepage hero button
+- `aboutTitle`: Homepage about section heading and About page heading
+
+---
+
+### About.txt (optional)
+
+**Purpose:** About text with more than one paragraph
+
+**Example:**
+```
+Whiskers & Co. B2B Supply stocks pet products for retailers and boutiques.
+
+Orders ship from our warehouse in two to three business days.
+```
+
+**Rules:**
+- A blank line starts a new paragraph.
+- When About.txt exists, it replaces the `about:` key in Descriptions.txt.
+- The home page and the About page show each paragraph separately.
+
+---
+
+### Fonts.txt (optional)
+
+**Format:** Key-value pairs (key: value)
+
+**Example:**
+```
+titleFont: Playfair Display
+bodyFont: Inter
+titleFontUrl: https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap
+bodyFontUrl: https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap
+taglineFont: Times New Roman, Tinos, Times, serif
+taglineFontUrl: https://fonts.googleapis.com/css2?family=Tinos:wght@400;700&display=swap
+```
+
+**Keys:**
+- `titleFont` - Font of the headings. Default: `Inter`
+- `bodyFont` - Font of the body text and the buttons. Default: `Inter`
+- `titleFontUrl`, `bodyFontUrl` - Stylesheet that loads each font: a Google Fonts link, or a path such as `/fonts/brand.css`
+- `taglineFont` - Font of the tagline in the home page hero. Default: the body font
+- `taglineFontUrl` - Stylesheet that loads the tagline font. Leave it out for a font that the device has.
+
+**Font lists:** A font value can name more than one font, with commas between them. The browser uses the first font that it has. Put a web font such as Tinos after a system font such as Times New Roman. Then all devices show a similar font.
+
+---
+
+### OrderEmail.txt (optional, Launchpad)
+
+**Purpose:** The wording of the order confirmation email that the customer gets
+
+**Example:**
+```
+subject: Your Whiskers & Co. order request
+heading: Request received
+
+Thank you for your order request.
+
+Our team confirms the quantities
+and the delivery date by email.
+```
+
+**Rules:**
+- The lines before the first blank line are settings. The text after it is the message.
+- `subject` is necessary. `heading` is optional. The default heading is the subject.
+- A blank line starts a new paragraph. A single line break stays in the email.
+- Lines that start with # are comments.
+- Without a subject or a message, Launchpad sends the standard email.
+- The order number, the items, the delivery details and the cancel link stay in the email.
 
 ---
 
@@ -244,6 +321,8 @@ tagline: Quality products for your business
 about: We provide quality products for businesses.
 footer: © 2026 All rights reserved.
 ```
+
+`heroButton` and `aboutTitle` have no default value. Without them, the template labels show.
 
 ## Troubleshooting
 

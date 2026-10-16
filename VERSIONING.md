@@ -81,6 +81,7 @@ Add new entry to the Version History table:
 | STS-3.0.1 | 2026-07-01 | Variant groups count & list as one item across all pages (shared lib/variants.ts helper) |
 | STS-4.0.0 | 2026-07-06 | Hidden items: Details/Hidden.txt flag hides products from the storefront |
 | STS-4.1.0 | 2026-09-10 | Product variants merged into main: Color/Size folder naming, 2-level picker on product page, variant groups collapse to one card with chips, stock-aware size pills |
+| STS-4.3.0 | 2026-10-16 | Shop copy settings, all optional: `heroButton` and `aboutTitle` in Descriptions.txt, `taglineFont` and `taglineFontUrl` in Fonts.txt. The home page shows each About.txt paragraph apart. STS-4.2.x shipped only in the Launchpad shop overrides. |
 ```
 
 ### 3. Commit Changes

@@ -32,6 +32,11 @@ export default function RootLayout({
         {design.fonts.bodyFontUrl && design.fonts.bodyFontUrl !== design.fonts.titleFontUrl && (
           <link rel="stylesheet" href={design.fonts.bodyFontUrl} />
         )}
+        {design.fonts.taglineFontUrl &&
+          design.fonts.taglineFontUrl !== design.fonts.titleFontUrl &&
+          design.fonts.taglineFontUrl !== design.fonts.bodyFontUrl && (
+          <link rel="stylesheet" href={design.fonts.taglineFontUrl} />
+        )}
         <style dangerouslySetInnerHTML={{
           __html: `
             :root {

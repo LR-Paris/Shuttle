@@ -83,7 +83,7 @@ export default function AboutPage() {
             fontFamily: design.fonts.titleFont,
           }}
         >
-          About {design.companyName}
+          {design.descriptions.aboutTitle || `About ${design.companyName}`}
         </h1>
         <div className="max-w-3xl">
           <p
