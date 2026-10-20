@@ -50,6 +50,17 @@ function readDetailsFile(detailsPath: string, filename: string): string {
   }
 }
 
+// main.* is the primary photo (DATABASE/ShopCollections/README.md), so it leads.
+// The rest follow in natural order, so detail-2 comes before detail-10.
+// readdir order depends on the disk and on how the DATABASE zip was unpacked,
+// so the template sets the order itself.
+export function compareProductPhotos(a: string, b: string): number {
+  const aMain = /^main\./i.test(a);
+  const bMain = /^main\./i.test(b);
+  if (aMain !== bMain) return aMain ? -1 : 1;
+  return a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' });
+}
+
 function getProductImages(photosPath: string, productId: string): string[] {
   try {
     if (!fs.existsSync(photosPath)) return [];
@@ -60,7 +71,9 @@ function getProductImages(photosPath: string, productId: string): string[] {
       return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext);
     });
 
-    return imageFiles.map(file => `/api/images/products/${productId}/${file}`);
+    return imageFiles
+      .sort(compareProductPhotos)
+      .map(file => `/api/images/products/${productId}/${file}`);
   } catch (error) {
     return [];
   }
