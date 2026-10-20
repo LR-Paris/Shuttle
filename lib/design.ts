@@ -40,6 +40,8 @@ export interface Fonts {
 export interface Style {
   cornerRadius: number;
   style: string;
+  /** Which price leads on product cards and the product page: 'box' (default) or 'unit'. */
+  mainPrice: 'box' | 'unit';
 }
 
 export interface FAQEntry {
@@ -199,12 +201,14 @@ export function getStyle(): Style {
     return {
       cornerRadius: parseInt(parsed.cornerRadius || '12', 10),
       style: parsed.style || 'rounded',
+      mainPrice: (parsed.mainPrice || '').toLowerCase() === 'unit' ? 'unit' : 'box',
     };
   } catch (error) {
     console.error('Error reading style:', error);
     return {
       cornerRadius: 12,
       style: 'rounded',
+      mainPrice: 'box',
     };
   }
 }

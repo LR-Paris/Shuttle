@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { addToCart } from '@/lib/cart';
 import FadeImage from '@/components/FadeImage';
+import { priceLines } from '@/lib/price';
 
 interface ProductVariant {
   id: string;
@@ -46,6 +47,7 @@ interface DesignData {
     about: string;
     footer: string;
   };
+  style?: { mainPrice?: string };
 }
 
 interface InventoryData {
@@ -151,6 +153,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
   }
 
   const totalPrice = product.boxCost * quantity;
+  const price = priceLines(product, design.style?.mainPrice);
   const stock = inventory?.stock ?? null;
   const isOutOfStock = stock !== null && stock <= 0;
   const maxQuantity = stock !== null && stock > 0 ? stock : undefined;
@@ -304,10 +307,11 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
               Box of {product.unitsPerBox} units
             </p>
             <p className="text-4xl font-bold mb-1" style={{ color: design.colors.secondary }}>
-              ${product.boxCost.toFixed(2)}
+              {price.main}
+              {price.unitFirst && <span className="text-lg font-normal"> per unit</span>}
             </p>
             <p style={{ color: design.colors.textLight }}>
-              ${product.itemCost.toFixed(2)} per unit
+              {price.secondary}
             </p>
             {stock !== null && (
               <p className="text-sm mt-2 font-semibold" style={{ color: stock > 0 ? design.colors.success : '#EF4444' }}>

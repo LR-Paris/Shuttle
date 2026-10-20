@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import FadeImage from '@/components/FadeImage';
 import VariantChips from '@/components/VariantChips';
 import { countDistinctProducts, dedupeVariantGroups, variantDisplayName } from '@/lib/variants';
+import { priceLines } from '@/lib/price';
 
 export default function Home() {
   const [design, setDesign] = useState<any>(null);
@@ -206,6 +207,7 @@ export default function Home() {
               {allProducts.map((product: any) => {
                 const stock = stockMap[product.id] ?? null;
                 const isOutOfStock = stock !== null && stock <= 0;
+                const price = priceLines(product, design.style?.mainPrice);
 
                 return (
                   <Link
@@ -249,10 +251,11 @@ export default function Home() {
                           Box of {product.unitsPerBox} units
                         </p>
                         <p className="text-2xl font-bold" style={{ color: design.colors.secondary, fontFamily: design.fonts.titleFont }}>
-                          ${product.boxCost.toFixed(2)}
+                          {price.main}
+                          {price.unitFirst && <span className="text-sm font-normal"> per unit</span>}
                         </p>
                         <p className="text-sm" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
-                          ${product.itemCost.toFixed(2)} per unit
+                          {price.secondary}
                         </p>
                       </div>
                       {stock !== null && (

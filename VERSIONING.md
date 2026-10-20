@@ -83,6 +83,7 @@ Add new entry to the Version History table:
 | STS-4.1.0 | 2026-09-10 | Product variants merged into main: Color/Size folder naming, 2-level picker on product page, variant groups collapse to one card with chips, stock-aware size pills |
 | STS-4.3.0 | 2026-10-16 | Shop copy settings, all optional: `heroButton` and `aboutTitle` in Descriptions.txt, `taglineFont` and `taglineFontUrl` in Fonts.txt. The home page shows each About.txt paragraph apart. STS-4.2.x shipped only in the Launchpad shop overrides. |
 | STS-4.3.1 | 2026-10-20 | Product photos: `main.*` is always the first photo, the rest follow in natural name order. The order no longer depends on the disk or on how the DATABASE zip was unpacked. |
+| STS-4.4.0 | 2026-10-20 | `Style.txt` takes `mainPrice: unit`: product cards and the product page show the unit price large and the box price on the small line. Default `box`, unchanged. |
 ```
 
 ### 3. Commit Changes

@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import FadeImage from '@/components/FadeImage';
 import VariantChips from '@/components/VariantChips';
 import { dedupeVariantGroups, variantDisplayName } from '@/lib/variants';
+import { priceLines } from '@/lib/price';
 
 type SortOption = 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc' | 'units-asc' | 'units-desc' | 'total-asc' | 'total-desc';
 
@@ -137,6 +138,7 @@ export default function ShopAllPage() {
         {sortedProducts.map((product: any) => {
           const stock = stockMap[product.id] ?? null;
           const isOutOfStock = stock !== null && stock <= 0;
+          const price = priceLines(product, design.style?.mainPrice);
 
           return (
             <Link
@@ -221,7 +223,8 @@ export default function ShopAllPage() {
                       fontFamily: design.fonts.titleFont,
                     }}
                   >
-                    ${product.boxCost.toFixed(2)}
+                    {price.main}
+                    {price.unitFirst && <span className="text-sm font-normal"> per unit</span>}
                   </p>
                   <p
                     className="text-sm"
@@ -230,7 +233,7 @@ export default function ShopAllPage() {
                       fontFamily: design.fonts.bodyFont,
                     }}
                   >
-                    ${product.itemCost.toFixed(2)} per unit
+                    {price.secondary}
                   </p>
                 </div>
                 {stock !== null && (

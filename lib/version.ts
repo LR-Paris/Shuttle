@@ -32,6 +32,7 @@
  * - STS-4.1.0 - Product variants on main: Color/Size folder naming, 2-level picker, variant groups collapse to one card with chips, stock-aware size pills
  * - STS-4.3.0 - Shop copy settings: heroButton and aboutTitle in Descriptions.txt, taglineFont and taglineFontUrl in Fonts.txt, About.txt paragraphs on the home page
  * - STS-4.3.1 - Product photos: main.* always first, the rest in natural name order, whatever order the disk lists them in
+ * - STS-4.4.0 - Style.txt mainPrice: unit puts the unit price first on product cards and the product page
  *
  * To increment version:
  * 1. Update VERSION constant below
@@ -40,14 +41,14 @@
  * 4. Commit with version number in commit message
  */
 
-export const VERSION = 'STS-4.3.1';
+export const VERSION = 'STS-4.4.0';
 
 export const VERSION_INFO = {
   name: 'Shop Template System',
   version: VERSION,
   codename: 'Beacon',
   releaseDate: '2026-10-20',
-  description: 'Product photos: main.* is always the first photo, the rest follow in natural name order',
+  description: 'A shop can lead with the unit price: Style.txt mainPrice: unit',
   attribution: 'Built with LR Paris Shuttle',
 };
 

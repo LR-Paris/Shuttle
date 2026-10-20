@@ -12,6 +12,7 @@ Details/
 ├── Colors.txt          # Color scheme (REQUIRED)
 ├── Descriptions.txt    # Taglines and descriptions (REQUIRED)
 ├── Fonts.txt           # Fonts (optional)
+├── Style.txt           # Corners and the leading price (optional)
 ├── About.txt           # About text with paragraphs (optional)
 └── OrderEmail.txt      # Order confirmation email wording (optional, Launchpad)
 ```
@@ -199,6 +200,26 @@ taglineFontUrl: https://fonts.googleapis.com/css2?family=Tinos:wght@400;700&disp
 - `taglineFontUrl` - Stylesheet that loads the tagline font. Leave it out for a font that the device has.
 
 **Font lists:** A font value can name more than one font, with commas between them. The browser uses the first font that it has. Put a web font such as Tinos after a system font such as Times New Roman. Then all devices show a similar font.
+
+---
+
+### Style.txt (optional)
+
+**Format:** Key-value pairs (key: value)
+
+**Example:**
+```
+cornerRadius: 0
+style: sharp
+mainPrice: unit
+```
+
+**Keys:**
+- `cornerRadius` - Corner radius of cards and buttons, in pixels. Default: `12`
+- `style` - `rounded` or `sharp`. Default: `rounded`
+- `mainPrice` - The price that product cards and the product page show large. `box` shows the box price large and the unit price under it. `unit` shows the unit price large and the box price under it. Default: `box`
+
+Use `mainPrice: unit` when a box is a whole order size, such as 1,000 units. The cart and the checkout always show box prices and totals.
 
 ---
 

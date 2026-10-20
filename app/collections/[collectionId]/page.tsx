@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import FadeImage from '@/components/FadeImage';
 import { dedupeVariantGroups } from '@/lib/variants';
+import { priceLines } from '@/lib/price';
 
 type SortOption = 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc' | 'units-asc' | 'units-desc' | 'total-asc' | 'total-desc';
 
@@ -207,6 +208,7 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
             const stock = stockMap[product.id] ?? null;
             const isOutOfStock = stock !== null && stock <= 0;
             const displayName = product.variantGroup || product.name;
+            const price = priceLines(product, design.style?.mainPrice);
 
             return (
               <Link
@@ -287,10 +289,11 @@ export default function CollectionPage({ params }: { params: Promise<{ collectio
                       Box of {product.unitsPerBox} units
                     </p>
                     <p className="text-2xl font-bold" style={{ color: design.colors.secondary, fontFamily: design.fonts.titleFont }}>
-                      ${product.boxCost.toFixed(2)}
+                      {price.main}
+                      {price.unitFirst && <span className="text-sm font-normal"> per unit</span>}
                     </p>
                     <p className="text-sm" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
-                      ${product.itemCost.toFixed(2)} per unit
+                      {price.secondary}
                     </p>
                   </div>
                   {stock !== null && (
