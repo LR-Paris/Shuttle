@@ -17,6 +17,7 @@ interface DesignData {
   };
   companyName: string;
   contactEmail: string;
+  style?: { quantityLabel?: string };
 }
 
 interface OrderItem {
@@ -41,7 +42,7 @@ function sanitize(str: string): string {
   return str.replace(/[^\x20-\x7E]/g, '');
 }
 
-function generateReceiptPDF(order: LastOrder, companyName: string): Blob {
+function generateReceiptPDF(order: LastOrder, companyName: string, quantityLabel?: string): Blob {
   const W = 612;
   const H = 792;
   const M = 50;
@@ -109,7 +110,8 @@ function generateReceiptPDF(order: LastOrder, companyName: string): Blob {
     text(`$${item.boxCost.toFixed(2)}`, colPrice, y, 10);
     text(`$${(item.boxCost * item.quantity).toFixed(2)}`, colTotal, y, 10);
     y -= 14;
-    text(`SKU: ${item.sku}  |  ${item.quantity * item.unitsPerBox} units (${item.unitsPerBox}/box)`, colItem + 8, y, 8);
+    const lot = quantityLabel === 'moq' ? `MOQ ${item.unitsPerBox}` : `${item.unitsPerBox}/box`;
+    text(`SKU: ${item.sku}  |  ${item.quantity * item.unitsPerBox} units (${lot})`, colItem + 8, y, 8);
     y -= 20;
   }
 
@@ -183,7 +185,7 @@ function OrderSuccessContent() {
 
   const handleDownloadReceipt = () => {
     if (!lastOrder || !design) return;
-    const blob = generateReceiptPDF(lastOrder, design.companyName);
+    const blob = generateReceiptPDF(lastOrder, design.companyName, design.style?.quantityLabel);
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;

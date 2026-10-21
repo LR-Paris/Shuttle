@@ -33,6 +33,7 @@
  * - STS-4.3.0 - Shop copy settings: heroButton and aboutTitle in Descriptions.txt, taglineFont and taglineFontUrl in Fonts.txt, About.txt paragraphs on the home page
  * - STS-4.3.1 - Product photos: main.* always first, the rest in natural name order, whatever order the disk lists them in
  * - STS-4.4.0 - Style.txt mainPrice: unit puts the unit price first on product cards and the product page
+ * - STS-4.5.0 - Style.txt quantityLabel: moq says "MOQ 1000 units" instead of "Box of 1000 units", counts lots instead of boxes, and prices a lot at MOQ times the unit price
  *
  * To increment version:
  * 1. Update VERSION constant below
@@ -41,14 +42,14 @@
  * 4. Commit with version number in commit message
  */
 
-export const VERSION = 'STS-4.4.0';
+export const VERSION = 'STS-4.5.0';
 
 export const VERSION_INFO = {
   name: 'Shop Template System',
   version: VERSION,
-  codename: 'Beacon',
-  releaseDate: '2026-10-20',
-  description: 'A shop can lead with the unit price: Style.txt mainPrice: unit',
+  codename: 'Minimum',
+  releaseDate: '2026-10-21',
+  description: 'A shop can sell in minimum order quantities: Style.txt quantityLabel: moq',
   attribution: 'Built with LR Paris Shuttle',
 };
 

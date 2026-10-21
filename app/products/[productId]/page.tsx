@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { addToCart } from '@/lib/cart';
 import FadeImage from '@/components/FadeImage';
 import { priceLines } from '@/lib/price';
+import { quantityWords } from '@/lib/quantity';
 
 interface ProductVariant {
   id: string;
@@ -47,7 +48,7 @@ interface DesignData {
     about: string;
     footer: string;
   };
-  style?: { mainPrice?: string };
+  style?: { mainPrice?: string; quantityLabel?: string };
 }
 
 interface InventoryData {
@@ -153,7 +154,8 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
   }
 
   const totalPrice = product.boxCost * quantity;
-  const price = priceLines(product, design.style?.mainPrice);
+  const price = priceLines(product, design.style?.mainPrice, design.style?.quantityLabel);
+  const words = quantityWords(design.style?.quantityLabel);
   const stock = inventory?.stock ?? null;
   const isOutOfStock = stock !== null && stock <= 0;
   const maxQuantity = stock !== null && stock > 0 ? stock : undefined;
@@ -304,7 +306,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
               SKU: {product.sku}
             </p>
             <p className="text-lg font-semibold mb-2" style={{ color: design.colors.text }}>
-              Box of {product.unitsPerBox} units
+              {words.lot(product.unitsPerBox)}
             </p>
             <p className="text-4xl font-bold mb-1" style={{ color: design.colors.secondary }}>
               {price.main}
@@ -323,7 +325,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
           {/* Quantity Selector */}
           <div className="mb-6">
             <label className="block text-sm font-semibold mb-2" style={{ color: design.colors.text }}>
-              Quantity (boxes):
+              {words.quantityHeading(product.unitsPerBox)}
             </label>
             <div className="flex items-center space-x-4">
               <button
@@ -366,7 +368,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
           {/* Total */}
           <div className="mb-6">
             <p className="text-sm" style={{ color: design.colors.textLight }}>
-              Total ({quantity} {quantity === 1 ? 'box' : 'boxes'}):
+              Total ({quantity} {words.noun(quantity)}):
             </p>
             <p className="text-3xl font-bold" style={{ color: design.colors.primary }}>
               ${totalPrice.toFixed(2)}

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getCart, updateCartItemQuantity, removeFromCart, type Cart } from '@/lib/cart';
+import { quantityWords } from '@/lib/quantity';
 
 interface DesignData {
   colors: {
@@ -22,6 +23,7 @@ interface DesignData {
   };
   style: {
     cornerRadius: number;
+    quantityLabel?: string;
   };
 }
 
@@ -136,7 +138,7 @@ export default function CartPage() {
                         SKU: {item.sku}
                       </p>
                       <p className="text-sm" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
-                        Box of {item.unitsPerBox} units
+                        {quantityWords(design.style.quantityLabel).lot(item.unitsPerBox)}
                       </p>
                       {/* Stock status */}
                       {stock !== null && (
@@ -149,8 +151,8 @@ export default function CartPage() {
                           {isOutOfStock
                             ? 'Out of Stock'
                             : isLowStock
-                              ? `Only ${stock} ${stock === 1 ? 'box' : 'boxes'} available`
-                              : `${stock} boxes available`}
+                              ? `Only ${stock} ${quantityWords(design.style.quantityLabel).noun(stock)} available`
+                              : `${stock} ${quantityWords(design.style.quantityLabel).noun(stock)} available`}
                         </p>
                       )}
                       {isOverStock && !isOutOfStock && (
@@ -206,7 +208,7 @@ export default function CartPage() {
 
                     <div className="text-right">
                       <p className="text-sm" style={{ color: design.colors.textLight, fontFamily: design.fonts.bodyFont }}>
-                        ${item.boxCost.toFixed(2)} per box
+                        ${item.boxCost.toFixed(2)} {quantityWords(design.style.quantityLabel).perLot}
                       </p>
                       <p className="text-2xl font-bold" style={{ color: design.colors.secondary, fontFamily: design.fonts.titleFont }}>
                         ${(item.boxCost * item.quantity).toFixed(2)}

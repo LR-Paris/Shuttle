@@ -212,6 +212,7 @@ taglineFontUrl: https://fonts.googleapis.com/css2?family=Tinos:wght@400;700&disp
 cornerRadius: 0
 style: sharp
 mainPrice: unit
+quantityLabel: moq
 ```
 
 **Keys:**
@@ -219,7 +220,11 @@ mainPrice: unit
 - `style` - `rounded` or `sharp`. Default: `rounded`
 - `mainPrice` - The price that product cards and the product page show large. `box` shows the box price large and the unit price under it. `unit` shows the unit price large and the box price under it. Default: `box`
 
+- `quantityLabel` - What the shop calls the amount a product sells in. `box` says "Box of 50 units". `moq` says "MOQ 1000 units", counts lots instead of boxes, and with `mainPrice: unit` shows the lot price as the minimum order. Default: `box`
+
 Use `mainPrice: unit` when a box is a whole order size, such as 1,000 units. The cart and the checkout always show box prices and totals.
+
+Use `quantityLabel: moq` when the units per box are a minimum order quantity rather than a physical box. A customer still orders whole lots: two lots of an MOQ of 1,000 units is 2,000 units. With `moq`, the price of a lot is always the MOQ times the unit price, so `BoxCost.txt` is not read. Change `UnitsPerBox.txt` or `ItemCost.txt` and the total follows.
 
 ---
 

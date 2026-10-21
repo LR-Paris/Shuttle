@@ -6,6 +6,7 @@ import FadeImage from '@/components/FadeImage';
 import VariantChips from '@/components/VariantChips';
 import { countDistinctProducts, dedupeVariantGroups, variantDisplayName } from '@/lib/variants';
 import { priceLines } from '@/lib/price';
+import { quantityWords } from '@/lib/quantity';
 
 export default function Home() {
   const [design, setDesign] = useState<any>(null);
@@ -207,7 +208,8 @@ export default function Home() {
               {allProducts.map((product: any) => {
                 const stock = stockMap[product.id] ?? null;
                 const isOutOfStock = stock !== null && stock <= 0;
-                const price = priceLines(product, design.style?.mainPrice);
+                const price = priceLines(product, design.style?.mainPrice, design.style?.quantityLabel);
+                const words = quantityWords(design.style?.quantityLabel);
 
                 return (
                   <Link
@@ -248,7 +250,7 @@ export default function Home() {
                       </p>
                       <div className="mb-2">
                         <p className="text-sm font-semibold" style={{ color: design.colors.text, fontFamily: design.fonts.bodyFont }}>
-                          Box of {product.unitsPerBox} units
+                          {words.lot(product.unitsPerBox)}
                         </p>
                         <p className="text-2xl font-bold" style={{ color: design.colors.secondary, fontFamily: design.fonts.titleFont }}>
                           {price.main}

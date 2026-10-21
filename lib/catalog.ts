@@ -4,6 +4,18 @@ import path from 'path';
 const DATABASE_PATH = path.join(process.cwd(), 'DATABASE');
 const COLLECTIONS_PATH = path.join(DATABASE_PATH, 'ShopCollections');
 
+// Style.txt `quantityLabel: moq` makes UnitsPerBox a minimum order quantity,
+// and the lot price then follows it: the MOQ times the unit price. Read quietly
+// once per collection: a shop without Style.txt sells boxes, as before.
+function lotIsMinimumOrder(): boolean {
+  try {
+    const text = fs.readFileSync(path.join(DATABASE_PATH, 'Design', 'Details', 'Style.txt'), 'utf-8');
+    return /^\s*quantityLabel\s*:\s*moq\s*$/im.test(text);
+  } catch {
+    return false;
+  }
+}
+
 export interface ProductVariant {
   id: string;
   name: string;
@@ -132,7 +144,8 @@ function parseProduct(
   collectionName: string,
   collectionId: string,
   itemName: string,
-  itemPath: string
+  itemPath: string,
+  minimumOrder = false,
 ): Product | null {
   try {
     const detailsPath = path.join(itemPath, 'Details');
@@ -146,8 +159,12 @@ function parseProduct(
     const description = readDetailsFile(detailsPath, 'Description.txt');
     const sku = readDetailsFile(detailsPath, 'SKU.txt');
     const itemCost = parseFloat(readDetailsFile(detailsPath, 'ItemCost.txt') || '0');
-    const boxCost = parseFloat(readDetailsFile(detailsPath, 'BoxCost.txt') || '0');
     const unitsPerBox = parseInt(readDetailsFile(detailsPath, 'UnitsPerBox.txt') || '1', 10);
+    // A minimum order costs the MOQ times the unit price, so a new MOQ or unit
+    // price can never leave a stale total behind. Box shops read BoxCost.txt.
+    const boxCost = minimumOrder
+      ? Math.round(itemCost * unitsPerBox * 100) / 100
+      : parseFloat(readDetailsFile(detailsPath, 'BoxCost.txt') || '0');
 
     // Hidden flag — Details/Hidden.txt containing "true" hides the product from the storefront
     if (readDetailsFile(detailsPath, 'Hidden.txt').toLowerCase() === 'true') {
@@ -183,6 +200,7 @@ function parseCollection(collectionName: string, collectionPath: string): Collec
   try {
     const items = fs.readdirSync(collectionPath, { withFileTypes: true });
     const collectionId = slugify(collectionName);
+    const minimumOrder = lotIsMinimumOrder();
 
     // Parse all products, keeping folder names for variant detection
     const productEntries: Array<{ folderName: string; product: Product }> = [];
@@ -191,7 +209,7 @@ function parseCollection(collectionName: string, collectionPath: string): Collec
       if (!item.isDirectory()) continue;
 
       const itemPath = path.join(collectionPath, item.name);
-      const product = parseProduct(collectionName, collectionId, item.name, itemPath);
+      const product = parseProduct(collectionName, collectionId, item.name, itemPath, minimumOrder);
 
       if (product) {
         productEntries.push({ folderName: item.name, product });

@@ -84,6 +84,7 @@ Add new entry to the Version History table:
 | STS-4.3.0 | 2026-10-16 | Shop copy settings, all optional: `heroButton` and `aboutTitle` in Descriptions.txt, `taglineFont` and `taglineFontUrl` in Fonts.txt. The home page shows each About.txt paragraph apart. STS-4.2.x shipped only in the Launchpad shop overrides. |
 | STS-4.3.1 | 2026-10-20 | Product photos: `main.*` is always the first photo, the rest follow in natural name order. The order no longer depends on the disk or on how the DATABASE zip was unpacked. |
 | STS-4.4.0 | 2026-10-20 | `Style.txt` takes `mainPrice: unit`: product cards and the product page show the unit price large and the box price on the small line. Default `box`, unchanged. |
+| STS-4.5.0 | 2026-10-21 | `Style.txt` takes `quantityLabel: moq`: "MOQ 1000 units" instead of "Box of 1000 units" on cards, the product page, the cart and the receipt, lots instead of boxes, and "minimum order" on the lot price when the unit price leads. The lot price is the MOQ times the unit price, so `BoxCost.txt` is not read. Default `box`, unchanged. |
 ```
 
 ### 3. Commit Changes

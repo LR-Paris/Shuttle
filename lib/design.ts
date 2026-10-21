@@ -42,6 +42,8 @@ export interface Style {
   style: string;
   /** Which price leads on product cards and the product page: 'box' (default) or 'unit'. */
   mainPrice: 'box' | 'unit';
+  /** What a lot is called: 'box' (default, "Box of 50 units") or 'moq' ("MOQ 1000 units"). */
+  quantityLabel: 'box' | 'moq';
 }
 
 export interface FAQEntry {
@@ -202,6 +204,7 @@ export function getStyle(): Style {
       cornerRadius: parseInt(parsed.cornerRadius || '12', 10),
       style: parsed.style || 'rounded',
       mainPrice: (parsed.mainPrice || '').toLowerCase() === 'unit' ? 'unit' : 'box',
+      quantityLabel: (parsed.quantityLabel || '').toLowerCase() === 'moq' ? 'moq' : 'box',
     };
   } catch (error) {
     console.error('Error reading style:', error);
@@ -209,6 +212,7 @@ export function getStyle(): Style {
       cornerRadius: 12,
       style: 'rounded',
       mainPrice: 'box',
+      quantityLabel: 'box',
     };
   }
 }

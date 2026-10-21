@@ -6,6 +6,7 @@ import FadeImage from '@/components/FadeImage';
 import VariantChips from '@/components/VariantChips';
 import { dedupeVariantGroups, variantDisplayName } from '@/lib/variants';
 import { priceLines } from '@/lib/price';
+import { quantityWords } from '@/lib/quantity';
 
 type SortOption = 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc' | 'units-asc' | 'units-desc' | 'total-asc' | 'total-desc';
 
@@ -126,8 +127,8 @@ export default function ShopAllPage() {
             <option value="name-desc">Name (Z-A)</option>
             <option value="price-asc">Price per unit (Low to High)</option>
             <option value="price-desc">Price per unit (High to Low)</option>
-            <option value="units-asc">Units per box (Low to High)</option>
-            <option value="units-desc">Units per box (High to Low)</option>
+            <option value="units-asc">{quantityWords(design.style?.quantityLabel).sortLabel} (Low to High)</option>
+            <option value="units-desc">{quantityWords(design.style?.quantityLabel).sortLabel} (High to Low)</option>
             <option value="total-asc">Box price (Low to High)</option>
             <option value="total-desc">Box price (High to Low)</option>
           </select>
@@ -138,7 +139,8 @@ export default function ShopAllPage() {
         {sortedProducts.map((product: any) => {
           const stock = stockMap[product.id] ?? null;
           const isOutOfStock = stock !== null && stock <= 0;
-          const price = priceLines(product, design.style?.mainPrice);
+          const price = priceLines(product, design.style?.mainPrice, design.style?.quantityLabel);
+          const words = quantityWords(design.style?.quantityLabel);
 
           return (
             <Link
@@ -214,7 +216,7 @@ export default function ShopAllPage() {
                       fontFamily: design.fonts.bodyFont,
                     }}
                   >
-                    Box of {product.unitsPerBox} units
+                    {words.lot(product.unitsPerBox)}
                   </p>
                   <p
                     className="text-2xl font-bold"
