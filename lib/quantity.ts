@@ -18,6 +18,8 @@ export interface QuantityWords {
   quantityHeading: (units: number) => string;
   /** The sort option for lot size: "Units per box" or "MOQ". */
   sortLabel: string;
+  /** The sort option for the lot price: "Box price" or "Minimum order". */
+  lotPriceLabel: string;
 }
 
 export function quantityWords(label?: string): QuantityWords {
@@ -28,6 +30,7 @@ export function quantityWords(label?: string): QuantityWords {
       perLot: 'per lot',
       quantityHeading: (units) => `Quantity, in lots of ${units} units:`,
       sortLabel: 'MOQ',
+      lotPriceLabel: 'Minimum order',
     };
   }
   return {
@@ -36,5 +39,6 @@ export function quantityWords(label?: string): QuantityWords {
     perLot: 'per box',
     quantityHeading: () => 'Quantity (boxes):',
     sortLabel: 'Units per box',
+    lotPriceLabel: 'Box price',
   };
 }

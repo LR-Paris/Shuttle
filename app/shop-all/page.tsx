@@ -129,8 +129,8 @@ export default function ShopAllPage() {
             <option value="price-desc">Price per unit (High to Low)</option>
             <option value="units-asc">{quantityWords(design.style?.quantityLabel).sortLabel} (Low to High)</option>
             <option value="units-desc">{quantityWords(design.style?.quantityLabel).sortLabel} (High to Low)</option>
-            <option value="total-asc">Box price (Low to High)</option>
-            <option value="total-desc">Box price (High to Low)</option>
+            <option value="total-asc">{quantityWords(design.style?.quantityLabel).lotPriceLabel} (Low to High)</option>
+            <option value="total-desc">{quantityWords(design.style?.quantityLabel).lotPriceLabel} (High to Low)</option>
           </select>
         </div>
       </div>
