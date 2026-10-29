@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { deductStock, getStockMap } from '@/lib/inventory';
+import { requireShopSession } from '@/lib/shopAuth';
 
 interface OrderItem {
   productId: string;
@@ -92,6 +93,9 @@ function ensureCSVHeader(ordersPath: string): void {
 }
 
 export async function POST(request: NextRequest) {
+  const denied = await requireShopSession();
+  if (denied) return denied;
+
   try {
     const orderData: OrderData = await request.json();
 

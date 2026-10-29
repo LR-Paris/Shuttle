@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCollection } from '@/lib/catalog';
+import { requireShopSession } from '@/lib/shopAuth';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ collectionId: string }> }
 ) {
+  const denied = await requireShopSession();
+  if (denied) return denied;
+
   try {
     const { collectionId } = await params;
     const collection = getCollection(collectionId);

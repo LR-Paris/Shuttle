@@ -34,6 +34,7 @@
  * - STS-4.3.1 - Product photos: main.* always first, the rest in natural name order, whatever order the disk lists them in
  * - STS-4.4.0 - Style.txt mainPrice: unit puts the unit price first on product cards and the product page
  * - STS-4.5.0 - Style.txt quantityLabel: moq says "MOQ 1000 units" instead of "Box of 1000 units", counts lots instead of boxes, and prices a lot at MOQ times the unit price
+ * - STS-4.6.0 - Security: the shop password is checked on the server and never sent to the browser; a session cookie unlocks the pages and the API
  *
  * To increment version:
  * 1. Update VERSION constant below
@@ -42,14 +43,14 @@
  * 4. Commit with version number in commit message
  */
 
-export const VERSION = 'STS-4.5.0';
+export const VERSION = 'STS-4.6.0';
 
 export const VERSION_INFO = {
   name: 'Shop Template System',
   version: VERSION,
-  codename: 'Minimum',
-  releaseDate: '2026-10-21',
-  description: 'A shop can sell in minimum order quantities: Style.txt quantityLabel: moq',
+  codename: 'Lock',
+  releaseDate: '2026-10-29',
+  description: 'The shop password is checked on the server and never sent to the browser',
   attribution: 'Built with LR Paris Shuttle',
 };
 

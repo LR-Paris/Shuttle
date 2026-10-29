@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { restoreStock } from '@/lib/inventory';
+import { requireShopSession } from '@/lib/shopAuth';
 
 const ORDERS_CSV = path.join(process.cwd(), 'DATABASE', 'Orders', 'orders.csv');
 const CANCEL_WINDOW_MS = 2 * 60 * 60 * 1000; // 2 hours
@@ -38,6 +39,9 @@ function parseCSVLine(line: string): string[] {
 }
 
 export async function POST(request: NextRequest) {
+  const denied = await requireShopSession();
+  if (denied) return denied;
+
   try {
     const { orderId } = await request.json();
 

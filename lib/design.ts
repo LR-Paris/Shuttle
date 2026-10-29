@@ -57,7 +57,6 @@ export interface DesignData {
   descriptions: Descriptions;
   fonts: Fonts;
   style: Style;
-  password: string;
   contactEmail: string;
   adminEmail: string;
   logoPath: string | null;
@@ -217,6 +216,7 @@ export function getStyle(): Style {
   }
 }
 
+// Server only: lib/shopAuth.ts checks attempts against it. Never add it to DesignData.
 export function getPassword(): string {
   try {
     const passwordPath = path.join(DESIGN_PATH, 'Details', 'Password.txt');
@@ -389,7 +389,6 @@ export function getDesignData(): DesignData {
     descriptions: getDescriptions(),
     fonts: getFonts(),
     style: getStyle(),
-    password: getPassword(),
     contactEmail: getContactEmail(),
     adminEmail: getAdminEmail(),
     logoPath: getLogoPath('logo'),

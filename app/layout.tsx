@@ -4,6 +4,7 @@ import { getDesignData } from "@/lib/design";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PasswordProtection from "@/components/PasswordProtection";
+import { hasShopSession } from "@/lib/shopAuth";
 
 export async function generateMetadata(): Promise<Metadata> {
   const design = getDesignData();
@@ -16,12 +17,15 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const design = getDesignData();
+  // Until the visitor enters the shop password, only the gate is rendered:
+  // no header, page or footer reaches the browser.
+  const unlocked = await hasShopSession();
 
   return (
     <html lang="en">
@@ -68,36 +72,39 @@ export default function RootLayout({
         }} />
       </head>
       <body className="flex flex-col min-h-screen" style={{ backgroundColor: design.colors.background, color: design.colors.text }}>
-        <PasswordProtection
-          correctPassword={design.password}
-          primaryColor={design.colors.primary}
-          secondaryColor={design.colors.secondary}
-          titleFont={design.fonts.titleFont}
-          bodyFont={design.fonts.bodyFont}
-          cornerRadius={design.style.cornerRadius}
-          companyName={design.companyName}
-          logoPath={design.logoPath}
-          logoWhitePath={design.logoWhitePath}
-        >
-          <Header
-            companyName={design.companyName}
-            logoPath={design.logoPath}
-            logoWhitePath={design.logoWhitePath}
+        {unlocked ? (
+          <>
+            <Header
+              companyName={design.companyName}
+              logoPath={design.logoPath}
+              logoWhitePath={design.logoWhitePath}
+              primaryColor={design.colors.primary}
+              secondaryColor={design.colors.secondary}
+              titleFont={design.fonts.titleFont}
+              bodyFont={design.fonts.bodyFont}
+              cornerRadius={design.style.cornerRadius}
+            />
+            <main className="flex-grow">
+              {children}
+            </main>
+            <Footer
+              footerText={design.descriptions.footer}
+              primaryColor={design.colors.primary}
+              bodyFont={design.fonts.bodyFont}
+            />
+          </>
+        ) : (
+          <PasswordProtection
             primaryColor={design.colors.primary}
             secondaryColor={design.colors.secondary}
             titleFont={design.fonts.titleFont}
             bodyFont={design.fonts.bodyFont}
             cornerRadius={design.style.cornerRadius}
+            companyName={design.companyName}
+            logoPath={design.logoPath}
+            logoWhitePath={design.logoWhitePath}
           />
-          <main className="flex-grow">
-            {children}
-          </main>
-          <Footer
-            footerText={design.descriptions.footer}
-            primaryColor={design.colors.primary}
-            bodyFont={design.fonts.bodyFont}
-          />
-        </PasswordProtection>
+        )}
       </body>
     </html>
   );

@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getAllCollections } from '@/lib/catalog';
+import { requireShopSession } from '@/lib/shopAuth';
 
 export async function GET() {
+  const denied = await requireShopSession();
+  if (denied) return denied;
+
   try {
     const collections = getAllCollections();
     return NextResponse.json(collections);

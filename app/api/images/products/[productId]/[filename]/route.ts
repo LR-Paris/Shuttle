@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { getAllProducts } from '@/lib/catalog';
+import { requireShopSession } from '@/lib/shopAuth';
 
 function slugify(text: string): string {
   return text
@@ -14,6 +15,9 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ productId: string; filename: string }> }
 ) {
+  const denied = await requireShopSession();
+  if (denied) return denied;
+
   try {
     const { productId, filename } = await params;
 
@@ -67,7 +71,8 @@ export async function GET(
     return new NextResponse(fileBuffer, {
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=3600', // Changed to 1 hour instead of immutable
+        // private: behind the password gate, so Cloudflare must not cache it for everyone
+        'Cache-Control': 'private, max-age=3600',
       },
     });
   } catch (error) {

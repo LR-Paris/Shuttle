@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { requireShopSession } from '@/lib/shopAuth';
 
 const DATABASE_PATH = path.join(process.cwd(), 'DATABASE');
 const SHOWCASE_PATH = path.join(DATABASE_PATH, 'Design', 'ShowcasePhotos');
@@ -9,6 +10,9 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ path: string[] }> }
 ) {
+  const denied = await requireShopSession();
+  if (denied) return denied;
+
   try {
     const { path: pathArray } = await params;
     const filePath = pathArray.join('/');
@@ -41,7 +45,8 @@ export async function GET(
       status: 200,
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=31536000, immutable',
+        // private: behind the password gate, so Cloudflare must not cache it for everyone
+        'Cache-Control': 'private, max-age=31536000, immutable',
       },
     });
   } catch (error) {
