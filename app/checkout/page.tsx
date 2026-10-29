@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { getCart, clearCart, type Cart } from '@/lib/cart';
+import { apiFetch } from '@/lib/api';
 
 interface DesignData {
   colors: {
@@ -81,12 +82,12 @@ export default function CheckoutPage() {
     }
     setCart(currentCart);
 
-    fetch('/api/design')
+    apiFetch('/design')
       .then(r => r.json())
       .then(setDesign)
       .catch(console.error);
 
-    fetch('/api/presets')
+    apiFetch('/presets')
       .then(r => r.json())
       .then((data: PresetsData) => {
         setPresets(data);
@@ -160,7 +161,7 @@ export default function CheckoutPage() {
         hotelSelection: presets?.dataRequired.hotel_list ? hotelSelection : '',
       };
 
-      const response = await fetch('/api/orders', {
+      const response = await apiFetch('/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -191,7 +192,7 @@ export default function CheckoutPage() {
         formData.append('po_file', poFile);
         formData.append('order_id', result.orderId);
 
-        const uploadResponse = await fetch('/api/orders/upload-po', {
+        const uploadResponse = await apiFetch('/orders/upload-po', {
           method: 'POST',
           body: formData,
         });

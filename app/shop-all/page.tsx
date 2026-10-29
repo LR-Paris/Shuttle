@@ -7,6 +7,7 @@ import VariantChips from '@/components/VariantChips';
 import { dedupeVariantGroups, variantDisplayName } from '@/lib/variants';
 import { priceLines } from '@/lib/price';
 import { quantityWords } from '@/lib/quantity';
+import { apiFetch } from '@/lib/api';
 
 type SortOption = 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc' | 'units-asc' | 'units-desc' | 'total-asc' | 'total-desc';
 
@@ -19,9 +20,9 @@ export default function ShopAllPage() {
   useEffect(() => {
     async function loadData() {
       const [designResponse, collectionsResponse, inventoryResponse] = await Promise.all([
-        fetch('/api/design'),
-        fetch('/api/collections'),
-        fetch('/api/inventory').catch(() => null),
+        apiFetch('/design'),
+        apiFetch('/collections'),
+        apiFetch('/inventory').catch(() => null),
       ]);
 
       const designData = await designResponse.json();

@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getInventory, getStockByProductId, seedInventory } from '@/lib/inventory';
+import { requireShopSession } from '@/lib/shopAuth';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
+  const denied = await requireShopSession();
+  if (denied) return denied;
+
   try {
     const { searchParams } = new URL(request.url);
     const productId = searchParams.get('productId');
@@ -27,6 +31,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const denied = await requireShopSession();
+  if (denied) return denied;
+
   try {
     const body = await request.json();
 

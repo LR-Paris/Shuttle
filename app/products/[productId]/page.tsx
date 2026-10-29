@@ -7,6 +7,7 @@ import { addToCart } from '@/lib/cart';
 import FadeImage from '@/components/FadeImage';
 import { priceLines } from '@/lib/price';
 import { quantityWords } from '@/lib/quantity';
+import { apiFetch } from '@/lib/api';
 
 interface ProductVariant {
   id: string;
@@ -77,9 +78,9 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
 
   useEffect(() => {
     Promise.all([
-      fetch(`/api/products/${productId}`).then(r => r.json()),
-      fetch('/api/design').then(r => r.json()),
-      fetch(`/api/inventory?productId=${productId}`).then(r => r.ok ? r.json() : null).catch(() => null),
+      apiFetch(`/products/${productId}`).then(r => r.json()),
+      apiFetch('/design').then(r => r.json()),
+      apiFetch(`/inventory?productId=${productId}`).then(r => r.ok ? r.json() : null).catch(() => null),
     ])
       .then(([productData, designData, inventoryData]) => {
         setProduct(productData);
@@ -89,7 +90,7 @@ export default function ProductPage({ params }: { params: Promise<{ productId: s
 
         // If this product has variants, fetch full inventory to show stock per pill
         if (productData?.variants?.length > 1) {
-          fetch('/api/inventory')
+          apiFetch('/inventory')
             .then(r => r.ok ? r.json() : [])
             .then((allInventory: Array<{productId: string; stock: number}>) => {
               const map: Record<string, number> = {};

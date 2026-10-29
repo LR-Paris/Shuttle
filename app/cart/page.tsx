@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getCart, updateCartItemQuantity, removeFromCart, type Cart } from '@/lib/cart';
 import { quantityWords } from '@/lib/quantity';
+import { apiFetch } from '@/lib/api';
 
 interface DesignData {
   colors: {
@@ -37,8 +38,8 @@ export default function CartPage() {
     setCart(getCart());
 
     Promise.all([
-      fetch('/api/design').then(r => r.json()),
-      fetch('/api/inventory').then(r => r.ok ? r.json() : []).catch(() => []),
+      apiFetch('/design').then(r => r.json()),
+      apiFetch('/inventory').then(r => r.ok ? r.json() : []).catch(() => []),
     ]).then(([designData, inventoryData]) => {
       setDesign(designData);
       const map: Record<string, number> = {};

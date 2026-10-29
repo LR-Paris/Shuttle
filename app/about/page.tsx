@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { apiFetch } from '@/lib/api';
 
 // Helper function to format FAQ answer text with email links
 function formatAnswer(answer: string, secondaryColor: string, bodyFont: string) {
@@ -48,16 +49,16 @@ export default function AboutPage() {
 
   useEffect(() => {
     async function loadData() {
-      const response = await fetch('/api/design');
+      const response = await apiFetch('/design');
       const designData = await response.json();
       setDesign(designData);
       document.title = `${designData.companyName} - About`;
 
-      const versionResponse = await fetch('/api/version');
+      const versionResponse = await apiFetch('/version');
       const versionData = await versionResponse.json();
       setVersionInfo(versionData);
 
-      const faqResponse = await fetch('/api/faq');
+      const faqResponse = await apiFetch('/faq');
       const faqData = await faqResponse.json();
       setFaqs(faqData);
     }

@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getFAQData } from '@/lib/design';
+import { requireShopSession } from '@/lib/shopAuth';
 
 export async function GET() {
+  const denied = await requireShopSession();
+  if (denied) return denied;
+
   try {
     const faqs = getFAQData();
     return NextResponse.json(faqs);

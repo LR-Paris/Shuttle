@@ -85,6 +85,7 @@ Add new entry to the Version History table:
 | STS-4.3.1 | 2026-10-20 | Product photos: `main.*` is always the first photo, the rest follow in natural name order. The order no longer depends on the disk or on how the DATABASE zip was unpacked. |
 | STS-4.4.0 | 2026-10-20 | `Style.txt` takes `mainPrice: unit`: product cards and the product page show the unit price large and the box price on the small line. Default `box`, unchanged. |
 | STS-4.5.0 | 2026-10-21 | `Style.txt` takes `quantityLabel: moq`: "MOQ 1000 units" instead of "Box of 1000 units" on cards, the product page, the cart and the receipt, lots instead of boxes, and "minimum order" on the lot price when the unit price leads. The lot price is the MOQ times the unit price, so `BoxCost.txt` is not read. Default `box`, unchanged. |
+| STS-4.6.0 | 2026-10-29 | Security: the shop password is checked on the server. `/api/design` and the page HTML no longer carry it; `POST /api/auth` sets a 7-day httpOnly cookie, and the layout and every API route except `/api/auth` and the logo require it. Changing `Password.txt` signs everyone out. Pages call `apiFetch()` from `lib/api.ts`. |
 ```
 
 ### 3. Commit Changes

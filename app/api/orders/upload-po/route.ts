@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { requireShopSession } from '@/lib/shopAuth';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
+  const denied = await requireShopSession();
+  if (denied) return denied;
+
   try {
     const formData = await request.formData();
     const file = formData.get('po_file') as File | null;

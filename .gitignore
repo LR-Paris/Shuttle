@@ -24,6 +24,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# shop session signing key (lib/shopAuth.ts makes it on first use)
+/.shop-session-secret
+
 # local env files
 .env*.local
 
