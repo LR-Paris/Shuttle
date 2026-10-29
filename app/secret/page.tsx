@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { apiFetch } from '@/lib/api';
 
 interface DesignData {
   colors: {
@@ -28,7 +29,7 @@ export default function SecretPage() {
   const [design, setDesign] = useState<DesignData | null>(null);
 
   useEffect(() => {
-    fetch('/api/design')
+    apiFetch('/design')
       .then(r => r.json())
       .then(setDesign)
       .catch(console.error);

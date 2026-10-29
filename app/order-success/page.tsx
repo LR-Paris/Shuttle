@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { apiFetch } from '@/lib/api';
 
 interface DesignData {
   colors: {
@@ -170,7 +171,7 @@ function OrderSuccessContent() {
   const [cancelError, setCancelError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/design')
+    apiFetch('/design')
       .then(r => r.json())
       .then(setDesign)
       .catch(console.error);
@@ -206,7 +207,7 @@ function OrderSuccessContent() {
     setCancelError(null);
 
     try {
-      const response = await fetch('/api/orders/cancel', {
+      const response = await apiFetch('/orders/cancel', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId }),

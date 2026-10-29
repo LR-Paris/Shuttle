@@ -7,6 +7,7 @@ import VariantChips from '@/components/VariantChips';
 import { countDistinctProducts, dedupeVariantGroups, variantDisplayName } from '@/lib/variants';
 import { priceLines } from '@/lib/price';
 import { quantityWords } from '@/lib/quantity';
+import { apiFetch } from '@/lib/api';
 
 export default function Home() {
   const [design, setDesign] = useState<any>(null);
@@ -18,8 +19,8 @@ export default function Home() {
   useEffect(() => {
     async function loadData() {
       const [designResponse, collectionsResponse] = await Promise.all([
-        fetch('/api/design'),
-        fetch('/api/collections')
+        apiFetch('/design'),
+        apiFetch('/collections')
       ]);
 
       const designData = await designResponse.json();
@@ -40,7 +41,7 @@ export default function Home() {
         setAllProducts(dedupeVariantGroups(products));
 
         try {
-          const inventoryResponse = await fetch('/api/inventory');
+          const inventoryResponse = await apiFetch('/inventory');
           if (inventoryResponse.ok) {
             const inventoryData = await inventoryResponse.json();
             const map: Record<string, number> = {};
